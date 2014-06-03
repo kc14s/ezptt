@@ -18,9 +18,12 @@ echo i18n(' PTT批踢踢實業坊');
 ?>
 </title>
 <link rel="stylesheet" href="http://cdn.bootcss.com/twitter-bootstrap/3.0.3/css/bootstrap.min.css">
+<link rel="stylesheet" href="//code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css">
 <script src="http://cdn.bootcss.com/jquery/1.10.2/jquery.min.js"></script>
 <script src="http://cdn.bootcss.com/twitter-bootstrap/3.0.3/js/bootstrap.min.js"></script>
+<script src="http://code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
 <script src="<?echo $static_host;?>/js/jquery.lazyload.min.js"></script>
+<script src="<?echo $static_host;?>/js/auto_complete.js"></script>
 <meta property="qc:admins" content="2746676521624354063757" />
 <style>
 body,button, input, select, textarea,h1 ,h2, h3, h4, h5, h6 { font-family: 'Microsoft YaHei','宋体' , Tahoma, Helvetica, Arial, sans-serif;}
@@ -28,9 +31,22 @@ body,button, input, select, textarea,h1 ,h2, h3, h4, h5, h6 { font-family: 'Micr
 </head>
 <body>
 <script>  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');  ga('create', 'UA-17088225-4', 'ezptt.com');  ga('send', 'pageview');</script>
-<div class="row"><div class="col-md-1 col-md-offset-9 col-xs-1 col-xs-offset-9">
-<div class="btn-group">
-<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+<div class="row">
+<div class="col-md-8 col-md-offset-2 col-xs-12">
+<nav class="navbar navbar-default" role="navigation">
+<div class="collapse navbar-collapse">
+<ul class="nav navbar-nav">
+<li><a href="/">PTT</a></li>
+<li><a href="/disp">Disp</a></li>
+</ul>
+<form class="navbar-form navbar-left" role="search" action="/select_board" method="POST">
+<div class="form-group">
+<input type="text" id="select_board" name="en_name" class="form-control" placeholder="<? echo i18n('xuanzekanban') ?>">
+</div>
+<button type="submit" class="btn btn-default">Submit</button>
+</form>
+<div class="btn-group navbar-right">
+<button type="button" class="btn btn-default dropdown-toggle navbar-btn" data-toggle="dropdown">
 <? echo i18n('xuanzeyuyan')?><span class="caret"></span>
 </button>
 <ul class="dropdown-menu" role="menu">
@@ -38,5 +54,11 @@ body,button, input, select, textarea,h1 ,h2, h3, h4, h5, h6 { font-family: 'Micr
 <li><a href="http://cn.ezptt.com<? echo $_SERVER['REQUEST_URI']; ?>">简体中文</a></li>
 </ul>
 </div>
+</div>
+</nav>
+</div>
+</div>
+<div class="row">
+<div class="col-md-1 col-md-offset-9 col-xs-1 col-xs-offset-9">
 </div></div>
 <div class="row">

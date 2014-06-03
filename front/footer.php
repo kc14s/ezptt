@@ -1,4 +1,4 @@
-<div align="center"><? //echo $baidu_480_160; ?></div>
+<div align="center"><? if (!$is_loyal_user) echo $cpc_chaping_cpc; ?></div>
 </div>
 <script> 
 $(function() { 

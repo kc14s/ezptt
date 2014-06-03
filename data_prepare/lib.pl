@@ -153,6 +153,7 @@ sub get_hot_boards {
 		push @boards, [$en_name, $cn_name];
 		print "$en_name\t$cn_name\n";
 	}
+	push @boards, ['Sex', '[西斯]'];
 	return @boards;
 }
 
@@ -176,6 +177,7 @@ sub get_topics {
 	my $bid = $_[0]->[2];
 	my $url = "http://www.ptt.cc/bbs/$en_name/index.html";
 	my $continue = 1;
+	my $page_count = 0;
 	while ($continue) {
 		$continue = 0;
 		my $content = get_url($url);
@@ -185,10 +187,13 @@ sub get_topics {
 				$continue |= download_topic($bid, $en_name, $1, $2, $3);
 			}
 		}
+		if (++$page_count > 10) {
+			$continue = 0;
+		}
 		if ($continue) {
 			$url = "http://www.ptt.cc$1" if ($content =~ /href="(\/bbs\/$en_name\/index\d+\.html)">&lsaquo;/);
 		}
-		$continue = 0;	# remember to comment out
+#		$continue = 0;	# remember to comment out
 	}
 }
 
@@ -316,15 +321,15 @@ sub download_attachments {
 		}
 		my $att_path = $ENV{"pwd"}."/data/att_temp/$bid.$tid1.$tid2";
 		my $att_content = get_url($attachment->[0]);
-		if (`file $att_path | grep HTML | wc -l` > 0) {
-			`rm $att_path`;
-			next;
-		}
 		next if (length($att_content) < 1024 * 10 || length($att_content) == 48373);
 		open OUT, ">$att_path";
 		binmode(OUT);
 		print OUT $att_content;
 		close OUT;
+		if (`file $att_path | grep HTML | wc -l` > 0) {
+			`rm $att_path`;
+			next;
+		}
 		my $ext_name = substr($file_name, rindex($file_name, '.') + 1);
 		if (!defined($ext_name) || length($ext_name) < 3 || length($ext_name) > 4) {
 			$ext_name = 'jpg';
@@ -428,7 +433,7 @@ sub gen_ptt_index {
 	while (my ($bid, $tid1, $tid2) = $request->fetchrow_array) {
 		$db_conn->do("update topic set rank = (select count(*) from reply where bid = $bid and tid1 = $tid1 and tid2 = '$tid2') where  bid = $bid and tid1 = $tid1 and tid2 = '$tid2'");
 	}
-	$sql = "select en_name, category, bid, tid1, tid2, title, attachment from board, topic where pub_time > '$time' and bid = id order by rank desc limit 150";
+	$sql = "select en_name, category, bid, tid1, tid2, title, attachment from board, topic where pub_time > '$time' and bid = board.id order by rank desc limit 150";
 	$request = $db_conn->prepare($sql);
 	$request->execute;
 	my %categories;
@@ -442,7 +447,7 @@ sub gen_ptt_index {
 		}
 		my @attachments;
 		if ($attachment) {
-				my $req = $db_conn->prepare("select md5, ext_name from attachment where bid = $bid and tid1 = $tid1 and tid2 = '$tid2'");
+				my $req = $db_conn->prepare("select md5, ext_name from attachment where bid = $bid and tid1 = $tid1 and tid2 = '$tid2' limit 2");
 				$req->execute;
 				while (my ($md5, $ext_name) = $req->fetchrow_array) {
 					if (-e "../data/att/$md5.$ext_name") {

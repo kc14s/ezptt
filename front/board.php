@@ -8,9 +8,12 @@ if ($ptt_allow == 0 && !$is_spider && !$is_from_search_engine) {
 }
 $en_name = $_GET['en_name'];
 $page = (int)$_GET['page'];
-echo $_GET['page'];
 $db_conn = conn_ezptt_db();
 list($bid, $cn_name) = execute_vector("select id, cn_name from board where en_name = '$en_name'");
+if (!isset($bid)) {
+	header('HTTP/1.1 404 Not Found');
+	exit();
+}
 $result = mysql_query("select tid1, tid2, title, attachment from topic where bid = $bid order by pub_time desc limit ".(($page - 1) * $page_size).", $page_size");
 while (list($tid1, $tid2, $title, $attachment) = mysql_fetch_array($result)) {
 	$topic = array($tid1, $tid2, $title);
@@ -27,7 +30,6 @@ while (list($tid1, $tid2, $title, $attachment) = mysql_fetch_array($result)) {
 
 $html = "<h3 align=\"center\">[$en_name] ".i18n($cn_name)."</h3>";
 $html .= "<div class=\"col-md-8 col-md-offset-2 col-xs-12\">";
-$html .= $google_320_100;
 $html .= '<div class="list-group">';
 foreach ($topics as $topic) {
 	list($tid1, $tid2, $title, $attachment1, $attachment2) = $topic;
@@ -49,7 +51,7 @@ $html .= '<ul class="pager"><li class="previous '.$page_up_disabled.'"><a href="
 $html .= '</div>';
 
 
-
+$html_title = "$en_name $cn_name";
 require_once('header.php');
 echo $html;
 require_once('footer.php');

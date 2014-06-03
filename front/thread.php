@@ -43,7 +43,6 @@ if ($is_spider) {
 }
 
 $html = "<div class=\"col-md-8 col-md-offset-2 col-xs-12\"><ol class=\"breadcrumb\"><li><a href=\"/\">PTT</a></li><li><a href=\"/board/$en_name/\">$en_name</a></li></ol><h3>".i18n($topic_title)."</h3>";
-$html .= $google_320_100;
 foreach ($articles as $article) {
 	list($author, $time, $content, $attachments, $nick) = $article;
 	$html .= '<div class="panel panel-info">';
@@ -87,7 +86,7 @@ if (isset($old_topics)) {
 		}
 		$html .= '</div></div>';
 }
-$html .= '<p><a href="/">PTT</a></p></div>';
+$html .= '<p><a href="/">PTT</a> <a href="/disp">disp</a></p></div>';
 //$html .= '<script type="text/javascript">var zx_aid = 1;var zx_uid = 10799;var zoneid = 11554;</script><script type="text/javascript" charset="utf-8" src="http://click.9cpc.com/view.js"></script>';
 
 require_once('header.php');

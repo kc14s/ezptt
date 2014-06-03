@@ -325,7 +325,7 @@ sub download_attachments {
 			`rm $att_path`;
 			next;
 		}
-		next if (length($att_content) < 1024 * 10 || length($att_content) == 48373);
+		next if (length($att_content) < 1024 * 10 || length($att_content) == 48373 || length($att_content) == 17230);
 		open OUT, ">$att_path";
 		binmode(OUT);
 		print OUT $att_content;

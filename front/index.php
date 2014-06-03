@@ -24,7 +24,6 @@ $categories = array('活動中心', '生活娛樂館', '戰略高手', '臺灣�
 
 $html = '<h3 align="center">PTT BBS</h3>';
 $html .= "<div class=\"col-md-6 col-md-offset-2 col-xs-12\">";
-$html .= $google_320_100;
 foreach ($categories as $category) {
 	$topics = $json->$category;
 	if (!isset($topics) || count($topics) == 0) continue;
