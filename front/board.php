@@ -34,7 +34,7 @@ $html .= '<div class="list-group">';
 foreach ($topics as $topic) {
 	list($tid1, $tid2, $title, $attachment1, $attachment2) = $topic;
 	$title = i18n($title);
-	$html .="<a class=\"list-group-item\" href=\"/thread/$en_name/$tid1/$tid2\">$title";
+	$html .="<a class=\"list-group-item\" href=\"/article/$en_name/$tid1/$tid2\">$title";
 	if (isset($attachment1)) {
 		$html .= '<br>';
 		$html .= "<img data-original=\"$static_host/att/$attachment1\" height=\"200\" />";

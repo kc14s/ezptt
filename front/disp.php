@@ -22,7 +22,7 @@ $dataset = get_dataset("data/index");
 
 $html = '<h3 align="center">PTT BBS</h3>';
 $html .= "<div class=\"col-md-6 col-md-offset-2 col-xs-12\">";
-$html .= $google_320_100;
+//$html .= $google_320_100;
 $html .= '<div class="list-group">';
 foreach ($dataset as $article) {
 	list($category, $en_name, $cn_name, $bid, $tid, $title, $author, $att[0], $att[1]) = $article;
@@ -48,7 +48,7 @@ while (count($beauty_indexes) < 10) {
 		$beauty_indexes[$index] = 0;
 		list($en_name, $tid1, $tid2, $title, $file_name) = $dataset[$index];
 		$html .= '<div class="row">';
-		$html .= '<div class="thumbnail"><a href="'."/thread/$en_name/$tid1/$tid2".'"><img src="'.$static_host.'/att/'.$file_name.'" width="300" /></a><div class="caption"><p><a href="'."/thread/$en_name/$tid1/$tid2".'">'.i18n($title).'</a></p></div></div></div>';
+		$html .= '<div class="thumbnail"><a href="'."/article/$en_name/$tid1/$tid2".'"><img src="'.$static_host.'/att/'.$file_name.'" width="300" /></a><div class="caption"><p><a href="'."/article/$en_name/$tid1/$tid2".'">'.i18n($title).'</a></p></div></div></div>';
 }
 $html .= '</div>';
 

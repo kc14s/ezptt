@@ -23,7 +23,7 @@ echo i18n(' PTT批踢踢實業坊');
 <script src="http://cdn.bootcss.com/twitter-bootstrap/3.0.3/js/bootstrap.min.js"></script>
 <script src="http://code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
 <script src="<?echo $static_host;?>/js/jquery.lazyload.min.js"></script>
-<script src="<?echo $static_host;?>/js/auto_complete.js"></script>
+<script src="<?echo $static_host;?>/js/auto_complete.js?v=2"></script>
 <meta property="qc:admins" content="2746676521624354063757" />
 <style>
 body,button, input, select, textarea,h1 ,h2, h3, h4, h5, h6 { font-family: 'Microsoft YaHei','宋体' , Tahoma, Helvetica, Arial, sans-serif;}
@@ -36,12 +36,18 @@ body,button, input, select, textarea,h1 ,h2, h3, h4, h5, h6 { font-family: 'Micr
 <nav class="navbar navbar-default" role="navigation">
 <div class="collapse navbar-collapse">
 <ul class="nav navbar-nav">
-<li><a href="/">PTT</a></li>
-<li><a href="/disp">Disp</a></li>
+<li <?if ($_SERVER['REQUEST_URI'] == '/' || strpos($_SERVER['REQUEST_URI'], '/board') === 0 || strpos($_SERVER['REQUEST_URI'], '/article') === 0 || strpos($_SERVER['REQUEST_URI'], '/thread') === 0) echo 'class="active"'?>><a href="/">PTT</a></li>
+<li <?if (strpos($_SERVER['REQUEST_URI'], '/disp') === 0 || strpos($_SERVER['REQUEST_URI'], '/topic') === 0) echo 'class="active"'?>><a href="/disp">Disp</a></li>
 </ul>
 <form class="navbar-form navbar-left" role="search" action="/select_board" method="POST">
 <div class="form-group">
 <input type="text" id="select_board" name="en_name" class="form-control" placeholder="<? echo i18n('xuanzekanban') ?>">
+</div>
+<button type="submit" class="btn btn-default">Submit</button>
+</form>
+<form class="navbar-form navbar-left" role="search" action="/query_author" method="POST">
+<div class="form-group">
+<input type="text" name="author" class="form-control" placeholder="<? echo i18n('chaxunzuozhe') ?>">
 </div>
 <button type="submit" class="btn btn-default">Submit</button>
 </form>

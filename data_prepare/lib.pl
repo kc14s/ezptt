@@ -63,7 +63,7 @@ sub get_url {
 #		$ua->proxy('http', "http://".$proxies[$proxy_idx]);
 		my $request = HTTP::Request->new(GET=>$url);
 		$request->header('Accept-Encoding' => HTTP::Message::decodable);
-		$request->header('Referer' => 'http://disp.cc/');
+		$request->header('Referer' => 'http://www.ptt.cc/ask/over18?from=%2Fbbs%2FSex%2Findex.html');
 		$request->header('Cookie' => 'over18=1');
 		my $response = $ua->request($request);
 #               print $response->content."\n\n".$response->decoded_content(charset => 'none')."\n\n";
@@ -131,6 +131,15 @@ sub execute_scalar {
 	return '0';     
 } 
 
+sub execute_vector {    
+	my ($sql, $conn) = @_;  
+	$conn = $ENV{'db_conn'} if (!defined($conn));
+	my $request = $conn->prepare($sql);
+#	print "$sql\n";
+	$request->execute();
+	return $request->fetchrow_array;
+} 
+
 sub get_all_boards {
 	my @boards;
 	my $sql = 'select en_name, cn_name from board';
@@ -153,7 +162,7 @@ sub get_hot_boards {
 		push @boards, [$en_name, $cn_name];
 		print "$en_name\t$cn_name\n";
 	}
-	push @boards, ['Sex', '[西斯]'];
+	push @boards, ['sex', '[西斯]'];
 	return @boards;
 }
 
@@ -309,9 +318,19 @@ sub download_attachments {
 	my ($bid, $tid1, $tid2, $attachments) = @_;
 	foreach my $attachment (@$attachments) {
 		my ($url, $file_name) = @$attachment;
-		next if (execute_scalar("select count(*) from attachment where url = '$url'") > 0);
+#		next if (execute_scalar("select count(*) from attachment where url = '$url'") > 0);
+		next if (execute_scalar("select count(*) from attachment where bid = $bid and tid1 = $tid1 and tid2 = '$tid2'") > 0);
 		if (index($url, 'http://www.youtube.com/') == 0) {
 			next;
+		}
+		my $ext_name = substr($file_name, rindex($file_name, '.') + 1);
+		if (!defined($ext_name) || length($ext_name) < 3 || length($ext_name) > 4) {
+			$ext_name = 'jpg';
+		}
+		my $md5 = execute_scalar("select md5 from attachment where bid = $bid and tid1 = $tid1 and tid2 = '$tid2'");
+		if (defined($md5) && length($md5) > 5) {
+			$db_conn->do("insert delayed into attachment(bid, tid1, tid2, md5, url, ext_name) values($bid, $tid1, '$tid2', '$md5', '$url', '$ext_name'");
+			return;
 		}
 		if (index($attachment->[1], '?') >= 0) {
 			$attachment->[1] = Digest::MD5->new->add($attachment->[1])->hexdigest.'.jpg';
@@ -330,12 +349,8 @@ sub download_attachments {
 			`rm $att_path`;
 			next;
 		}
-		my $ext_name = substr($file_name, rindex($file_name, '.') + 1);
-		if (!defined($ext_name) || length($ext_name) < 3 || length($ext_name) > 4) {
-			$ext_name = 'jpg';
-		}
-		my $md5 = Digest::MD5->new->add($att_content)->hexdigest;
-		next if (execute_scalar("select count(*) from attachment where md5 = '$md5'") > 0);
+		$md5 = Digest::MD5->new->add($att_content)->hexdigest;
+#		next if (execute_scalar("select count(*) from attachment where md5 = '$md5'") > 0);
 		my $target_path = $ENV{"pwd"}."/data/att/$md5.$ext_name";
 		system("mv $att_path $target_path");
 		my $sql = "insert delayed into attachment(bid, tid1, tid2, md5, url, ext_name) values($bid, $tid1, '$tid2', '$md5', '$url', '$ext_name')";
@@ -433,12 +448,12 @@ sub gen_ptt_index {
 	while (my ($bid, $tid1, $tid2) = $request->fetchrow_array) {
 		$db_conn->do("update topic set rank = (select count(*) from reply where bid = $bid and tid1 = $tid1 and tid2 = '$tid2') where  bid = $bid and tid1 = $tid1 and tid2 = '$tid2'");
 	}
-	$sql = "select en_name, category, bid, tid1, tid2, title, attachment from board, topic where pub_time > '$time' and bid = board.id order by rank desc limit 150";
+	$sql = "select en_name, category, bid, tid1, tid2, title, attachment, author from board, topic where pub_time > '$time' and bid = board.id order by rank desc limit 250";
 	$request = $db_conn->prepare($sql);
 	$request->execute;
 	my %categories;
 	my %bids;
-	while (my ($en_name, $category, $bid, $tid1, $tid2, $title, $attachment, $reply_num) = $request->fetchrow_array) {
+	while (my ($en_name, $category, $bid, $tid1, $tid2, $title, $attachment, $author) = $request->fetchrow_array) {
 		next if (++$bids{$bid} > 3);
 		my $pa = $categories{$category};
 		if (!defined($pa)) {
@@ -452,17 +467,17 @@ sub gen_ptt_index {
 				while (my ($md5, $ext_name) = $req->fetchrow_array) {
 					if (-e "../data/att/$md5.$ext_name") {
 						push @attachments, "$md5.$ext_name";
-						last if (@attachments > 2);
+						last if (@attachments >= 2);
 					}
 				}
 		}
-		push @$pa, [$en_name, $bid, $tid1, $tid2, $title, join("\t", @attachments)];
+		push @$pa, [$en_name, $bid, $tid1, $tid2, $title, $author, join("\t", @attachments)];
 	}
 	if (!defined($bids{$en_name_to_bid{'Beauty'}})) {
-		$sql = "select en_name, category, bid, tid1, tid2, title, attachment from board, topic where pub_time > '".get_datetime_str(-1)."' and topic.bid = ".$en_name_to_bid{'Beauty'}." and attachment = 1 and topic.bid = board.id order by rank desc limit 3";
+		$sql = "select en_name, category, bid, tid1, tid2, title, attachment, author from board, topic where pub_time > '".get_datetime_str(-1)."' and topic.bid = ".$en_name_to_bid{'Beauty'}." and attachment = 1 and topic.bid = board.id order by rank desc limit 3";
 		$request = $db_conn->prepare($sql);
 		$request->execute;
-		while (my ($en_name, $category, $bid, $tid1, $tid2, $title, $attachment, $reply_num) = $request->fetchrow_array) {
+		while (my ($en_name, $category, $bid, $tid1, $tid2, $title, $attachment, $author) = $request->fetchrow_array) {
 			next if (++$bids{$bid} > 3);
 			my $pa = $categories{$category};
 			if (!defined($pa)) {
@@ -471,16 +486,16 @@ sub gen_ptt_index {
 			}
 			my @attachments;
 			if ($attachment) {
-				my $req = $db_conn->prepare("select md5, ext_name from attachment where bid = $bid and tid1 = $tid1 and tid2 = '$tid2'");
+				my $req = $db_conn->prepare("select md5, ext_name from attachment where bid = $bid and tid1 = $tid1 and tid2 = '$tid2' limit 2");
 				$req->execute;
 				while (my ($md5, $ext_name) = $req->fetchrow_array) {
 					if (-e "../data/att/$md5.$ext_name") {
 						push @attachments, "$md5.$ext_name";
-						last if (@attachments > 2);
+						last if (@attachments >= 2);
 					}
 				}
 			}
-			push @$pa, [$en_name, $bid, $tid1, $tid2, $title, join("\t", @attachments)];
+			push @$pa, [$en_name, $bid, $tid1, $tid2, $title, $author, join("\t", @attachments)];
 		}
 	}
 	my $json = new JSON;

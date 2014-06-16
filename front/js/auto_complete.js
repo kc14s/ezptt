@@ -1941,6 +1941,7 @@ var board_en_names = [
 'Seven-up',
 'SevenHand',
 'Sewing',
+'sex',
 'SF',
 'SFFamily',
 'SG',

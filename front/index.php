@@ -24,6 +24,7 @@ $categories = array('活動中心', '生活娛樂館', '戰略高手', '臺灣�
 
 $html = '<h3 align="center">PTT BBS</h3>';
 $html .= "<div class=\"col-md-6 col-md-offset-2 col-xs-12\">";
+$html .= $google_320_100;
 foreach ($categories as $category) {
 	$topics = $json->$category;
 	if (!isset($topics) || count($topics) == 0) continue;
@@ -32,9 +33,9 @@ foreach ($categories as $category) {
 //	$html .= '<div class="panel-body">';
 	$html .= '<div class="list-group">';
 	foreach ($topics as $topic) {
-		list($en_name, $bid, $tid1, $tid2, $title, $attachments) = $topic;
+		list($en_name, $bid, $tid1, $tid2, $title, $author, $attachments) = $topic;
 		$title = i18n($title);
-		$html .="<a class=\"list-group-item\" href=\"/thread/$en_name/$tid1/$tid2\">[$en_name] $title";
+		$html .="<a class=\"list-group-item\" href=\"/article/$en_name/$tid1/$tid2\">[$en_name] $title<span class=\"pull-right\">$author</span>";
 		if (isset($attachments) && strlen($attachments) > 0) {
 			$html .= '<br>';
 			$file_names = explode("\t", $attachments);
@@ -58,7 +59,7 @@ while (count($beauty_indexes) < 10) {
 	$beauty_indexes[$index] = 0;
 	list($en_name, $tid1, $tid2, $title, $file_name) = $dataset[$index];
 	$html .= '<div class="row">';
-	$html .= '<div class="thumbnail"><a href="'."/thread/$en_name/$tid1/$tid2".'"><img src="'.$static_host.'/att/'.$file_name.'" width="300" /></a><div class="caption"><p><a href="'."/thread/$en_name/$tid1/$tid2".'">'.i18n($title).'</a></p></div></div></div>';
+	$html .= '<div class="thumbnail"><a href="'."/article/$en_name/$tid1/$tid2".'"><img src="'.$static_host.'/att/'.$file_name.'" width="300" /></a><div class="caption"><p><a href="'."/article/$en_name/$tid1/$tid2".'">'.i18n($title).'</a></p></div></div></div>';
 }
 $html .= '</div>';
 require_once('header.php');

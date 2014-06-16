@@ -31,8 +31,7 @@ while (list($prev_title, $prev_tid) = mysql_fetch_array($result)) {
 	$prev_topics[] = array($prev_title, $prev_tid);
 }
 
-$html = "<div class=\"col-md-8 col-md-offset-2 col-xs-12\"><a href=\"/\">PTT BBS</a> &gt; $en_name<h3>".i18n($topic_title)."</h3>";
-$html .= $google_320_100;
+$html = "<div class=\"col-md-8 col-md-offset-2 col-xs-12\"><a href=\"/disp\">Disp</a> &gt; $en_name<h3>".i18n($topic_title)."</h3>";
 foreach ($articles as $article) {
 	list($author, $time, $content, $attachments) = $article;
 	$html .= '<div class="panel panel-info">';

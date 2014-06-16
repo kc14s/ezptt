@@ -374,7 +374,7 @@ my %beauty_bids = (
 );
 
 sub gen_beauty {
-	open OUT, ">../front/data/beauty";
+	open OUT, ">../front/data/beauty.disp";
 	my $sql = 'select topic.bid, topic.tid, title, file_name from topic, attachment where topic.bid in ('.join(',', keys(%beauty_bids)).') and attachment = 1 and topic.bid = attachment.bid and topic.tid = attachment.tid group by topic.bid, topic.tid';
 	my $request = $db_conn->prepare($sql);
 	$request->execute;

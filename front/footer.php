@@ -1,4 +1,4 @@
-<div align="center"><? if (!$is_loyal_user) echo $cpc_chaping_cpc; ?></div>
+<div align="center"><? if (false && !$is_loyal_user) echo $cpc_chaping_cpc; ?></div>
 </div>
 <script> 
 $(function() { 
