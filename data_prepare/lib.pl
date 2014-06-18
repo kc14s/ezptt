@@ -46,6 +46,9 @@ sub get_url {
 		if (index($url, 'ptt.cc') >= 0) {
 			sleep(1);
 		}
+		if (index($url, '/bbs/sex/') > 0) {
+			$url = 'https'.substr($url, 4);
+		}
 		print "fetching $url\n";
 		my $ua = LWP::UserAgent->new;
 		$ua->agent("Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.9.0.4)Gecko/2008111217 Fedora/3.0.4-1.fc10 Firefox/3.0.5");
