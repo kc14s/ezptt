@@ -873,7 +873,7 @@ function is_loyal_user() {
 	global $is_from_search_engine;
 	$loyal_user_uris = array(
 	'/' => 1,
-	'/disp' => 1
+	'/disp.php' => 1
 	);
 	if ($is_from_search_engine) {}
 	else if ($is_spider) {
@@ -894,5 +894,21 @@ function is_loyal_user() {
 //		error_log('not loyal');
 	}
 	return $is_loyal;
+}
+
+function get_old_ck101_topic_html() {
+	list($tid_max, $tid_min) = execute_vector('select max(tid), min(tid) from ck101.topic');
+	$result = mysql_query('select bid, title, author, tid from ck101.topic where tid > '.rand($tid_min, $tid_max).' order by tid limit 10');
+	while (list($bid, $title, $author, $tid) = mysql_fetch_array($result)) {
+		$old_topics[] = array($title, $author, $bid, $tid);
+	}
+	$html = '<div class="panel panel-default"><div class="panel-heading">'.i18n('jixuyuedu').'</div>';
+	$html .= '<div class="list-group">';
+	foreach ($old_topics as $topic) {
+		list($title, $author, $bid, $tid) = $topic;
+		$html .= "<a href=\"/ck101/$bid/$tid\" class=\"list-group-item\">".i18n($title.' '.$author)." </a>";
+	}
+	$html .= '</div></div>';
+	return $html;
 }
 ?>

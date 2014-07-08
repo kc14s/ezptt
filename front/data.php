@@ -24,6 +24,15 @@ function conn_ezptt_db() {
 	return $db_conn;
 }
 
+function conn_ck101_db() {
+	global $db_server, $db_user, $db_password, $ck101_database;
+	$db_conn = mysql_pconnect($db_server, $db_user, $db_password);
+	mysql_select_db($ck101_database, $db_conn);
+	mysql_query("set names utf8");
+	mysql_query("SET time_zone = '+8:00'");
+	return $db_conn;
+}
+
 function get_attachments($bid, $aid, $author, $pub_time) {
 	$db_conn = conn_db();
 //	$sql = "select att_id, file_name from attachment where bid = $bid and aid = $aid and author = '$author' and $pub_time <= ts and date_add('$pub_time', interval 1, day) > ts";

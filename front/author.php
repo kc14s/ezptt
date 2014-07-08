@@ -44,6 +44,12 @@ else {
 }
 $html .= '<p><a href="/">PTT</a> <a href="/disp">disp</a></p></div>';
 $html .= '</div>';
+if (!$is_spider) {
+	$html .= $scupio_video_expand;
+}
+if (!$is_loyal_user) {
+	$html .= $adcash_popunder;
+}
 
 require_once('header.php');
 echo $html;

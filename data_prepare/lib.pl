@@ -43,11 +43,9 @@ sub get_url {
 	my $url = $_[0];
 	my $retry_count = 0;
 	while (1) {
+		#if (index($url, 'ptt.cc') >= 0 || index($url, 'ck101.com') >= 0) {
 		if (index($url, 'ptt.cc') >= 0) {
 			sleep(1);
-		}
-		if (index($url, '/bbs/sex/') > 0) {
-			$url = 'https'.substr($url, 4);
 		}
 		print "fetching $url\n";
 		my $ua = LWP::UserAgent->new;
@@ -66,7 +64,7 @@ sub get_url {
 #		$ua->proxy('http', "http://".$proxies[$proxy_idx]);
 		my $request = HTTP::Request->new(GET=>$url);
 		$request->header('Accept-Encoding' => HTTP::Message::decodable);
-		$request->header('Referer' => 'http://www.ptt.cc/ask/over18?from=%2Fbbs%2FSex%2Findex.html');
+		$request->header('Referer' => 'https://www.ptt.cc/ask/over18?from=%2Fbbs%2FSex%2Findex.html');
 		$request->header('Cookie' => 'over18=1');
 		my $response = $ua->request($request);
 #               print $response->content."\n\n".$response->decoded_content(charset => 'none')."\n\n";
@@ -187,7 +185,7 @@ sub get_datetime_str {
 sub get_topics {
 	my $en_name = $_[0]->[0];
 	my $bid = $_[0]->[2];
-	my $url = "http://www.ptt.cc/bbs/$en_name/index.html";
+	my $url = "https://www.ptt.cc/bbs/$en_name/index.html";
 	my $continue = 1;
 	my $page_count = 0;
 	while ($continue) {
@@ -203,7 +201,7 @@ sub get_topics {
 			$continue = 0;
 		}
 		if ($continue) {
-			$url = "http://www.ptt.cc$1" if ($content =~ /href="(\/bbs\/$en_name\/index\d+\.html)">&lsaquo;/);
+			$url = "https://www.ptt.cc$1" if ($content =~ /href="(\/bbs\/$en_name\/index\d+\.html)">&lsaquo;/);
 		}
 #		$continue = 0;	# remember to comment out
 	}
@@ -230,7 +228,7 @@ sub month_en_to_number {
 sub download_topic {
 	my ($bid, $en_name, $tid1, $tid2, $title) = @_;
 	my $ret = 0;
-	my $url = "http://www.ptt.cc/bbs/$en_name/M.$tid1.A.$tid2.html";
+	my $url = "https://www.ptt.cc/bbs/$en_name/M.$tid1.A.$tid2.html";
 	my $content = get_url($url);
 	my ($user, $nick, $body, $topic_pub_time);
 	my @attachments;
@@ -411,16 +409,16 @@ sub gen_beauty {
 }
 
 sub update_board_category {
-	my $url = 'http://www.ptt.cc/bbs/index.html';
+	my $url = 'https://www.ptt.cc/bbs/index.html';
 	my $html = get_url($url);
 	$html = encode('utf-8', decode('big5', $html));
 	while ($html =~ /<a href="\/bbs\/(\d+)\.html">\w_Group \- ([\d\D]+?) /g) {
 		my $category = $2;
-		$url = "http://www.ptt.cc/bbs/$1.html";
+		$url = "https://www.ptt.cc/bbs/$1.html";
 		my $sub_index_html = get_url($url);
 		$sub_index_html = encode('utf-8', decode('big5', $sub_index_html));
 		while ($sub_index_html =~ /<a href="\/bbs\/(\d+)\.html">\w+/g) {
-			$url = "http://www.ptt.cc/bbs/$1.html";
+			$url = "https://www.ptt.cc/bbs/$1.html";
 			my $sub_sub_index_html = get_url($url);
 			$sub_sub_index_html = encode('utf-8', decode('big5', $sub_sub_index_html));
 			while ($sub_sub_index_html =~ /<a href="\/bbs\/([\w\-]+)\/index\.html">([\w\-]+) \- ([\d\D]+?)<\/a>/g) {
@@ -457,6 +455,7 @@ sub gen_ptt_index {
 	my %categories;
 	my %bids;
 	while (my ($en_name, $category, $bid, $tid1, $tid2, $title, $attachment, $author) = $request->fetchrow_array) {
+#		next if ($en_name eq 'sex');
 		next if (++$bids{$bid} > 3);
 		my $pa = $categories{$category};
 		if (!defined($pa)) {

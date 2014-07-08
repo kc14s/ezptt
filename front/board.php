@@ -46,8 +46,10 @@ foreach ($topics as $topic) {
 }
 $html .= '</div>';
 
-$page_up_disabled = $page == 1 ? 'disabled' : '';
-$html .= '<ul class="pager"><li class="previous '.$page_up_disabled.'"><a href="/board/'.$en_name.'/'.($page - 1).'">&larr; Older</a></li><li class="next"><a href="/board/'.$en_name.'/'.($page + 1).'">Newer &rarr;</a></li></ul>';
+if (!$is_spider) {
+	$page_up_disabled = $page == 1 ? 'disabled' : '';
+	$html .= '<ul class="pager"><li class="previous '.$page_up_disabled.'"><a href="/board/'.$en_name.'/'.($page - 1).'">&larr; Newer</a></li><li class="next"><a href="/board/'.$en_name.'/'.($page + 1).'">Older &rarr;</a></li></ul>';
+}
 $html .= '</div>';
 
 

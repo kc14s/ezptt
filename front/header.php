@@ -14,12 +14,17 @@ $_hmtPixel = $_hmt->trackPageView();
 if (isset($html_title)) {
 	echo $html_title;
 }
-echo i18n(' PTT批踢踢實業坊');
+if (strpos($_SERVER['REQUEST_URI'], 'ck101') > 0) {
+	echo i18n(' ck101 卡提諾論壇');
+}
+else {
+	echo i18n(' PTT批踢踢實業坊');
+}
 ?>
 </title>
 <link rel="stylesheet" href="http://cdn.bootcss.com/twitter-bootstrap/3.0.3/css/bootstrap.min.css">
 <link rel="stylesheet" href="//code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css">
-<script src="http://cdn.bootcss.com/jquery/1.10.2/jquery.min.js"></script>
+<script src="<?echo $static_host;?>/js/jquery.min.js"></script>
 <script src="http://cdn.bootcss.com/twitter-bootstrap/3.0.3/js/bootstrap.min.js"></script>
 <script src="http://code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
 <script src="<?echo $static_host;?>/js/jquery.lazyload.min.js"></script>
