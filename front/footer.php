@@ -1,6 +1,9 @@
-<div align="center"><? if (false && !$is_loyal_user) echo $cpc_chaping_cpc; ?></div>
 </div>
 <script> 
+var interval = setInterval(function(){
+$("img").lazyload();
+clearInterval(interval);
+},1000);
 $(function() { 
 	$("img").lazyload(); 
 	effect : "fadeIn";
@@ -12,4 +15,6 @@ $("img").load(function(){
 	}
 });
 </script>
-<img src="<?php echo $_hmtPixel; ?>" width="0" height="0" /></body></html>
+<img src="<?php echo $_hmtPixel; ?>" width="0" height="0" />
+<p class="text-center">Links <a href="http://www.redditfun.com/">reddit fun</a></p>
+</body></html>

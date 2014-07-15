@@ -911,4 +911,41 @@ function get_old_ck101_topic_html() {
 	$html .= '</div></div>';
 	return $html;
 }
+
+function get_rand_reddit_topic_html() {
+	list($id_max, $id_min) = execute_vector('select max(sid), min(sid) from reddit.topic');
+	$result = mysql_query('select subreddit, title, author, id from reddit.topic where sid > '.rand($id_min, $id_max).' order by sid limit 10');
+	while (list($subreddit, $title, $author, $id) = mysql_fetch_array($result)) {
+		$rand_topics[] = array($subreddit, $title, $author, $id);
+	}
+	$html = '<div class="panel panel-default"><div class="panel-heading">Recommended Topics</div>';
+	$html .= '<div class="list-group">';
+	foreach ($rand_topics as $topic) {
+		list($subreddit, $title, $author, $id) = $topic;
+		$html .= "<a href=\"http://www.redditfun.com/reddit/$subreddit/$id/".str_to_url($title)."\" class=\"list-group-item\">$title<span class=\"pull-right\">$author</span></a>";
+	}
+	$html .= '</div></div>';
+	return $html;
+}
+
+function str_to_url($str) {
+	$len = strlen($str);
+	$url = '';
+	$flag = false;
+	for ($i = 0; $i < $len; ++$i) {
+		$char = substr($str, $i, 1);
+		if (ctype_alpha($char) || ctype_digit($char)) {
+			$url .= $char;
+			$flag = false;
+		}
+		else {
+			if (!$flag) {
+				$url .= '_';
+				$flag = true;
+			}
+		}
+	}
+	$url = trim($url, '_');
+	return $url;
+}
 ?>

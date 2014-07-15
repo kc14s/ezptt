@@ -39,12 +39,21 @@ sub init_db {
 	return $db_conn;
 }
 
+sub get_datetime_string {
+	my $timestamp = $_[0];
+	$timestamp = time() if (!defined($timestamp));
+	my ($sec,$min,$hour,$day,$mon,$year,$wday,$yday,$isdst)=localtime($timestamp);
+	$year += 1900;
+	$mon++;
+	return "$year-$mon-$day $hour:$min:$sec";
+}
+
 sub get_url {
 	my $url = $_[0];
 	my $retry_count = 0;
 	while (1) {
-		#if (index($url, 'ptt.cc') >= 0 || index($url, 'ck101.com') >= 0) {
-		if (index($url, 'ptt.cc') >= 0) {
+		if (index($url, 'ptt.cc') >= 0 || index($url, 'ck101.com') >= 0) {
+		#if (index($url, 'ptt.cc') >= 0) {
 			sleep(1);
 		}
 		print "fetching $url\n";
@@ -64,8 +73,13 @@ sub get_url {
 #		$ua->proxy('http', "http://".$proxies[$proxy_idx]);
 		my $request = HTTP::Request->new(GET=>$url);
 		$request->header('Accept-Encoding' => HTTP::Message::decodable);
-		$request->header('Referer' => 'https://www.ptt.cc/ask/over18?from=%2Fbbs%2FSex%2Findex.html');
-		$request->header('Cookie' => 'over18=1');
+#		$request->header('Referer' => 'https://www.ptt.cc/ask/over18?from=%2Fbbs%2FSex%2Findex.html');
+		if (index($url, 'ptt.cc') > 0) {
+			$request->header('Cookie' => 'over18=1');
+		}
+		elsif (index($url, 'ck101.com') >= 0) {
+			$request->header('Cookie' => '__cfduid=d74ab99ef3072bdb47b0678f88d2b66681404958312957; Lre7_9bf0_saltkey=Icch8CNo; Lre7_9bf0_lastvisit=1404954713; Lre7_9bf0_sid=e71lWt; Lre7_9bf0_lastact=1404958570%09agree18.php%09; _ga=GA1.2.569121392.1404958318; _dc=1; __asc=ca80cb291471e0aa03d42d23cd6; __auc=ca80cb291471e0aa03d42d23cd6; Lre7_9bf0_sendmail=1; __gads=ID=a2c3135d0c4cc793:T=1404958325:S=ALNI_MZC58rdQnMM4XY-dB9FJKF-hugo-Q; Lre7_9bf0_viewid=tid_3024583; fbm_455878464472095=base_domain=.ck101.com; PHPSESSID=mp37ph8r1q1p512t3h7mj833n7; Lre7_9bf0_ulastactivity=44c14jhewCZ5NEWGynewy4zWTJD04p83%2FNfvfLJTpCpWbx6S30iL; Lre7_9bf0_auth=b49bCklr9l68I1l%2BZi7lhrl133l%2BK7h8aGBUE39yG6L%2F8uQYoitLwmsCxTVcTZxGXHt74nhuIEiGiZU7LcWFpFu%2BCHZx; Lre7_9bf0_checkpm=1; Lre7_9bf0_nofavfid=1; Lre7_9bf0_visitedfid=622D1226; Lre7_9bf0_forum_lastvisit=D_622_1404958563; fbsr_455878464472095=Rf-mzCfKzaIwtPV8SITQEx9UPgifUvkN_urebIoFIyI.eyJhbGdvcml0aG0iOiJITUFDLVNIQTI1NiIsImNvZGUiOiJBUUJ0S1dNRjk2cFJVQldEQXF0dTJ4SzY0akpZM044enk0U3BWWnBtcktYUEtMWDZ0blNOa2pNcWxpTHEwX2dZVDY5Mm9mYkRMaEtCc3JHRzZ3NkdPSk9DZzJSdjN0bzRSYmhyZ3FzUm4yNWw3RE11b1BPSmxyUVNHUk9lVXlhbExwcncwYVBCUHVpVnNoWDZBWWhaWHpsVmtQSHc0bnd1VC1JZmMza1ZWVm0wZ2s3R092UFJUZEc5M1cyNk4wbzUydlE3QU50RUxzRDVYMGU2RzdJaDV4b3ZCaVlPZTM1MWdZMjNiQ2FlRllwY0N2NC1sN3RCR0VJT0Q0T0FZUl9abXBqcTZCQU9UOExEQ0hTXzBqRy1mNV9ZSkpjTWowVS1NMDZsdnNxVFBVRG00SzlGY1lMMGRYb01GQWFXQ2VLaW5mcmFGaU9IdlI0NlN0OVBERGZ6N1ZaekJIei1mQzMxalR5TGhyU1VOSDh3SlEiLCJpc3N1ZWRfYXQiOjE0MDQ5NTg1NzMsInVzZXJfaWQiOiIxMDAwMDI5NTcxODU1NjQifQ; Lre7_9bf0_agree18=1');
+		}
 		my $response = $ua->request($request);
 #               print $response->content."\n\n".$response->decoded_content(charset => 'none')."\n\n";
 #               my $content = $response->content;

@@ -30,9 +30,9 @@ while(list($author, $reply_time, $content) = mysql_fetch_array($result)) {
 	$author_link = execute_scalar("select count(*) from topic where author = '$author'") > 5;
 	$articles[] = array($author, $reply_time, $content, array(), $nick, $author_link);
 }
-$result = mysql_query("select title, tid1, tid2 from topic where bid = $bid and pub_time <= '$topic_pub_time' and tid1 <> $tid1 order by pub_time desc limit 10");
-while (list($prev_title, $prev_tid1, $prev_tid2) = mysql_fetch_array($result)) {
-	$prev_topics[] = array($prev_title, $prev_tid1, $prev_tid2);
+$result = mysql_query("select title, tid1, tid2, author from topic where bid = $bid and pub_time <= '$topic_pub_time' and tid1 <> $tid1 order by pub_time desc limit 10");
+while (list($prev_title, $prev_tid1, $prev_tid2, $prev_author) = mysql_fetch_array($result)) {
+	$prev_topics[] = array($prev_title, $prev_tid1, $prev_tid2, $prev_author);
 }
 
 if (false || $is_spider) {
@@ -104,8 +104,8 @@ if (isset($prev_topics)) {
 		$html .= '<div class="panel panel-default"><div class="panel-heading">'.i18n('jixuyuedu').'</div>';
 		$html .= '<div class="list-group">';
 		foreach ($prev_topics as $topic) {
-				list($title, $tid1, $tid2) = $topic;
-				$html .= "<a href=\"/article/$en_name/$tid1/$tid2\" class=\"list-group-item\">".i18n($title)."</a>";
+				list($title, $tid1, $tid2, $author) = $topic;
+				$html .= "<a href=\"/article/$en_name/$tid1/$tid2\" class=\"list-group-item\">".i18n($title)."<span class=\"pull-right\">$author</span></a>";
 		}
 		$html .= '</div></div>';
 }
@@ -117,6 +117,9 @@ if (isset($old_topics)) {
 				$html .= "<a href=\"/article/$en_name/$tid1/$tid2\" class=\"list-group-item\">".i18n($title)." $author</a>";
 		}
 		$html .= '</div></div>';
+}
+if (false || $is_spider) {
+		$html .= get_rand_reddit_topic_html();
 }
 if (false || $is_spider) {
 	$html .= get_old_ck101_topic_html();
