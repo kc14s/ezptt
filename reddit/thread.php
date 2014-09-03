@@ -1,5 +1,6 @@
 <?
 require_once("init.php");
+require_once("reddit_lib.php");
 $is_spider = is_spider();
 $is_from_search_engine = is_from_search_engine();
 
@@ -16,9 +17,6 @@ while(list($author, $ups, $body, $created) = mysql_fetch_array($result)) {
 	$articles[] = array($author, $ups, $body, $created);
 }
 
-if (!$is_spider) {
-	$html .= $scupio_video_expand;
-}
 $html .= "<div class=\"col-md-8 col-md-offset-2 col-xs-12\"><ol class=\"breadcrumb\"><li><a href=\"/\">reddit</a></li><li>$subreddit</li></ol><h3>$title</h3>";
 if (!$is_loyal_user) {
 //	$html .= $google_320_100;
@@ -60,15 +58,21 @@ foreach ($articles as $article) {
 			}
 		}
 	}
+	else {
+		$img_url = get_img_url($selftext, 2);
+		if (isset($img_url)) {
+			$html .= "<img data-original=\"$img_url\" class=\"img-responsive\" />";
+		}
+	}
 	$html .= $selftext;
 	$html .= '</div>';
 	$html .= '</div>';
 	if (!$is_loyal_user) {
 		if ($floor == 1 || $floor == 2) {
-			$html .= $scupio_728_90;
+//			$html .= $scupio_728_90;
 		}
 		else if ($floor == 3) {
-			$html .= $digitalpoint_468_60;
+//			$html .= $digitalpoint_468_60;
 //			$html .= $bloggerads_banner;
 		}
 	}
@@ -88,8 +92,8 @@ if (isset($prev_topics)) {
 if (false || $is_spider) {
 	$html .= get_rand_reddit_topic_html();
 }
-if (false || $is_spider) {
-	$html .= get_old_ck101_topic_html();
+if (true || $is_spider) {
+#	$html .= get_old_ck101_topic_html();
 }
 //$html .= '<p><a href="/">PTT</a> <a href="/disp">disp</a></p></div>';
 //$html .= '<script type="text/javascript">var zx_aid = 1;var zx_uid = 10799;var zoneid = 11554;</script><script type="text/javascript" charset="utf-8" src="http://click.9cpc.com/view.js"></script>';

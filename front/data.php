@@ -41,6 +41,22 @@ function conn_reddit_db() {
 	return $db_conn;
 }
 
+function conn_dmm_db() {
+	global $db_server, $db_user, $db_password;
+	$db_conn = mysql_pconnect($db_server, $db_user, $db_password);
+	mysql_select_db('dmm', $db_conn);
+	mysql_query("set names utf8");
+	return $db_conn;
+}
+
+function conn_ads_db() {
+	global $db_server, $db_user, $db_password;
+	$db_conn = mysql_pconnect($db_server, $db_user, $db_password);
+	mysql_select_db('ads', $db_conn);
+	mysql_query("set names utf8");
+	return $db_conn;
+}
+
 function get_attachments($bid, $aid, $author, $pub_time) {
 	$db_conn = conn_db();
 //	$sql = "select att_id, file_name from attachment where bid = $bid and aid = $aid and author = '$author' and $pub_time <= ts and date_add('$pub_time', interval 1, day) > ts";

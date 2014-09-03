@@ -897,6 +897,7 @@ function is_loyal_user() {
 }
 
 function get_old_ck101_topic_html() {
+	require_once('i18n.php');
 	list($tid_max, $tid_min) = execute_vector('select max(tid), min(tid) from ck101.topic');
 	$result = mysql_query('select bid, title, author, tid from ck101.topic where tid > '.rand($tid_min, $tid_max).' order by tid limit 10');
 	while (list($bid, $title, $author, $tid) = mysql_fetch_array($result)) {
@@ -906,7 +907,7 @@ function get_old_ck101_topic_html() {
 	$html .= '<div class="list-group">';
 	foreach ($old_topics as $topic) {
 		list($title, $author, $bid, $tid) = $topic;
-		$html .= "<a href=\"/ck101/$bid/$tid\" class=\"list-group-item\">".i18n($title.' '.$author)." </a>";
+		$html .= "<a href=\"http://www.ucptt.com/ck101/$bid/$tid\" class=\"list-group-item\">".i18n($title.' '.$author)." </a>";
 	}
 	$html .= '</div></div>';
 	return $html;
@@ -928,6 +929,22 @@ function get_rand_reddit_topic_html() {
 	return $html;
 }
 
+function get_rand_dmm_topic_html() {
+	list($id_max, $id_min) = execute_vector('select max(id), min(id) from dmm.video');
+	$result = mysql_query('select title, sn, sn_normalized from dmm.video where id > '.rand($id_min, $id_max).' order by id limit 20');
+	while (list($title, $sn, $snn) = mysql_fetch_array($result)) {
+		$rand_videos[] = array($title, $sn, $snn);
+	}
+	$html = '<div class="panel panel-default"><div class="panel-heading">Recommended Video</div>';
+	$html .= '<div class="list-group">';
+	foreach ($rand_videos as $video) {
+		list($title, $sn, $snn) = $video;
+		$html .= "<a href=\"/video/$sn\" class=\"list-group-item\">$title $snn</a>";
+	}
+	$html .= '</div></div>';
+	return $html;
+}
+
 function str_to_url($str) {
 	$len = strlen($str);
 	$url = '';
@@ -940,12 +957,53 @@ function str_to_url($str) {
 		}
 		else {
 			if (!$flag) {
-				$url .= '_';
+				$url .= '-';
 				$flag = true;
 			}
 		}
 	}
-	$url = trim($url, '_');
+	$url = trim($url, '-');
 	return $url;
+}
+
+function get_percentage($num) {
+	return round($num * 100, 2).'%';
+}
+
+$domain_suffixes = array(
+'com' => 0,
+'net' => 0,
+'org' => 0,
+'cn' => 0,
+'edu' => 0,
+'cc' => 0,
+'hk' => 0,
+'tw' => 0,
+'co' => 0,
+'biz' => 0,
+'info' => 0,
+'tv' => 0,
+'me' => 0,
+'jp' => 0,
+'edu' => 0,
+'' => 0,
+'' => 0,
+'' => 0
+);
+function get_domain($url) {
+	global $domain_suffixes;
+	$url = str_replace('http://', '', $url);
+	preg_match('/[\w\.\-]+/', $url, $matches);
+	$site = $matches[0];
+	$slices = explode('.', $site);
+	if ($slices[0] == 'www' || $slices[0] == 'm') {
+		array_shift($slices);
+	}
+	//echo $domain_suffixes[$slices[count($slices) - 1]];
+	while (count($slices) > 1 && isset($domain_suffixes[$slices[count($slices) - 1]])) {
+		array_pop($slices);
+		//print_r($slices);
+	}
+	return $slices[count($slices) - 1];
 }
 ?>

@@ -15,9 +15,10 @@ $lz = $author;
 $topic_pub_time = $pub_time;
 $result = mysql_query("select author, pub_time, content from article where tid = $tid order by aid");
 while(list($author, $pub_time, $content) = mysql_fetch_array($result)) {
-	$articles[] = array($author, $pub_time, $content);
+	$articles[] = array($author, $pub_time, $content, get_author_link($author));
 }
 
+/*
 if (true || $is_spider) {
 	list($tid_max, $tid_min) = execute_vector('select max(tid), min(tid) from topic');
 	$result = mysql_query('select bid, title, author, tid from topic where tid > '.rand($tid_min, $tid_max).' order by tid limit 10');
@@ -25,6 +26,7 @@ if (true || $is_spider) {
 		$old_topics[] = array($title, $author, $bid, $tid);
 	}
 }
+*/
 
 if (!$is_spider) {
 	$html .= $scupio_video_expand;
@@ -40,11 +42,16 @@ if (!$is_loyal_user) {
 }
 $floor = 1;
 foreach ($articles as $article) {
-	list($author, $time, $content) = $article;
+	list($author, $time, $content, $author_link) = $article;
 	$html .= '<div class="panel panel-info">';
 	$html .= '<div class="panel-heading">';
-	$html .= ($author === $lz ? i18n('louzhu') : i18n('zuozhe')).": $author".(isset($nick) && strlen($nick) > 0 ? " ($nick)" : '');
-	$html .= " &nbsp; <span class=\"pull-right\">$time</span>";
+	if ($author_link >= 5) {
+		$html .= ($author === $lz ? i18n('louzhu') : i18n('zuozhe')).": <a href=\"/user/".urlencode($author)."\">$author</a>";
+	}
+	else {
+		$html .= ($author === $lz ? i18n('louzhu') : i18n('zuozhe')).": $author";
+	}
+	$html .= "<span class=\"pull-right\">$time</span>";
 	$html .= '</div>';
 	$html .= '<div class="panel-body">';
 	$content = i18n($content);
@@ -72,10 +79,19 @@ foreach ($articles as $article) {
 if (true || $is_spider) {
 	$html .= get_old_ck101_topic_html();
 }
+$html .= '</div>';
 //$html .= '<script type="text/javascript">var zx_aid = 1;var zx_uid = 10799;var zoneid = 11554;</script><script type="text/javascript" charset="utf-8" src="http://click.9cpc.com/view.js"></script>';
 
 require_once('header.php');
 echo $html;
 require_once('footer.php');
+
+$author_links = array();
+function get_author_link($author) {
+	if (!isset($author_links{$author})) {
+		$author_links{$author} = execute_scalar("select count(*) from topic where author = '$author'");
+	}
+	return $author_links{$author};
+}
 ?>
 

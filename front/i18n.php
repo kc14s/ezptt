@@ -1,7 +1,7 @@
 <?
 require_once('ZhConversion.php');
 $lang = 'zh_TW';
-if ($_SERVER['HTTP_HOST'] == 'cn.ezptt.com') {
+if ($_SERVER['HTTP_HOST'] == 'cn.ucptt.com') {
 	$lang = 'zh_CN';
 }
 else if ($is_spider && !$is_google_spider) {
@@ -9,6 +9,9 @@ else if ($is_spider && !$is_google_spider) {
 }
 else if (is_from_cn_search_engine()) {
 	$lang = 'zh_CN';
+}
+else {
+	$lang = 'zh_TW';
 }
 
 $i18n = array(

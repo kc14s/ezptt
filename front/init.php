@@ -5,10 +5,6 @@ foreach (array_values($_REQUEST) as $v) {
 		exit;
 	}
 }
-if ($_SERVER['HTTP_HOST'] == 'redditfun.com') {
-		header('Location: http://www.redditfun.com'.$_SERVER['REQUEST_URI'], TRUE, 301);
-		exit;
-}
 require_once("functions.php");
 require_once("data.php");
 $is_spider = is_spider();

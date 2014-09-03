@@ -28,7 +28,7 @@ $html .= "<div class=\"col-md-6 col-md-offset-2 col-xs-12\">";
 foreach ($categories as $category) {
 	$topics = $json->$category;
 	if (!isset($topics) || count($topics) == 0) continue;
-	$html .= '<div class="panel panel-default">';
+	$html .= '<div class="panel panel-info">';
 	$html .= '<div class="panel-heading">'.i18n($category).'</div>';
 //	$html .= '<div class="panel-body">';
 	$html .= '<div class="list-group">';

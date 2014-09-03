@@ -19,7 +19,7 @@ while (list($subreddit, $title, $ups, $url, $selftext, $id) = mysql_fetch_array(
 $html = '';
 foreach ($articles as $article) {
 	list($subreddit, $title, $ups, $url, $selftext, $tid, $rid, $rauthor, $body) = $article;
-	$img_url = get_img_url($url);
+	$img_url = get_img_url($url, 1);
 	if (!isset($img_url)) continue;
 	$thread_url = "/reddit/$subreddit/$tid/".str_to_url($title);
 	$html .= '<div class="row"><div class="col-sm-5 col-sm-offset-3 col-xs-12"><div class="thumbnail">';

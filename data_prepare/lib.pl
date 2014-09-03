@@ -196,6 +196,12 @@ sub get_datetime_str {
 	return $ret;
 }
 
+sub get_date_str {
+	my $ret = `date -d '$_[0] days' '+%F'`;
+	chomp $ret;
+	return $ret;
+}
+
 sub get_topics {
 	my $en_name = $_[0]->[0];
 	my $bid = $_[0]->[2];

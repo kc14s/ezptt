@@ -14,7 +14,7 @@ $_hmtPixel = $_hmt->trackPageView();
 if (isset($html_title)) {
 	echo $html_title;
 }
-if (strpos($_SERVER['REQUEST_URI'], 'ck101') > 0) {
+if (strpos($_SERVER['REQUEST_URI'], 'ck101') > 0 || strpos($_SERVER['REQUEST_URI'], 'user') > 0) {
 	echo i18n(' ck101 卡提諾論壇');
 }
 else {
@@ -23,16 +23,21 @@ else {
 ?>
 </title>
 <link rel="stylesheet" href="http://cdn.bootcss.com/twitter-bootstrap/3.0.3/css/bootstrap.min.css">
-<link rel="stylesheet" href="//code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css">
+<link rel="stylesheet" href="<?echo $static_host;?>/css/jquery-ui.css">
 <script src="<?echo $static_host;?>/js/jquery.min.js"></script>
 <script src="http://cdn.bootcss.com/twitter-bootstrap/3.0.3/js/bootstrap.min.js"></script>
-<script src="http://code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
+<script src="<?echo $static_host;?>/js/jquery-ui.js"></script>
 <script src="<?echo $static_host;?>/js/jquery.lazyload.min.js"></script>
 <script src="<?echo $static_host;?>/js/auto_complete.js?v=2"></script>
 <meta property="qc:admins" content="2746676521624354063757" />
 <style>
 body,button, input, select, textarea,h1 ,h2, h3, h4, h5, h6 { font-family: 'Microsoft YaHei','宋体' , Tahoma, Helvetica, Arial, sans-serif;}
 </style>
+<?
+if ($_SERVER['SCRIPT_NAME'] == '/index.php') {
+	echo '<base target="_blank" />';
+}
+?>
 </head>
 <body>
 <script>  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');  ga('create', 'UA-17088225-4', 'ezptt.com');  ga('send', 'pageview');</script>
@@ -61,8 +66,8 @@ body,button, input, select, textarea,h1 ,h2, h3, h4, h5, h6 { font-family: 'Micr
 <? echo i18n('xuanzeyuyan')?><span class="caret"></span>
 </button>
 <ul class="dropdown-menu" role="menu">
-<li><a href="http://www.ezptt.com<? echo $_SERVER['REQUEST_URI']; ?>">正體中文</a></li>
-<li><a href="http://cn.ezptt.com<? echo $_SERVER['REQUEST_URI']; ?>">简体中文</a></li>
+<li><a href="http://www.ucptt.com<? echo $_SERVER['REQUEST_URI']; ?>">正體中文</a></li>
+<li><a href="http://cn.ucptt.com<? echo $_SERVER['REQUEST_URI']; ?>">简体中文</a></li>
 </ul>
 </div>
 </div>

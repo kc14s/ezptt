@@ -44,11 +44,11 @@ if (false || $is_spider) {
 	}
 }
 
-if (!$is_spider) {
+if (false || !$is_spider) {
 	$html .= $scupio_video_expand;
 }
 $html .= "<div class=\"col-md-8 col-md-offset-2 col-xs-12\"><ol class=\"breadcrumb\"><li><a href=\"/\">PTT</a></li><li><a href=\"/board/$en_name/\">$en_name</a></li></ol><h3>".i18n($topic_title)."</h3>";
-if (!$is_loyal_user) {
+if (false || !$is_loyal_user) {
 //	$html .= $google_320_100;
 //	$html .= $chitika_468_60;
 //	$html .= $bloggerads_banner;
@@ -119,7 +119,7 @@ if (isset($old_topics)) {
 		$html .= '</div></div>';
 }
 if (false || $is_spider) {
-		$html .= get_rand_reddit_topic_html();
+//		$html .= get_rand_reddit_topic_html();
 }
 if (false || $is_spider) {
 	$html .= get_old_ck101_topic_html();
