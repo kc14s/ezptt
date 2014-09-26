@@ -137,7 +137,6 @@ sub execute_scalar {
 	my ($sql, $conn) = @_;  
 	$conn = $ENV{'db_conn'} if (!defined($conn));
 	my $request = $conn->prepare($sql);
-#	print "$sql\n";
 	$request->execute();
 	my ($result) = $request->fetchrow_array;
 	if (defined($result)) {
@@ -150,7 +149,6 @@ sub execute_vector {
 	my ($sql, $conn) = @_;  
 	$conn = $ENV{'db_conn'} if (!defined($conn));
 	my $request = $conn->prepare($sql);
-#	print "$sql\n";
 	$request->execute();
 	return $request->fetchrow_array;
 } 

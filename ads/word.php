@@ -6,7 +6,7 @@ $word_id = from_external_id($_GET['id']);
 $db_conn = conn_ads_db();
 $word = execute_scalar("select word from word where word_id = $word_id");
 $html_title = $word;
-$result = mysql_query("select website, charge, user.user_id user_id from user, consumption where word_id = $word_id and user.user_id = consumption.user_id order by charge desc");
+$result = mysql_query("select website, cash, user.user_id user_id from user, consumption where word_id = $word_id and user.user_id = consumption.user_id order by cash desc");
 $charge_total = 0;
 while($row = mysql_fetch_array($result)) {
 	$consumptions[] = $row;

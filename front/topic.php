@@ -1,4 +1,5 @@
 <?
+//disp topic
 require_once("init.php");
 require_once("i18n.php");
 $is_spider = is_spider();

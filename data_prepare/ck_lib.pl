@@ -59,9 +59,11 @@ sub get_ck_topics {
 		while ($html =~ /<tbody id="normalthread_(\d+)"([\d\D]+?)<\/tbody>/g) {
 			my ($tid, $span) = ($1, $2);
 			my ($author, $pub_time, $title);
-			if ($span =~ /ck101\.com\/space-uid-\d+.html" c="1">([\d\D]+?)<\/a><\/cite>\s*<em><span>([\d\-\s:]+)<\/span><\/em>/) {
+			if ($span =~ /ck101\.com\/space-uid-\d+.html" c="1">([\d\D]+?)<\/a><\/cite>/) {
 				$author = $1;
-				$pub_time = "$2:00";
+			}
+			if ($span =~ /([\d\-\s:]+)<\/span><\/em>/) {
+				$pub_time = "$1:00";
 			}
 			if ($span =~ /ck101\.com\/thread-\d+-1-1.html'\);atarget\(this\);" class="s xst"><h2>([\d\D]+?)<\/h2>/g) {
 				$title = $1;

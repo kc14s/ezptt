@@ -8,18 +8,20 @@ $website = execute_scalar("select website from user where user_id = $user_id");
 $html_title = $website;
 $user_word_consumptions = array();
 list($word_num, $charge_total) = execute_vector("select count(*), sum(cash) from consumption where user_id = $user_id");
-$result = mysql_query("select word, consumption.cash cash, format(consumption.cash / consumption.click, 2) acp, word.word_id word_id, format(word.cash / word.click, 2) global_acp from word, consumption where user_id = $user_id and word.word_id = consumption.word_id order by consumption.cash desc limit 5");
+$result = mysql_query("select word, consumption.cash cash, format(consumption.cash / consumption.click, 2) acp, word.word_id word_id, format(word.cash / word.click, 2) global_acp from word, consumption where user_id = $user_id and word.word_id = consumption.word_id order by consumption.cash desc limit 50000");
 while(list($word, $cash, $acp, $word_id, $global_acp) = mysql_fetch_array($result)) {
 	$consumptions[] = array($word, $cash, $acp, $word_id, $global_acp, get_percentage($cash / $charge_total));
-	$word_ids[] = $word_id;
-	$top_word_consumptions[$word] = $cash;
+	if (count($word_ids) < 5) {
+		$word_ids[] = $word_id;
+		$top_word_consumptions[$word] = $cash;
+	}
 	$user_word_consumptions[$website.' '.$word] = $cash;
 }
 
 $competitors = execute_dataset("select user.user_id, website, sum(cash) charge_total from user, consumption where word_id in (".join(',', $word_ids).") and user.user_id = consumption.user_id and user.user_id <> $user_id group by user.user_id order by charge_total desc limit 3");
 foreach ($competitors as $competitor) {
 	list($competitor_id, $competitor_website, $competitor_top_word_charge) = $competitor;
-	$competitor_websites[] = $competitor_website;
+	//$competitor_websites[] = $competitor_website;
 	$competitor_consumptions = execute_dataset("select word, consumption.cash from word, consumption where user_id = $competitor_id and word.word_id = consumption.word_id order by consumption.cash desc limit 5");
 	foreach ($competitor_consumptions as $competitor_consumption) {
 		list($word, $charge) = $competitor_consumption;
@@ -29,7 +31,8 @@ foreach ($competitors as $competitor) {
 }
 arsort($top_word_consumptions);
 $top_words = array_keys($top_word_consumptions);
-array_unshift($competitor_websites, $website);
+//array_unshift($competitor_websites, $website);
+array_unshift($competitors, array($user_id, $website));
 
 $html = '<div class="row"><div class="col-md-8 col-md-offset-2 col-xs-10"><nav class="navbar navbar-default navbar-static-top" role="navigation">
 <div class="container-fluid">
@@ -39,7 +42,7 @@ $html = '<div class="row"><div class="col-md-8 col-md-offset-2 col-xs-10"><nav c
 <div class="collapse navbar-collapse">
 <form class="navbar-form navbar-left" role="search" action="/search" method="POST">
 <div class="form-group">
-<input type="text" class="form-control" name="query" size="60" value="'.$word.'">
+<input type="text" class="form-control" name="query" size="60" value="'.$website.'">
 </div>
 <div class="form-group"><select class="form-control" name="type">
 <option value="1">广告词查询</option>
@@ -68,18 +71,23 @@ if (count($consumptions) > 0) {
 			$html .= "<tr><td>$i</td><td><a href=\"/word/$word_id\">$word</a></td><td>$website</td><td>$charge_estimated</td><td>$acp</td><td>$global_acp</td></tr>";
 		}
 	}
-	$html .= "<tr><td colspan=\"6\">监测到${website}共投放了${word_num}个广告词，估算消费额■■■■■■■■■元。查看完整报表。</td></tr>";
+	$html .= "<tr><td colspan=\"6\">监测到${website}共投放了${word_num}个广告词，估算消费额${charge_total}元。</td></tr>";
 	$html .= '</table>';
-	$html .= '<p>与同类广告主的比较</p>';
+	$html .= '<p>类似广告主的广告投放额</p>';
 	$html .= '<table class="table table-hover table-striped"><tr><th>#</th><th>广告词</th>';
-	foreach ($competitor_websites as $competitor_website) {
-		$html .= "<th>$competitor_website</th>";
+	//foreach ($competitor_websites as $competitor_website) {
+	foreach ($competitors as $competitor) {
+		list($competitor_id, $competitor_website, $competitor_top_word_charge) = $competitor;
+		$competitor_id_external = to_external_id($competitor_id);
+		$html .= "<th><a href=\"/advertiser/$competitor_id_external\">$competitor_website</a></th>";
 	}
 	$html .= '</tr>';
 	for ($i = 1; $i <= count($top_words); ++$i) {
 		$word = $top_words[$i - 1];
 		$html .= "<tr><td>$i</td><td>$word</td>";
-		foreach ($competitor_websites as $competitor_website) {
+		//foreach ($competitor_websites as $competitor_website) {
+		foreach ($competitors as $competitor) {
+			list($competitor_id, $competitor_website, $competitor_top_word_charge) = $competitor;
 			$html .= '<td>'.$user_word_consumptions[$competitor_website.' '.$word].'</td>';
 		}
 		$html .= '</tr>';

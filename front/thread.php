@@ -17,6 +17,9 @@ $title = i18n($title);
 $topic_title = $title;
 $html_title = "$title $author";
 $lz = $author;
+if ($is_spider) {
+	$pub_time = date("Y-m-d").substr($pub_time, 10);
+}
 $topic_pub_time = $pub_time;
 $attachments = array();
 $nick = i18n(execute_scalar("select nick from user where user_id = '$author'"));
@@ -28,6 +31,9 @@ $result = mysql_query("select author, reply_time, content from reply where tid1 
 while(list($author, $reply_time, $content) = mysql_fetch_array($result)) {
 	$nick = i18n(execute_scalar("select nick from user where user_id = '$author'"));
 	$author_link = execute_scalar("select count(*) from topic where author = '$author'") > 5;
+	if ($is_spider) {
+		$reply_time = date("Y-m-d").substr($reply_time, 10);
+	}
 	$articles[] = array($author, $reply_time, $content, array(), $nick, $author_link);
 }
 $result = mysql_query("select title, tid1, tid2, author from topic where bid = $bid and pub_time <= '$topic_pub_time' and tid1 <> $tid1 order by pub_time desc limit 10");
@@ -95,7 +101,7 @@ foreach ($articles as $article) {
 		}
 		else if ($floor == 3) {
 			$html .= $digitalpoint_468_60;
-//			$html .= $bloggerads_banner;
+			$html .= $bloggerads_banner;
 		}
 	}
 	++$floor;

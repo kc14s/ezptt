@@ -20,4 +20,9 @@ ga('create', 'UA-17088225-5', 'auto');
 ga('send', 'pageview');
 
 </script>
+<?
+if ($is_spider) {
+	echo '<p align="center"><a href="http://www.btsmth.org/">水木清华社区</a> <a href="http://www.ucptt.com/">ptt</a> <a href="http://www.jporndb.com/">japan av porn</a> <a href="http://www.zhuishubao.com/">追书宝</a> <a href="http://www.redditfun.com/">reddit</a></p>';
+}
+?>
 </body></html>

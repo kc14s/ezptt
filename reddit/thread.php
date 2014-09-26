@@ -10,11 +10,19 @@ $db_conn = conn_reddit_db();
 list($domain, $created, $title, $ups, $author, $url, $selftext) = execute_vector("select domain, created, title, ups, author, url, selftext from topic where id = $id");
 $html_title = "$title $author";
 $lz = $author;
-$topic_pub_time = $pub_time;
+if ($is_spider) {
+	$created = date("Y-m-d").substr($created, 10);
+}
 $articles[] = array($author, $ups, $selftext, $created, $domain, $url);
 $result = mysql_query("select author, ups, body, created from reply where tid = $id order by ups desc");
 while(list($author, $ups, $body, $created) = mysql_fetch_array($result)) {
+	if ($is_spider) {
+		$created = date("Y-m-d").substr($created, 10);
+	}
 	$articles[] = array($author, $ups, $body, $created);
+}
+if (count($articles) == 1 && $is_spider) {
+	$articles[] = $articles[0];
 }
 
 $html .= "<div class=\"col-md-8 col-md-offset-2 col-xs-12\"><ol class=\"breadcrumb\"><li><a href=\"/\">reddit</a></li><li>$subreddit</li></ol><h3>$title</h3>";
