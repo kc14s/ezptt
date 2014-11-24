@@ -5,6 +5,7 @@ use HTTP::Cookies;
 use Data::Dumper;
 use Encode;
 use JSON;
+use URI::Escape;
 #use Encode::HanConvert;
 use Digest::MD5;
 #use Encode::HanConvert qw(trad simple);
@@ -45,6 +46,11 @@ sub get_datetime_string {
 	my ($sec,$min,$hour,$day,$mon,$year,$wday,$yday,$isdst)=localtime($timestamp);
 	$year += 1900;
 	$mon++;
+	$mon = "0$mon" if ($mon < 10);
+	$day = "0$day" if ($day < 10);
+	$hour = "0$hour" if ($hour< 10);
+	$min = "0$min" if ($min < 10);
+	$sec = "0$sec" if ($sec < 10);
 	return "$year-$mon-$day $hour:$min:$sec";
 }
 
@@ -58,7 +64,7 @@ sub get_url {
 		}
 		print "fetching $url\n";
 		my $ua = LWP::UserAgent->new;
-		$ua->agent("Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.9.0.4)Gecko/2008111217 Fedora/3.0.4-1.fc10 Firefox/3.0.5");
+		$ua->agent("Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/33.0.1750.146 BIDUBrowser/6.x Safari/537.36");
 		my $proxy_idx = -1;
 		if (index($url, "att.php") > 0) {
 			$ua->timeout(60);
@@ -72,7 +78,8 @@ sub get_url {
 		$proxy_idx = int(rand(scalar @proxies));
 #		$ua->proxy('http', "http://".$proxies[$proxy_idx]);
 		my $request = HTTP::Request->new(GET=>$url);
-		$request->header('Accept-Encoding' => HTTP::Message::decodable);
+#		$request->header('Accept-Encoding' => HTTP::Message::decodable);
+		$request->header('Accept-Encoding' => 'utf8');
 #		$request->header('Referer' => 'https://www.ptt.cc/ask/over18?from=%2Fbbs%2FSex%2Findex.html');
 		if (index($url, 'ptt.cc') > 0) {
 			$request->header('Cookie' => 'over18=1');
@@ -82,7 +89,7 @@ sub get_url {
 		}
 		my $response = $ua->request($request);
 #               print $response->content."\n\n".$response->decoded_content(charset => 'none')."\n\n";
-#               my $content = $response->content;
+#		my $content = $response->content;
 		my $content = $response->decoded_content(charset => 'none');
 #               if (index($content, 'No further action is required on your part') >= 0 || index($content, 'We have limited resources') >= 0 || index($content, 'Access Denied') >= 0) {
 		if (!defined($content)) {
@@ -130,6 +137,19 @@ sub get_url {
 			print STDERR "enough retries. give up $url\n";
 			return "<tr><th>发生错误</th></tr>";
 		}
+	}
+}
+
+sub post_url {
+	my ($url, $form) = @_;
+	my $ua = LWP::UserAgent->new;
+	$ua->agent("Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.9.0.4)Gecko/2008111217 Fedora/3.0.4-1.fc10 Firefox/3.0.5");
+	my $response = $ua->post($url, $form);
+	if ($response->is_success) {
+		return $response->content;
+	}
+	else {
+		return $response->status_line;
 	}
 }
 
@@ -524,4 +544,27 @@ sub gen_ptt_index {
 	close OUT;
 }
 
+sub gen_tianya_index {
+	my %threads;
+	my $time = `date -d '-12 hours' '+%F %T'`;
+	chomp $time;
+	$time = '2014-10-03 12:00:00';
+	#my $sql = "select en_name, tid, title, user_name from thread, user where thread.uid = user.uid and pub_time > '$time' order by click desc limit 100";
+	my $sql = "select en_name, tid, title, uid from thread where pub_time > '$time' order by click desc limit 100";
+	my $request = $db_conn->prepare($sql);
+	$request->execute;
+	while (my ($en_name, $tid, $title, $user_name) = $request->fetchrow_array) {
+		my $pa = $threads{$en_name};
+		if (!defined($pa)) {
+			$pa = [];
+			$threads{$en_name} = $pa;
+		}
+		next if (@$pa > 3);
+		push @$pa, [$tid, $title, $user_name];
+	}
+	my $json = new JSON;
+	open OUT, '>../tianya/data/index';
+	print OUT $json->encode(\%threads);
+	close OUT;
+}
 1;
