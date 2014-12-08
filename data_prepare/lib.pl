@@ -12,6 +12,7 @@ use Digest::MD5;
 
 my @proxies;
 my $db_conn;
+my $json = new JSON;
 
 sub load_proxy {
 	open IN, $ENV{"pwd"}."/spider/data/base/proxy" or die("load proxy file failed\n");
@@ -142,6 +143,7 @@ sub get_url {
 
 sub post_url {
 	my ($url, $form) = @_;
+	print "posting $url ".$json->encode($form)."\n";
 	my $ua = LWP::UserAgent->new;
 	$ua->agent("Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.9.0.4)Gecko/2008111217 Fedora/3.0.4-1.fc10 Firefox/3.0.5");
 	my $response = $ua->post($url, $form);
@@ -538,7 +540,6 @@ sub gen_ptt_index {
 			push @$pa, [$en_name, $bid, $tid1, $tid2, $title, $author, join("\t", @attachments)];
 		}
 	}
-	my $json = new JSON;
 	open OUT, '>../front/data/ptt_index';
 	print OUT $json->encode(\%categories);
 	close OUT;
@@ -562,9 +563,17 @@ sub gen_tianya_index {
 		next if (@$pa > 3);
 		push @$pa, [$tid, $title, $user_name];
 	}
-	my $json = new JSON;
 	open OUT, '>../tianya/data/index';
 	print OUT $json->encode(\%threads);
 	close OUT;
 }
+
+sub add_slashes {
+	my $text = shift;
+	$text =~ s/\\/\\\\/g;
+	$text =~ s/'/\\'/g;
+	$text =~ s/"/\\"/g;
+	return "'$text'";
+}
+
 1;

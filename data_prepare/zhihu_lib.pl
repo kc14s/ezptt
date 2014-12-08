@@ -1,5 +1,6 @@
 #!/usr/bin/perl -w
 use strict;
+use utf8;
 no warnings 'utf8';
 
 our $db_conn;
@@ -18,25 +19,30 @@ my $json_parser = new JSON;
 
 sub get_boards {
         my $group = $_[0];
-        my ($group_id, $group_name) = @$group;
+        my ($board_id, $board_name) = @$group;
         my $url = 'http://www.zhihu.com/node/TopicsPlazzaListV2';
         my @boards;
         for (my $offset = 0; ; $offset += 20) {
                 my %form = (
                                 'method' => 'next',
-                                'params' => '{"topic_id":'.$group_id.',"offset":'.$offset.',"hash_id":"9fc675d1e89601361f31576d9b2724dd"}',
+                                'params' => '{"topic_id":'.$board_id.',"offset":'.$offset.',"hash_id":"9fc675d1e89601361f31576d9b2724dd"}',
                                 '_xsrf' => '777e3e3c5616ac059706b4d409203647'
                            );
                 my $html = post_url($url, \%form);
+		if (index($html, '{') != 0) {
+			print "skip malformed json\n";
+			sleep(60);
+			next;
+		}
                 my $json = $json_parser->decode($html);
                 my $pa = $json->{'msg'};
                 foreach my $item (@$pa) {
                         my $img = $1 if ($item =~ /\.zhimg\.com\/(\w+?)_xs\.jpg/);
-                        my $board_name = $1 if ($item =~ /<strong>([\d\D]+?)<\/strong>/);
-                        my $board_id = $1 if ($item =~ /\/topic\/(\d+)/);
+                        my $sb_name = $1 if ($item =~ /<strong>([\d\D]+?)<\/strong>/);
+                        my $sbid = $1 if ($item =~ /\/topic\/(\d+)/);
 #                       print "$board_id\t$board_name\t$img\n";
-                        push @boards, [$group_id, $group_name, $board_id, $board_name];
-                        $db_conn->do("replace into sub_board values($board_id, $group_id, ".$db_conn->quote($board_name).")");
+                        push @boards, [$board_id, $board_name, $sbid, $sb_name];
+                        $db_conn->do("replace into sub_board values($sbid, $board_id, ".add_slashes($sb_name).")");
                 }
                 last if (@$pa < 20);
 #                last;
@@ -46,9 +52,10 @@ sub get_boards {
 
 sub get_zhihu_questions {
         my $board = $_[0];
-        my ($group_id, $group_name, $board_id, $board_name) = @$board;
-        my $url = "http://www.zhihu.com/topic/$board_id/newest";
+        my ($board_id, $board_name, $sbid, $sb_name) = @$board;
+        my $url = "http://www.zhihu.com/topic/$sbid/newest";
         my $time = time();
+	my $now = time();
         my %questions;
         while (1) {
                 my %form = (
@@ -57,34 +64,46 @@ sub get_zhihu_questions {
                                 _xsrf => '777e3e3c5616ac059706b4d409203647'
                            );
                 my $html = post_url($url, \%form);
+		if (index($html, '{') != 0) {
+			print "skip malformed json\n";
+			sleep(60);
+			next;
+		}
                 my $json = $json_parser->decode($html);
                 my @arr = split('http://schema.org/Question', $json->{'msg'}->[1]);
                 foreach my $item (@arr) {
-                        $time = $1 if ($item =~ /data-timestamp="(\d+?)000"/);
-                        my ($sb_id, $sb_name) = (0, '');
-                        ($sb_id, $sb_name) = ($1, $2) if ($item =~ /href="\/topic\/(\d+)">([\d\D]+?)<\/a>/);
+                        $time = $1 if ($item =~ /data-timestamp="(\d+?)000"/ && $time > $1);
+#                        my ($sb_id, $sb_name) = (0, '');
+#                        ($sb_id, $sb_name) = ($1, $2) if ($item =~ /href="\/topic\/(\d+)">([\d\D]+?)<\/a>/);
                         my ($qid, $title) = ($1, $2) if ($item =~ / href="\/question\/(\d+)">([\d\D]+?)<\/a>/);
                         next if (!defined($qid));
-                        print "question\t$time\t$sb_id\t$sb_name\t$qid\t$title\n";
-                        $questions{$qid} = [$group_id, $group_name, $board_id, $board_name, $time, $sb_id, $sb_name, $qid, $title];
+                        print "question\t$time\t$sbid\t$sb_name\t$qid\t$title\n";
+                        $questions{$qid} = [$board_id, $board_name, $sbid, $sb_name, $time, $qid, $title];
                 }
                 last if (@arr < 20);
-                last;
+                last if ($now - $time > 60 * 60 * 24);
         }
         return \%questions;
 }
 
 sub get_zhihu_question {
         my $question = $_[0];
-        my ($group_id, $group_name, $board_id, $board_name, $time, $sb_id, $sb_name, $qid, $title) = @$question;
+        my ($board_id, $board_name, $sb_id, $sb_name, $time, $qid, $title) = @$question;
         my $url = "http://www.zhihu.com/question/$qid";
         my $html = get_url($url);
 #       print $html;
 #       return;
         my $q_title = $1 if ($html =~ /<h2 class="zm-item-title zm-editable-content">\s*([\d\D]+?)\s*<\/h2>/);
         my $q_content = $1 if ($html =~ /<div class="zm-editable-content">\s*([\d\D]*?)\s*<\/div>/);
+	if (!defined($q_content)) {
+		$q_content = $1 if ($html =~ /<div class="zh-summary summary clearfix">\s*([\d\D]+?)<a href="javascript/);
+	}
+	$q_title = decode('utf8', $q_title);
+	$q_content = decode('utf8', $q_content);
         print "question $q_title $q_content\n";
-	$db_conn->do("replace into question(qid, bid, sbid, title, content) values($qid, $board_id, $sb_id, ".$db_conn->quote($q_title).", ".$db_conn->quote($q_content).")");
+	$db_conn->do("replace into question(qid, bid, sbid, title, content) values($qid, $board_id, $sb_id, ".add_slashes($q_title).", ".add_slashes($q_content).")");
+#	$db_conn->do("replace into question(qid, bid, sbid, title, content) values($qid, $board_id, $sb_id, '$q_title', '$q_content')");
+	#print "replace into question(qid, bid, sbid, title, content) values($qid, $board_id, $sb_id, '$q_title', '$q_content')\n";
         my @arr = split('class="zm-item-answer "', $html);
         foreach my $item (@arr) {
                 my $ups = $1 if ($item =~ /<span class="count">([\-\d]+)<\/span>/);
@@ -102,10 +121,19 @@ sub get_zhihu_question {
                 }
                 my $content = '';
                 $content = $1 if ($item =~ /<div class="[\w\-\s]*zm\-editable\-content clearfix">\s*([\d\D]+?)\s*<\/div>/);
+		if (!defined($content)) {
+			$content = $1 if ($item =~ /<div class="fixed-summary zm-editable-content clearfix">\s*([\d\D]+?)\s*<\div>/);
+			$content =~ s/<div class="fixed-summary-mask">//;
+		}
                 my $comment_num = 0;
                 $comment_num = $1 if ($item =~ /<i class="z-icon-comment"><\/i>(\d+)/);
                 next if (!defined($aid));
-                $db_conn->do("replace into answer(aid, bid, qid, ups, author, nick, pub_date, content) values($aid, $board_id, $qid, $ups, '$author', '$nick', '$pub_time', ".$db_conn->quote($content).")");
+		$author = decode('utf8', $author);
+		$nick = decode('utf8', $nick);
+		$content = decode('utf8', $content);
+		$content = process_answer_content($content);
+		my $good = is_good_answer($content, $ups);
+                $db_conn->do("replace into answer(aid, bid, qid, ups, author, nick, pub_time, content, good) values($aid, $board_id, $qid, $ups, ".add_slashes($author).", ".add_slashes($nick).", '$pub_time', ".add_slashes($content).", $good)");
                 print "answer\t$aid $ups $comment_num $author $nick $pub_time ".substr($content, 0, 20)."\n";
 #               print "item $item\n";
 #               exit;
@@ -129,14 +157,36 @@ sub get_zhihu_question {
                         elsif ($comment =~ /<span class="date">昨天\s*([\d:]+)/) {
                                 $comment_date = get_date_str(-1);
                         }
+			else {
+				$comment_date = get_date_str(0);
+			}
                         next if (!defined($comment_id));
 #                       next if (execute_scalar("select count(*) from comment where cid = $comment_id") > 0);
                         print "comment $comment_id $commenter $comment_ups $comment_date $comment_content\n";
 #                       print $comment;
 #                       exit;
-                        $db_conn->do("replace into comment(cid, aid, author, ups, pub_date, content) values($comment_id, $aid, '$commenter', $comment_ups, '$comment_date', ".$db_conn->quote($comment_content).")");
+                        $db_conn->do("replace into comment(cid, aid, author, ups, pub_date, content) values($comment_id, $aid, ".add_slashes($commenter).", $comment_ups, '$comment_date', ".add_slashes($comment_content).")");
                 }
         }
+}
+
+sub process_answer_content {
+	my $content = shift;
+
+}
+
+sub is_good_answer {
+	my ($content, $ups) = @_;
+	if ($ups < 30) {
+		return 0;
+	}
+	return 0 if (index($content, '<img') > 0);
+	$content =~ s/<script.*?<\/script>//sg;
+	$content =~ s/<.+?>//sg;
+	if (length($content) < 70) {
+		return 1;
+	}
+	return 0;
 }
 
 1;
