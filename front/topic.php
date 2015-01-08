@@ -1,6 +1,7 @@
 <?
 //disp topic
 require_once("init.php");
+$db_conn = conn_db();
 require_once("i18n.php");
 $is_spider = is_spider();
 $is_from_search_engine = is_from_search_engine();
@@ -10,7 +11,6 @@ if ($ptt_allow == 0 && !$is_spider && !$is_from_search_engine) {
 }
 $bid = (int)$_GET['bid'];
 $tid = $_GET['tid'];
-$db_conn = conn_db();
 $en_name = execute_scalar("select en_name from board where id = $bid");
 list($author, $pub_time, $title, $content, $attachment) = execute_vector("select author, pub_time, title, content, attachment from topic where bid = $bid and tid = '$tid'");
 $title = i18n($title);
@@ -38,7 +38,7 @@ foreach ($articles as $article) {
 	$html .= '<div class="panel panel-info">';
 	$html .= '<div class="panel-heading">';
 	$html .= ($author === $lz ? i18n('louzhu') : i18n('zuozhe')).": $author (".i18n(execute_scalar("select nick from user where user_id = '$author'")).")";
-	$html .= " &nbsp; ".substr($time, 5);
+	$html .= " &nbsp; $time";
 	$html .= '</div>';
 	$html .= '<div class="panel-body">';
 	$content = i18n(preg_replace("/\n+/", "\n", trim($content)));

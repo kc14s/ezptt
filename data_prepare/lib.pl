@@ -12,19 +12,17 @@ use Digest::MD5;
 
 my @proxies;
 my $db_conn;
+my $ptt_site = 'www.ptt.cc';
 my $json = new JSON;
 
 sub load_proxy {
-	open IN, $ENV{"pwd"}."/spider/data/base/proxy" or die("load proxy file failed\n");
-	while (my $line = <IN>) {
-		chop $line;
-		my @arr = split("\t", $line);
-		if (@arr == 2 && $arr[1] eq "1") {
-			push @proxies, $arr[0];
-		}
+	open IN, $ENV{"pwd"}."/data_prepare/data/proxy" or die("load proxy file failed\n");
+	while (<IN>) {
+		chomp;
+		push @proxies, $_;
 	}
 	close IN;
-	print STDERR "".(scalar @proxies)." proxies loaded\n";
+	print "".(scalar @proxies)." proxies loaded\n";
 	return @proxies;
 }
 
@@ -65,7 +63,7 @@ sub get_url {
 		}
 		print "fetching $url\n";
 		my $ua = LWP::UserAgent->new;
-		$ua->agent("Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/33.0.1750.146 BIDUBrowser/6.x Safari/537.36");
+		$ua->agent("Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)");
 		my $proxy_idx = -1;
 		if (index($url, "att.php") > 0) {
 			$ua->timeout(60);
@@ -73,16 +71,17 @@ sub get_url {
 		else {
 			$ua->timeout(10);
 		}
-		if (0 && scalar @proxies <= 50) {
+		$proxy_idx = -1;
+		if (1 && scalar @proxies <= 50) {
 			load_proxy();
 		}
-		$proxy_idx = int(rand(scalar @proxies));
-#		$ua->proxy('http', "http://".$proxies[$proxy_idx]);
 		my $request = HTTP::Request->new(GET=>$url);
 #		$request->header('Accept-Encoding' => HTTP::Message::decodable);
 		$request->header('Accept-Encoding' => 'utf8');
 #		$request->header('Referer' => 'https://www.ptt.cc/ask/over18?from=%2Fbbs%2FSex%2Findex.html');
 		if (index($url, 'ptt.cc') > 0) {
+			$proxy_idx = int(rand(scalar @proxies));
+			$ua->proxy('http', "http://".$proxies[$proxy_idx]);
 			$request->header('Cookie' => 'over18=1');
 		}
 		elsif (index($url, 'ck101.com') >= 0) {
@@ -134,9 +133,18 @@ sub get_url {
 		if ($response->status_line eq '200 OK' && index($url, "att.php") > 0) {
 			print STDERR $content;
 		}
-		if (++$retry_count >= 2 && scalar @proxies < 200) {
+		if (++$retry_count >= 50) {
 			print STDERR "enough retries. give up $url\n";
 			return "<tr><th>发生错误</th></tr>";
+		}
+		if (scalar @proxies > 0 && $proxy_idx >= 0) {
+			print STDERR "remove proxy ".$proxies[$proxy_idx]."\n";
+			my @new_proxies;
+			foreach my $proxy (@proxies) {
+				push @new_proxies, $proxy if ($proxy ne $proxies[$proxy_idx]);
+			}
+			@proxies = @new_proxies;
+			print STDERR "".(scalar @proxies)." proxies left\n";
 		}
 	}
 }
@@ -187,13 +195,19 @@ sub get_all_boards {
 }
 
 sub get_hot_boards {
-	my @boards;
+	my %boards;
+	#my @boards = get_all_boards();
+	my @boards = ();
+	foreach my $board (@boards) {
+		$boards{$board->[0]} = 0;
+	}
 	my $content = encode('utf-8', decode('big5', get_url($ENV{'board_list_url'})));
 	my @slices = split('<table><tr>', $content);
 	foreach my $slice (@slices) {
 		my $en_name = $1 if ($slice =~ /<td width="120"><a href="\/bbs\/([\w\-]+?)\/index\.html">/);
 		my $cn_name = $1 if ($slice =~ /<td width="400"><a href="\/bbs\/[\w\-]+?\/index\.html">\s*([\d\D]+?)\s*<\/a><\/td>/);
 		next if (!defined($en_name) || !defined($cn_name));
+		next if (defined($boards{$en_name}));
 		push @boards, [$en_name, $cn_name];
 		print "$en_name\t$cn_name\n";
 	}
@@ -276,7 +290,8 @@ sub download_topic {
 	if ($content =~ /<span class="article-meta-value">(\w+) \(([\d\D]*?)\)<\/span>/) {
 		$user = $1;
 		$nick = $2;
-		$db_conn->do("replace into `user`(user_id, nick) values('$user', '$nick')");
+		$nick = $db_conn->quote($nick);
+		$db_conn->do("replace into `user`(user_id, nick) values('$user', $nick)");
 	}
 	if (!defined($user) || !defined($nick)) {
 		$user = 'unknown';
@@ -318,7 +333,7 @@ sub download_topic {
 	my @articles;
 	my @replies = split('<div class="push">', $content);
 	foreach my $reply (@replies) {
-		if ($reply =~ /<span class="f3 hl push-userid">(\w+)<\/span><span class="f3 push-content">([\d\D]+?)<\/span><span class="push-ipdatetime">\s*[\d\.]*(\d+)\/(\d+) ([\d:]+)\s*<\/span>/) {
+		if ($reply =~ /<span class="f3 hl push-userid">(\w+)<\/span><span class="f3 push-content">([\d\D]+?)<\/span><span class="push-ipdatetime">\s*(\d+)\/(\d+) ([\d:]+)\s*<\/span>/) {
 			my ($user, $reply_content, $month, $day, $time) = ($1, $2, $3, $4, $5);
 			$reply_content = substr($reply_content, 1) if (index($reply_content, ':') == 0);
 			$reply_content =~ s/^\s+//;
@@ -387,13 +402,13 @@ sub download_attachments {
 		print OUT $att_content;
 		close OUT;
 		if (`file $att_path | grep HTML | wc -l` > 0) {
-			`rm $att_path`;
+			`rm -f $att_path`;
 			next;
 		}
 		$md5 = Digest::MD5->new->add($att_content)->hexdigest;
 #		next if (execute_scalar("select count(*) from attachment where md5 = '$md5'") > 0);
 		my $target_path = $ENV{"pwd"}."/data/att/$md5.$ext_name";
-		system("mv $att_path $target_path");
+		system("mv -f $att_path $target_path");
 		my $sql = "insert delayed into attachment(bid, tid1, tid2, md5, url, ext_name) values($bid, $tid1, '$tid2', '$md5', '$url', '$ext_name')";
 		$db_conn->do($sql);
 	}

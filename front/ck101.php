@@ -1,11 +1,11 @@
 <?
 require_once("init.php");
+$db_conn = conn_ck101_db();
 require_once("i18n.php");
 $is_spider = is_spider();
 $is_from_search_engine = is_from_search_engine();
 $bid = (int)$_GET['bid'];
 $tid = (int)$_GET['tid'];
-$db_conn = conn_ck101_db();
 $board_cn_name = execute_scalar("select cn_name from board where id = $bid");
 list($title, $author) = execute_vector("select title, author from topic where tid = $tid");
 $title = i18n($title);
@@ -76,7 +76,18 @@ foreach ($articles as $article) {
 	}
 	++$floor;
 }
-if (true || $is_spider) {
+$result = mysql_query("select tid, title, author from topic where bid = $bid and tid < $tid order by tid desc limit 20");
+while (list($prev_tid, $title, $author) = mysql_fetch_array($result)) {
+	$prev_topics[] = array($prev_tid, $title, $author);
+}
+$html .= '<div class="panel panel-default"><div class="panel-heading">'.i18n('jixuyuedu').'</div>';
+$html .= '<div class="list-group">';
+foreach ($prev_topics as $prev_topic) {
+	list($prev_tid, $title, $author) = $prev_topic;
+	$html .= "<a href=\"/ck101/$bid/$prev_tid\" class=\"list-group-item\">".i18n($title)."<span class=\"pull-right\">$author</span></a>";
+}
+$html .= '</div></div>';
+if (false || $is_spider) {
 	$html .= get_old_ck101_topic_html();
 }
 $html .= '</div>';

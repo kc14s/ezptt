@@ -1,5 +1,6 @@
 <?
 require_once("init.php");
+$db_conn = conn_db();
 require_once("i18n.php");
 $is_spider = is_spider();
 $is_from_search_engine = is_from_search_engine();
@@ -10,7 +11,6 @@ if ($ptt_allow == 0 && !$is_spider && !$is_from_search_engine) {
 $bid = (int)$_GET['bid'];
 $tid = $_GET['tid'];
 /*
-$db_conn = conn_db();
 $result = mysql_query("select id, category, en_name, cn_name from board");
 while (list($bid, $category, $en_name, $cn_name) = mysql_fetch_array($result)) {
 	list($tid, $title) = execute_vector("select tid, title from topic where bid = $bid order by pub_time desc limit 1");

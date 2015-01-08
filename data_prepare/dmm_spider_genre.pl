@@ -110,7 +110,9 @@ foreach my $genre_id (keys %genre_ids) {
 			print "genres ".join(',', @genres)."\n";
 			print "stars ".join(', ', @stars)."\n";
 #			print ("replace into video(title, release_date, runtime, director, series, company, sn, fav_count, rating, description, sample_image_num) values('$title', '$release_date', $runtime, '$director', '$series', '$company', '$sn', $fav_count, $rating, ".$db_conn->quote($desc).", $sample_image_num)");
-			$db_conn->do("replace into video(title, release_date, runtime, director, series, company, sn, fav_count, rating, description, sample_image_num, channel) values('$title', '$release_date', $runtime, '$director', '$series', '$company', '$sn', $fav_count, $rating, ".$db_conn->quote($desc).", $sample_image_num, $channel)");
+			if (execute_scalar("select count(*) from video where sn = '$sn'") == 0) {
+				$db_conn->do("insert into video(title, release_date, runtime, director, series, company, sn, fav_count, rating, description, sample_image_num, channel) values('$title', '$release_date', $runtime, '$director', '$series', '$company', '$sn', $fav_count, $rating, ".$db_conn->quote($desc).", $sample_image_num, $channel)");
+			}
 			$db_conn->do("delete from genre where sn = '$sn'");
 			foreach my $genre (@genres) {
 				$db_conn->do("replace into genre(sn, genre) values('$sn', '$genre')");

@@ -1,5 +1,6 @@
 <?
 require_once("init.php");
+$db_conn = conn_ezptt_db();
 require_once("i18n.php");
 $is_from_search_engine = is_from_search_engine();
 if ($ptt_allow == 0 && !$is_spider && !$is_from_search_engine) {
@@ -8,7 +9,6 @@ if ($ptt_allow == 0 && !$is_spider && !$is_from_search_engine) {
 }
 $en_name = $_GET['en_name'];
 $page = (int)$_GET['page'];
-$db_conn = conn_ezptt_db();
 list($bid, $cn_name) = execute_vector("select id, cn_name from board where en_name = '$en_name'");
 if (!isset($bid)) {
 	header('HTTP/1.1 404 Not Found');

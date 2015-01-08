@@ -26,10 +26,7 @@ sub load_proxy {
 	open IN, $config{"pwd"}."/spider/data/base/proxy" or die("load proxy file failed\n");
 	while (my $line = <IN>) {
 		chop $line;
-		my @arr = split("\t", $line);
-		if (@arr == 2 && $arr[1] eq "1") {
-			push @proxies, $arr[0];
-		}
+		push @proxies, $line;
 	}
 	close IN;
 	print STDERR "".(scalar @proxies)." proxies loaded\n";
@@ -53,7 +50,7 @@ sub get_url {
 	my $url = $_[0];
 	my $retry_count = 0;
 	while (1) {
-		sleep(1);
+#		sleep(1);
 		print "fetching $url\n";
 		my $ua = LWP::UserAgent->new;
 		$ua->agent("Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.9.0.4)Gecko/2008111217 Fedora/3.0.4-1.fc10 Firefox/3.0.5");
@@ -64,11 +61,13 @@ sub get_url {
 		else {
 			$ua->timeout(10);
 		}
-		if (0 && scalar @proxies <= 50) {
+		if (1 && scalar @proxies <= 5) {
 			load_proxy();
 		}
 		$proxy_idx = int(rand(scalar @proxies));
-#		$ua->proxy('http', "http://".$proxies[$proxy_idx]);
+		if (index($url, 'disp.cc') > 0) {
+			$ua->proxy('http', "http://".$proxies[$proxy_idx]);
+		}
 		my $request = HTTP::Request->new(GET=>$url);
 		$request->header('Accept-Encoding' => HTTP::Message::decodable);
 		$request->header('Referer' => 'http://disp.cc/');
@@ -121,6 +120,15 @@ sub get_url {
 		if (++$retry_count >= 3 && scalar @proxies < 200) {
 			print STDERR "enough retries. give up $url\n";
 			return "<tr><th>发生错误</th></tr>";
+		}
+		if (scalar @proxies > 0 && $proxy_idx >= 0) {
+				print STDERR "remove proxy ".$proxies[$proxy_idx]."\n";
+				my @new_proxies;
+				foreach my $proxy (@proxies) {
+						push @new_proxies, $proxy if ($proxy ne $proxies[$proxy_idx]);
+				}
+				@proxies = @new_proxies;
+				print STDERR "".(scalar @proxies)." proxies left\n";
 		}
 	}
 }
@@ -192,7 +200,7 @@ sub get_topics {
 		my $content = get_url($url);
 		my @slices = split('<div class="row2">', $content);
 		foreach my $slice (@slices) {
-			if ($slice =~ /<span class="L12" title="([\d\-: ]+)">[\d\D]+?onClick="return downLevel\((\d+)\);" href="\.\.\/b\/\d+\-([\w\-]+)" ><span class="titleColor">([\d\D]+?)<\/span>[\d\D]+?title="目前人氣">(\d*)<\/span>[\d\D]+? title="累積人氣: (\d+)">/) {
+			if ($slice =~ /<span class="L12" title="([\d\-: ]+)">[\d\D]+?onClick="return downLevel\((\d+)\);" href="\.\.\/b\/\d+\-([\w\-]+)"\s*><span class="titleColor">([\d\D]+?)<\/span>[\d\D]+?title="目前人氣">(\d*)<\/span>[\d\D]+? title="累積人氣: (\d+)">/) {
 				print "$1\t$2\t$3\t$4\t$5\t$6\n";
 				next if (index($4, '[公告]') >= 0);
 				my $title = $4;
@@ -237,7 +245,7 @@ sub download_topics {
 			$db_conn->do("replace into `user`(user_id, nick) values('$user', '$nick')");
 #			print "replace into `user`(user_id, nick) values('$user', '$nick')\n";
 		}
-		if ($content =~ /<hr color="#008080" \/>([\d\D]+?)<div style="clear:both">/) {
+		if ($content =~ /<hr color="#008080"\s*\/>([\d\D]+?)<div style="clear:both">/) {
 			my $html = $1;
 			$body = $1;
 			$body =~ s/<(?:[^>'"]*|(['"]).*?\1)*>//gs;
