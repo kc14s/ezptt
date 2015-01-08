@@ -8,16 +8,12 @@ $aid = $_GET['aid'];
 $db_conn = conn_db();
 mysql_select_db('zhihu', $db_conn);
 mysql_query('set names utf8');
-list($bid, $sbid, $title, $q_content, $ups, $author, $nick, $a_content, $pub_time) = execute_vector("select question.bid, sbid, title, question.content, ups, author, nick, answer.content, pub_time from question, answer where aid = $aid and question.qid = answer.qid");
+list($bid, $sbid, $qid, $title, $q_content, $ups, $author, $nick, $a_content, $pub_time) = execute_vector("select question.bid, answer.sbid, question.qid, title, question.content, ups, author, nick, answer.content, pub_time from question, answer where aid = $aid and question.qid = answer.qid");
 $bname = execute_scalar("select name from board where bid = $bid");
 if ($sbid != 0) {
 	$sb_name = execute_scalar("select name from sub_board where sbid = $sbid");
 }
 $html_title = "$title $author";
-$dz = $author;
-if ($is_spider) {
-	$created = date("Y-m-d").substr($created, 10);
-}
 $articles[] = array('', '', 0, $title, $q_content, '');
 $articles[] = array($author, $nick, $ups, '', $a_content, $pub_time);
 $result = mysql_query("select author, ups, content, pub_date from comment where aid = $aid order by ups desc, pub_date desc");
@@ -30,9 +26,10 @@ while(list($author, $ups, $content, $pub_date) = mysql_fetch_array($result)) {
 if (count($articles) == 1 && $is_spider) {
 	$articles[] = $articles[0];
 }
+$other_answers = execute_dataset("select aid, author, ups, content from answer where qid = $qid order by ups desc limit 6");
 
-$html .= "<div class=\"col-md-8 col-md-offset-2 col-xs-12\"><ol class=\"breadcrumb\"><li><a href=\"/\">知乎</a></li><li>$bname</li>";
-if (isset($sb_name)) {
+$html .= "<div class=\"col-md-8 col-md-offset-2 col-xs-12\"><ol class=\"breadcrumb\"><li><a href=\"/\">知乎</a></li><li><a href=\"/topic/$bid/\">$bname</a></li><li><a href=\"/topic/$sbid\">$sb_name</a></li>";
+if (false && isset($sb_name)) {
 	$html .= "<li>$sb_name</li>";
 }
 $html .= "</ol><h3>$title</h3>";
@@ -63,7 +60,7 @@ foreach ($articles as $article) {
 		if ($content <> '') {
 			$html .= '<div class="panel-body">';
 			if ($floor == 2) {
-				$content = process_answer_content($content);
+				$content = process_answer_content($content, $aid);
 			}
 			$html .= $content;
 			$html .= '</div>';
@@ -79,6 +76,19 @@ foreach ($articles as $article) {
 //			$html .= $bloggerads_banner;
 		}
 	}
+	if ($floor == 2) {
+		if (count($other_answers) > 1) {
+			$html .= '<div class="panel panel-default"><div class="panel-heading">其他回答</div>';
+			$html .= '<div class="list-group">';
+			foreach ($other_answers as $other_answer) {
+				list($other_aid, $other_author, $other_ups, $other_content) = $other_answer;
+				if ($aid == $other_aid) continue;
+				$other_content = mb_substr(strip_tags($other_content), 0, 70, 'utf-8');
+				$html .= "<a href=\"/answer/$other_aid\" class=\"list-group-item\">$other_author：$other_content<span class=\"pull-right\"><span class=\"glyphicon glyphicon-thumbs-up\"></span> $other_ups</span></a>";
+			}
+			$html .= '</div></div>';
+		}
+	}
 	++$floor;
 }
 /*
@@ -92,7 +102,7 @@ if (isset($prev_topics)) {
 		$html .= '</div></div>';
 }
 */
-if (true || $is_spider) {
+if (false || $is_spider) {
 	$html .= get_rand_zhihu_topic_html();
 }
 if (true || $is_spider) {

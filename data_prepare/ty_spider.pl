@@ -6,6 +6,9 @@ require('config.pl');
 require('lib.pl');
 require('ty_lib.pl');
 
+my $now = `date +'%F %T'`;
+chomp $now;
+print "spider starts at $now\n";
 my $db_conn = init_db();
 $db_conn->do("use $ENV{'database_ty'}");
 my $board_index_url = 'http://focus.tianya.cn/thread/index.shtml';

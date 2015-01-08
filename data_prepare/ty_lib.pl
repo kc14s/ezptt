@@ -44,6 +44,7 @@ sub fetch_threads {
 	my $page = 0;
 	while (1) {
 		my $html = get_url($url);
+		sleep(1);
 		my @items = split('<td class="td-title faceblue">', $html);
 		foreach (@items) {
 			my ($thread_id, $title, $user_id, $user_name, $click, $reply, $pub_time);
@@ -65,7 +66,8 @@ sub fetch_threads {
 			print "thread $thread_id, $title, $user_id, $user_name, $click, $reply, $pub_time\n";
 			my $title_quoted = $db_conn->quote($title);
 			my $user_name_quoted = $db_conn->quote($user_name);
-			if (execute_scalar("select count(*) from thread where tid = $thread_id and en_name = '$en_name'") == 0) {
+			#if (execute_scalar("select count(*) from thread where tid = $thread_id and en_name = '$en_name'") == 0) {
+			if (execute_scalar("select count(*) from thread where tid = $thread_id") == 0) {
 				$db_conn->do("insert into thread(en_name, tid, title, uid, click, reply, pub_time) values('$en_name', $thread_id, $title_quoted, $user_id, $click, $reply, '$pub_time')");
 				$found_new = 1;
 			}
@@ -73,6 +75,7 @@ sub fetch_threads {
 				$db_conn->do("update thread set title = $title_quoted, uid = $user_id, click = $click, reply = $reply, pub_time = '$pub_time' where tid = $thread_id and en_name = '$en_name'");
 			}
 			if (execute_scalar("select count(*) from reply where en_name = '$en_name' and tid = $thread_id") < 20) {
+			#if (execute_scalar("select count(*) from reply where tid = $thread_id") < 20) {
 				$found_new |= fetch_reply($en_name, $thread_id);
 			}
 		}

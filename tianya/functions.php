@@ -278,18 +278,17 @@ function get_rand_dmm_topic_html() {
 	return $html;
 }
 
-function get_rand_zhihu_topic_html() {
-	list($id_min, $id_max) = execute_vector('select min(id), max(id) from zhihu.answer');
-	$result = mysql_query('select aid, title, author, nick from zhihu.question, zhihu.answer where question.qid = answer.qid and id > '.rand($id_min, $id_max).' order by id limit 20');
-	while (list($aid, $title, $author, $nick) = mysql_fetch_array($result)) {
-		$rand_topics[] = array($aid, $title, $author, $nick);
+function get_rand_tianya_topic_html() {
+	list($tid_max, $tid_min) = execute_vector('select max(tid), min(tid) from tianya.thread');
+	$result = mysql_query('select en_name, tid, title from thread where tid > '.rand($tid_min, $tid_max).' order by tid limit 30');
+	while (list($en_name, $tid, $title) = mysql_fetch_array($result)) {
+		$topics[] = array($en_name, $tid, $title);
 	}
-	$html = '<div class="panel panel-default"><div class="panel-heading">知乎随机推荐</div>';
+	$html = '<div class="panel panel-default">';
 	$html .= '<div class="list-group">';
-	foreach ($rand_topics as $topic) {
-		list($aid, $title, $author, $nick) = $topic;
-		#$html .= "<a href=\"/answer/$aid\" class=\"list-group-item\">$title $author $nick</a>";
-		$html .= "<a href=\"/answer/$aid\" class=\"list-group-item\">$title $author $nick</a>";
+	foreach ($topics as $topic) {
+		list($en_name, $tid, $title) = $topic;
+		$html .= "<a href=\"/thread/$en_name/$tid\" class=\"list-group-item\">$title</a>";
 	}
 	$html .= '</div></div>';
 	return $html;

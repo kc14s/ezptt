@@ -106,7 +106,8 @@ sub get_zhihu_question {
 	#print "replace into question(qid, bid, sbid, title, content) values($qid, $board_id, $sb_id, '$q_title', '$q_content')\n";
         my @arr = split('class="zm-item-answer "', $html);
         foreach my $item (@arr) {
-                my $ups = $1 if ($item =~ /<span class="count">([\-\d]+)<\/span>/);
+#                my $ups = $1 if ($item =~ /<span class="count">([\-\d]+)<\/span>/);
+		my $ups = $1 if ($item =~ /data\-votecount="(\d+)">/);
                 my $aid = $1 if ($item =~ /name="answer-(\d+)"/);
                 my ($author, $nick) = ('', '');
 #($author, $nick) = ($1, $2) if ($item =~ /href="\/people\/[\w\-]+?">([^<]+?)<\/a>，<strong title="([\d\D]+?)"/);
@@ -133,7 +134,10 @@ sub get_zhihu_question {
 		$content = decode('utf8', $content);
 		$content = process_answer_content($content);
 		my $good = is_good_answer($content, $ups);
-                $db_conn->do("replace into answer(aid, bid, qid, ups, author, nick, pub_time, content, good) values($aid, $board_id, $qid, $ups, ".add_slashes($author).", ".add_slashes($nick).", '$pub_time', ".add_slashes($content).", $good)");
+		my $hot = ($ups >= 100 ? 1 : 0);
+		if (execute_scalar("select count(*) from answer where aid = $aid") == 0) {
+                	$db_conn->do("insert into answer(aid, bid, sbid, qid, ups, author, nick, pub_time, content, good, hot) values($aid, $board_id, $sb_id, $qid, $ups, ".add_slashes($author).", ".add_slashes($nick).", '$pub_time', ".add_slashes($content).", $good, $hot)");
+		}
                 print "answer\t$aid $ups $comment_num $author $nick $pub_time ".substr($content, 0, 20)."\n";
 #               print "item $item\n";
 #               exit;
@@ -143,6 +147,8 @@ sub get_zhihu_question {
                 my $comment_html = get_url($comment_url);
 #               print $comment_html;
 #               next;
+		my $comment_ups_max = 0;
+		my $best_comment_length = 0;
                 my @comments = split('zm-item-comment', $comment_html);
                 foreach my $comment (@comments) {
                         my $comment_id = $1 if ($comment =~ /name="comment\-(\d+)"/);
@@ -150,9 +156,16 @@ sub get_zhihu_question {
                         $commenter = $1 if ($comment =~ /class="zg\-link" title="([\d\D]+?)"/);
                         my $comment_content = $1 if ($comment =~ /<div class="zm-comment-content">\s*([\d\D]+?)\s*<\/div>/);
                         my $comment_ups = $1 if ($comment =~ /<em>(\d+)<\/em>/);
+			if ($comment_ups_max < $comment_ups) {
+				$comment_ups_max = $comment_ups;
+				$best_comment_length = length($comment_content);
+			}
                         my $comment_date = '2000-01-01';
                         if ($comment =~ /<span class="date">([\d\-]+)/) {
                                 $comment_date = $1;
+				if (length($comment_date) < 8) {
+					$comment_date = get_date_str(0);
+				}
                         }
                         elsif ($comment =~ /<span class="date">昨天\s*([\d:]+)/) {
                                 $comment_date = get_date_str(-1);
@@ -165,8 +178,14 @@ sub get_zhihu_question {
                         print "comment $comment_id $commenter $comment_ups $comment_date $comment_content\n";
 #                       print $comment;
 #                       exit;
-                        $db_conn->do("replace into comment(cid, aid, author, ups, pub_date, content) values($comment_id, $aid, ".add_slashes($commenter).", $comment_ups, '$comment_date', ".add_slashes($comment_content).")");
+			if (execute_scalar("select count(*) from comment where cid = $comment_id") == 0) {
+                        	$db_conn->do("insert into comment(cid, aid, author, ups, pub_date, content) values($comment_id, $aid, ".add_slashes($commenter).", $comment_ups, '$comment_date', ".add_slashes($comment_content).")");
+			}
                 }
+		my $reply = ($ups >= 30 && $comment_ups_max * 2 >= $ups && $best_comment_length < 140) ? 1 : 0;
+		if ($reply) {
+			$db_conn->do("update answer set reply = $reply where aid = $aid");
+		}
         }
 }
 
@@ -180,6 +199,7 @@ sub is_good_answer {
 	if ($ups < 30) {
 		return 0;
 	}
+	return 0 if (length($content) < 2);
 	return 0 if (index($content, '<img') > 0);
 	$content =~ s/<script.*?<\/script>//sg;
 	$content =~ s/<.+?>//sg;

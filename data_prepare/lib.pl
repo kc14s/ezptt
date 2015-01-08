@@ -59,7 +59,7 @@ sub get_url {
 	my $url = $_[0];
 	my $retry_count = 0;
 	while (1) {
-		if (index($url, 'ptt.cc') >= 0 || index($url, 'ck101.com') >= 0) {
+		if (index($url, 'ptt.cc') >= 0 || index($url, 'ck101.com') >= 0 || index($url, 'tianya.cn') >= 0) {
 		#if (index($url, 'ptt.cc') >= 0) {
 			sleep(1);
 		}
