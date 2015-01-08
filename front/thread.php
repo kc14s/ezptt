@@ -1,5 +1,6 @@
 <?
 require_once("init.php");
+$db_conn = conn_ezptt_db();
 require_once("i18n.php");
 $is_spider = is_spider();
 $is_from_search_engine = is_from_search_engine();
@@ -10,7 +11,6 @@ if ($ptt_allow == 0 && !$is_spider && !$is_from_search_engine) {
 $en_name = $_GET['en_name'];
 $tid1 = (int)$_GET['tid1'];
 $tid2 = $_GET['tid2'];
-$db_conn = conn_ezptt_db();
 $bid = execute_scalar("select id from board where en_name = '$en_name'");
 list($author, $pub_time, $title, $content, $attachment) = execute_vector("select author, pub_time, title, content, attachment from topic where tid1 = $tid1 and tid2 = '$tid2'");
 $title = i18n($title);
@@ -36,6 +36,9 @@ while(list($author, $reply_time, $content) = mysql_fetch_array($result)) {
 	}
 	$articles[] = array($author, $reply_time, $content, array(), $nick, $author_link);
 }
+if ($topic_pub_time == '') {
+	$topic_pub_time = date("Y-m-d");
+}
 $result = mysql_query("select title, tid1, tid2, author from topic where bid = $bid and pub_time <= '$topic_pub_time' and tid1 <> $tid1 order by pub_time desc limit 10");
 while (list($prev_title, $prev_tid1, $prev_tid2, $prev_author) = mysql_fetch_array($result)) {
 	$prev_topics[] = array($prev_title, $prev_tid1, $prev_tid2, $prev_author);
@@ -59,7 +62,12 @@ if (false || !$is_loyal_user) {
 //	$html .= $chitika_468_60;
 //	$html .= $bloggerads_banner;
 	$html .= $scupio_728_90;
-	$html .= $adcash_popunder;
+//	$html .= "<p>$qadabra_728_90</p>";
+//	$html .= $infolinks;
+//	$html .= $qadabra_800_440_lightbox;
+//	$html .= $qadabra_160_600_left_slider;
+//	$html .= $qadabra_160_600_right_slider;
+	$html .= $revenuehits_popunder;
 }
 $floor = 1;
 foreach ($articles as $article) {
@@ -76,11 +84,11 @@ foreach ($articles as $article) {
 	$html .= '</div>';
 	$html .= '<div class="panel-body">';
 	$content = i18n(preg_replace("/\n+/", "\n", trim($content)));
-	if (strlen($content) < 1000 && !(strpos($content, 'http://') === false)) {
+	if (strlen($content) < 2000 && !(strpos($content, 'http://') === false)) {
 		$content = preg_replace("/(http:\/\/[\w\/\.\_\-]+\.jpg)/", "<br><a href=\"$1\" target=\"_blank\"><img data-original=\"$1\" class=\"img-responsive\" /></a>", $content);
 		$content = preg_replace("/(http:\/\/[\w\/\.\_\-]+\.png)/", "<br><a href=\"$1\" target=\"_blank\"><img data-original=\"$1\" class=\"img-responsive\" /></a>", $content);
 		$content = preg_replace("/(http:\/\/[\w\/\.\_\-]+\.gif)/", "<br><a href=\"$1\" target=\"_blank\"><img data-original=\"$1\" class=\"img-responsive\" /></a>", $content);
-		$content = preg_replace("/(http:\/\/ppt.cc[\w\/\.\_\-]+)/", "<br><a href=\"$1\" target=\"_blank\"><img data-original=\"$1@.jpg\" class=\"img-responsive\" /></a>", $content);
+		$content = preg_replace("/(http:\/\/ppt.cc[\w\/\.\_\-\~]+)/", "<br><a href=\"$1\" target=\"_blank\"><img data-original=\"$1@.jpg\" class=\"img-responsive\" /></a>", $content);
 		$content = preg_replace("/http:\/\/(imgur.com[\w\/\.\_\-]+)/", "<br><a href=\"$1\" target=\"_blank\"><img data-original=\"http://i.$1.jpg\" class=\"img-responsive\" /></a>", $content);
 		$content = preg_replace("/http:\/\/miupix.cc\/pm\-(\w+)/", "<br><a href=\"http://miupix.cc/dm/$1/uploadFromiPhone.jpg\" target=\"_blank\"><img data-original=\"http://miupix.cc/dm/$1/uploadFromiPhone.jpg\" class=\"img-responsive\" /></a>", $content);
 	}
@@ -99,9 +107,18 @@ foreach ($articles as $article) {
 		if ($floor == 1 || $floor == 2) {
 			$html .= $scupio_728_90;
 		}
-		else if ($floor == 3) {
-			$html .= $digitalpoint_468_60;
-			$html .= $bloggerads_banner;
+		else if ($floor >= 3 && $floor <= 5) {
+			$html .= $sogou_760_90;
+			//$html .= $av_show_468_60_1;
+			//$html .= $digitalpoint_468_60;
+			//$html .= $bloggerads_banner;
+		}
+		else if ($floor == 6) {
+			//$html .= $clicksor_728_90;
+			$html .= $gg91_click;
+		}
+		else if ($floor >= 7 && $floor <= 9){
+			$html .= $ads360_960_90;
 		}
 	}
 	++$floor;
@@ -124,6 +141,12 @@ if (isset($old_topics)) {
 		}
 		$html .= '</div></div>';
 }
+/*
+$html .= "<script>if (window.location.href.indexOf('ucptt.cor') == -1) {
+        window.location = 'http://www.ucptt.com/';
+		}'
+		</script>";
+*/
 if (false || $is_spider) {
 //		$html .= get_rand_reddit_topic_html();
 }

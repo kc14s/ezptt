@@ -3,5 +3,5 @@
 while :
 do
 	date=`date +%F`
-	./spider.pl >>log/spider.$date.log 2>>log/spider.$date.err;
+	./ptt_spider.pl >>log/ptt_spider.$date.log 2>>log/ptt_spider.$date.err;
 done

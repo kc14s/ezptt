@@ -32,6 +32,7 @@ if (!$is_loyal_user) {
 //	$html .= $bloggerads_banner;
 //	$html .= $scupio_728_90;
 //	$html .= $adcash_popunder;
+	$html .= $clicksor_full_page;
 }
 $floor = 1;
 foreach ($articles as $article) {
@@ -78,6 +79,7 @@ foreach ($articles as $article) {
 	if (!$is_loyal_user) {
 		if ($floor == 1 || $floor == 2) {
 //			$html .= $scupio_728_90;
+			$html .= $clicksor_728_90;
 		}
 		else if ($floor == 3) {
 //			$html .= $digitalpoint_468_60;
@@ -106,6 +108,9 @@ if (true || $is_spider) {
 //$html .= '<p><a href="/">PTT</a> <a href="/disp">disp</a></p></div>';
 //$html .= '<script type="text/javascript">var zx_aid = 1;var zx_uid = 10799;var zoneid = 11554;</script><script type="text/javascript" charset="utf-8" src="http://click.9cpc.com/view.js"></script>';
 $html .= '</div>';
+if (!$is_loyal_user) {
+	$html .= $adcash_popunder;
+}
 
 require_once('header.php');
 echo $html;

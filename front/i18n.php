@@ -10,6 +10,10 @@ else if ($is_spider && !$is_google_spider) {
 else if (is_from_cn_search_engine()) {
 	$lang = 'zh_CN';
 }
+else if (is_from_china()) {
+	$lang = 'zh_CN';
+//	error_log('from china');
+}
 else {
 	$lang = 'zh_TW';
 }
@@ -25,7 +29,7 @@ $i18n = array(
 'defawen' => '的全部帖子',
 'meizhaodaozuozhe' => '抱歉，未找到此用户的帖子',
 'chaxunzuozhe' => '查询作者',
-'' => '',
+'chengrenwenxue' => '成人文学',
 '' => '',
 '' => '',
 '' => '',
@@ -43,7 +47,7 @@ $i18n = array(
 'defawen' => '的全部發文',
 'meizhaodaozuozhe' => '抱歉，未找到此ID的發文',
 'chaxunzuozhe' => '檢索用戶',
-'' => '',
+'chengrenwenxue' => '成人文學',
 '' => '',
 '' => '',
 '' => '',

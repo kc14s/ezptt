@@ -17,6 +17,7 @@ echo ' reddit';
 <link rel="stylesheet" href="http://cdn.bootcss.com/twitter-bootstrap/3.0.3/css/bootstrap.min.css">
 <script src="http://cdn.bootcss.com/jquery/1.10.2/jquery.min.js"></script>
 <script src="<?echo $static_host;?>/js/jquery.lazyload.min.js"></script>
+<meta name="baidu-site-verification" content="frFxVvLfy9" />
 <?
 if (isset($target)) {
 	echo "<base target=\"$target\" />";

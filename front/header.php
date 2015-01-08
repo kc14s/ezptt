@@ -29,6 +29,7 @@ else {
 <script src="<?echo $static_host;?>/js/jquery-ui.js"></script>
 <script src="<?echo $static_host;?>/js/jquery.lazyload.min.js"></script>
 <script src="<?echo $static_host;?>/js/auto_complete.js?v=2"></script>
+<meta name="baidu-site-verification" content="uo47eIda6W" />
 <meta property="qc:admins" content="2746676521624354063757" />
 <style>
 body,button, input, select, textarea,h1 ,h2, h3, h4, h5, h6 { font-family: 'Microsoft YaHei','宋体' , Tahoma, Helvetica, Arial, sans-serif;}

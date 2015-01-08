@@ -1,5 +1,6 @@
 <?
 require_once("init.php");
+$db_conn = conn_ezptt_db();
 require_once("i18n.php");
 $is_spider = is_spider();
 $is_from_search_engine = is_from_search_engine();
@@ -12,7 +13,6 @@ $page = 1;
 if (isset($_GET['page'])) {
 	$page = $_GET['page'];
 }
-$db_conn = conn_ezptt_db();
 $nick = execute_scalar("select nick from user where user_id = '$author'");
 $nick = i18n($nick);
 $result = mysql_query("select en_name, title, tid1, tid2, pub_time from board, topic where author = '$author' and bid = board.id order by pub_time desc limit ".(($page - 1) * $page_size).", $page_size");

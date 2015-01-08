@@ -1,5 +1,6 @@
 <?
 require_once("init.php");
+$db_conn = conn_ezptt_db();
 require_once("i18n.php");
 $is_spider = is_spider();
 $is_from_search_engine = is_from_search_engine();

@@ -97,7 +97,7 @@ sub download_ck_topics {
 		foreach my $span (@spans) {
 			my ($aid, $author, $pub_time, $content);
 #			$aid = $1 if ($span =~ /<table id="pid(\d+)" class="plhin"/);
-			$aid = $1 if ($span =~ /postmessage_(\d+)/);
+			$aid = $1 if ($span =~ /div id="favatar(\d+)/);
 			$author = $1 if ($span =~ /title="([^"]+?)" class="xw1 xi2"/);
 			if (!defined($author)) {
 				$author = $1 if ($span =~ /<div class="pi">\s*([\d\D]+?)\s*<em>該用戶已被刪除<\/em>/);
@@ -114,7 +114,7 @@ sub download_ck_topics {
 			$content = $1 if ($span =~ /id="postmessage_\d+">\s*([\d\D]+?)\s*<\/td>/);
 			next if (!defined($aid));
 			if (!defined($author) || !defined($pub_time) || !defined($content)) {
-				print "ERROR\t$url\t$author\t$pub_time\t$content\n";
+				print "ERROR\t$aid\t$url\t$author\t$pub_time\t$content\n";
 				next;
 			}
 			$pub_time = "$pub_time:00";

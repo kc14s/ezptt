@@ -395,7 +395,7 @@ function is_from_search_engine() {
 		return false;
 	}
 	$referer = $_SERVER['HTTP_REFERER'];
-	$search_engines = array('.google.', '.baidu.com', '.sogou.com', 's.maxthon.com', 'web.gougou.com', 'g.firebird.cn', '.so.com', '.sm.cn', 'baidu.mobi');
+	$search_engines = array('.google.', 'search.yahoo.com', '.baidu.com', '.sogou.com', 's.maxthon.com', 'web.gougou.com', 'g.firebird.cn', '.so.com', '.sm.cn', 'baidu.mobi');
 	foreach ($search_engines as $se) {
 		if (strpos($referer, $se) > 0) {
 			return true;

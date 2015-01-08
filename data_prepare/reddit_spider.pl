@@ -51,7 +51,9 @@ while (1) {
 		$title = $db_conn->quote($title);
 		$selftext = $db_conn->quote($selftext);
 		$reply_html = $db_conn->quote($reply_html);
-		$db_conn->do("replace into topic(id, subreddit, domain, title, ups, downs, author, url, selftext, created, good, json) values($id, '$subreddit', '$domain', $title, $ups, $downs, '$author', $url, $selftext, '$created', $good, $reply_html)");
+		if (execute_scalar("select count(*) from topic where id = $id") == 0) {
+			$db_conn->do("insert into topic(id, subreddit, domain, title, ups, downs, author, url, selftext, created, good) values($id, '$subreddit', '$domain', $title, $ups, $downs, '$author', $url, $selftext, '$created', $good)");
+		}
 		foreach my $reply (@replies) {
 			my ($reply_id, $author, $ups, $downs, $body, $created) = @$reply;
 			$body = $db_conn->quote($body);

@@ -16,4 +16,6 @@ function get_img_url($url, $type) {
 		return $img_url;
 	}
 }
+
+$adcash_popunder = '<script type="text/javascript" src="http://www.adcash.com/script/java.php?option=rotateur&rotateur=354588"></script>';
 ?>
