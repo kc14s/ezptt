@@ -134,7 +134,7 @@ sub get_zhihu_question {
 		$content = decode('utf8', $content);
 		$content = process_answer_content($content);
 		my $good = is_good_answer($content, $ups);
-		my $hot = ($ups >= 100 ? 1 : 0);
+		my $hot = ($ups >= 50 ? 1 : 0);
 		if (execute_scalar("select count(*) from answer where aid = $aid") == 0) {
                 	$db_conn->do("insert into answer(aid, bid, sbid, qid, ups, author, nick, pub_time, content, good, hot) values($aid, $board_id, $sb_id, $qid, $ups, ".add_slashes($author).", ".add_slashes($nick).", '$pub_time', ".add_slashes($content).", $good, $hot)");
 		}

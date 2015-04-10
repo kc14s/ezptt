@@ -24,6 +24,7 @@ else if (isset($_GET['reply']) && $_GET['reply'] == 1) $type = 'reply';
 $result = mysql_query("select aid, ups, author, nick, answer.content, pub_time, qid from answer where $type = 1 $condition limit $page_size");
 while (list($aid, $ups, $author, $nick, $content, $pub_time, $qid) = mysql_fetch_array($result)) {
 	list($title, $bid, $sbid) = execute_vector("select title, bid, sbid from question where qid = $qid");
+	if (!isset($title) || $title == '') continue;
 	$board_name = execute_scalar("select name from board where bid = $bid");
 	$sub_board_name = execute_scalar("select name from sub_board where sbid = $sbid");
 	$article = array($bid, $sbid, $board_name, $sub_board_name, $title, $aid, $ups, $author, $nick, $content, $pub_time);
@@ -76,9 +77,10 @@ if (!isset($_GET['before']) && !isset($_GET['before'])) {
 	$html .= '<li class="previous disabled"><a href="#">&larr; Newer</a></li>';
 }
 else {
-	$html .= '<li class="previous"><a href="/'.$char.'after/'.$pubtime_max.'" target="_self">&larr; Newer</a></li>';
+	$html .= '<li class="previous"><a href="/'.$char.'after/'.$pubtime_max.'" target="_self">上一页</a></li>';
 }
-$html .= '<li class="next"><a href="/'.$char.'before/'.$pubtime_min.'" target="_self">Older &rarr;</a></li>';
+$html .= '<li class="next"><a href="/'.$char.'before/'.$pubtime_min.'" target="_self">下一页</a></li>';
+$html .= ' &nbsp; &nbsp; <li class="next"><a href="/random/'.$type.'" target="_self">随机</a></li>';
 $html .= '</ul></div></div>';
 //*/
 

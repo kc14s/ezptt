@@ -14,7 +14,7 @@ if (isset($html_title)) {
 echo ' 短知乎';
 ?>
 </title>
-<link rel="stylesheet" href="http://cdn.bootcss.com/twitter-bootstrap/3.0.3/css/bootstrap.min.css">
+<link rel="stylesheet" href="http://cdn.bootcss.com/twitter-bootstrap/3.3.4/css/bootstrap.min.css">
 <script src="http://cdn.bootcss.com/jquery/1.10.2/jquery.min.js"></script>
 <script src="<?echo $static_host;?>/js/jquery.lazyload.min.js"></script>
 <?
@@ -47,6 +47,9 @@ var _hmt = _hmt || [];
  s.parentNode.insertBefore(hm, s);
  })();
 </script>
+<style>
+body { overflow-x: hidden;}
+</style>
 </head>
 <body>
 <div class="row"><div class="col-sm-<?echo $width;?> col-sm-offset-<?echo $offset;?> col-xs-12">
