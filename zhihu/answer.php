@@ -9,6 +9,9 @@ $db_conn = conn_db();
 mysql_select_db('zhihu', $db_conn);
 mysql_query('set names utf8');
 list($bid, $sbid, $qid, $title, $q_content, $ups, $author, $nick, $a_content, $pub_time) = execute_vector("select question.bid, answer.sbid, question.qid, title, question.content, ups, author, nick, answer.content, pub_time from question, answer where aid = $aid and question.qid = answer.qid");
+if (strpos($q_content, '</div>') === 0) {
+	$q_content = '';
+}
 $bname = execute_scalar("select name from board where bid = $bid");
 if ($sbid != 0) {
 	$sb_name = execute_scalar("select name from sub_board where sbid = $sbid");
@@ -28,7 +31,7 @@ if (count($articles) == 1 && $is_spider) {
 }
 $other_answers = execute_dataset("select aid, author, ups, content from answer where qid = $qid order by ups desc limit 6");
 
-$html .= "<div class=\"col-md-8 col-md-offset-2 col-xs-12\"><ol class=\"breadcrumb\"><li><a href=\"/\">知乎</a></li><li><a href=\"/topic/$bid/\">$bname</a></li><li><a href=\"/topic/$sbid\">$sb_name</a></li>";
+$html = "<div class=\"row\"><div class=\"col-md-8 col-md-offset-2 col-xs-12\"><ol class=\"breadcrumb\"><li><a href=\"/\">知乎</a></li><li><a href=\"/topic/$bid/\">$bname</a></li><li><a href=\"/topic/$sbid\">$sb_name</a></li>";
 if (false && isset($sb_name)) {
 	$html .= "<li>$sb_name</li>";
 }
@@ -44,6 +47,9 @@ if (!$is_loyal_user) {
 $floor = 1;
 foreach ($articles as $article) {
 	list($author, $nick, $ups, $title, $content, $pub_time) = $article;
+	if ($floor == 1) {
+		$content = preg_replace('/pic\d+.zhimg.com/', 'image.duanzhihu.com', $content);
+	}
 	if ($floor > 1 || $content != '') {
 		$html .= '<div class="panel panel-info">';
 		if ($floor > 1) {
@@ -110,7 +116,7 @@ if (true || $is_spider) {
 }
 //$html .= '<p><a href="/">PTT</a> <a href="/disp">disp</a></p></div>';
 //$html .= '<script type="text/javascript">var zx_aid = 1;var zx_uid = 10799;var zoneid = 11554;</script><script type="text/javascript" charset="utf-8" src="http://click.9cpc.com/view.js"></script>';
-$html .= '</div>';
+$html .= '</div></div>';
 
 require_once('header.php');
 echo $html;

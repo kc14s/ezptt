@@ -1,6 +1,7 @@
 #!/usr/bin/perl -w
 use strict;
 use utf8;
+use HTML::Entities;
 no warnings 'utf8';
 
 our $db_conn;
@@ -30,7 +31,7 @@ sub get_boards {
                            );
                 my $html = post_url($url, \%form);
 		if (index($html, '{') != 0) {
-			print "skip malformed json\n";
+			print "skip malformed json\n$html\n";
 			sleep(60);
 			next;
 		}
@@ -45,7 +46,7 @@ sub get_boards {
                         $db_conn->do("replace into sub_board values($sbid, $board_id, ".add_slashes($sb_name).")");
                 }
                 last if (@$pa < 20);
-#                last;
+#		last;
         }
         return \@boards;
 }
@@ -65,7 +66,7 @@ sub get_zhihu_questions {
                            );
                 my $html = post_url($url, \%form);
 		if (index($html, '{') != 0) {
-			print "skip malformed json\n";
+			print "skip malformed json\n$html\n";
 			sleep(60);
 			next;
 		}
@@ -77,11 +78,13 @@ sub get_zhihu_questions {
 #                        ($sb_id, $sb_name) = ($1, $2) if ($item =~ /href="\/topic\/(\d+)">([\d\D]+?)<\/a>/);
                         my ($qid, $title) = ($1, $2) if ($item =~ / href="\/question\/(\d+)">([\d\D]+?)<\/a>/);
                         next if (!defined($qid));
-                        print "question\t$time\t$sbid\t$sb_name\t$qid\t$title\n";
+			my $author = $1 if ($item =~ /href="\/people\/.+?">([\d\D]+?)<\/a>/);
+                        print "question\t$time\t$sbid\t$sb_name\t$qid\t$author\t$title\n";
                         $questions{$qid} = [$board_id, $board_name, $sbid, $sb_name, $time, $qid, $title];
                 }
                 last if (@arr < 20);
-                last if ($now - $time > 60 * 60 * 24);
+                last if ($now - $time > 60 * 60 * 24 * 2);
+#		last;
         }
         return \%questions;
 }
@@ -89,18 +92,38 @@ sub get_zhihu_questions {
 sub get_zhihu_question {
         my $question = $_[0];
         my ($board_id, $board_name, $sb_id, $sb_name, $time, $qid, $title) = @$question;
+#	$qid = 30055018;
         my $url = "http://www.zhihu.com/question/$qid";
         my $html = get_url($url);
 #       print $html;
 #       return;
         my $q_title = $1 if ($html =~ /<h2 class="zm-item-title zm-editable-content">\s*([\d\D]+?)\s*<\/h2>/);
-        my $q_content = $1 if ($html =~ /<div class="zm-editable-content">\s*([\d\D]*?)\s*<\/div>/);
-	if (!defined($q_content)) {
-		$q_content = $1 if ($html =~ /<div class="zh-summary summary clearfix">\s*([\d\D]+?)<a href="javascript/);
+	my $q_content = undef;
+	$q_content = $1 if ($html =~ /<textarea class="content hidden">\s*([\d\D]+?)\s*<\/textarea>/);
+	if (defined($q_content) && $q_content ne '') {
+		$q_content = decode_entities($q_content);
+	}
+	if (!defined($q_content) || $q_content eq '') {
+        	$q_content = $1 if ($html =~ /<div class="zm\-editable\-content">\s*([\d\D]*?)\s*<\/div>/);
+	}
+	if (!defined($q_content) || $q_content eq '') {
+		$q_content = $1 if ($html =~ /<div class="zh-summary summary clearfix">\s*([\d\D]*?)<a href="javascript/);
 	}
 	$q_title = decode('utf8', $q_title);
-	$q_content = decode('utf8', $q_content);
-        print "question $q_title $q_content\n";
+#	my $original_q_content = $q_content;
+#      	print "question $q_title $q_content\n";
+	eval {
+		$q_content = decode('utf8', $q_content);
+	};
+	if ($@) {
+		print "empty q_content $@\n";
+#		print $html;
+	}
+#       print "question $q_title $q_content\n";
+#	$q_title = decode('Guess', $q_title);
+#	$q_content = decode('Guess', $q_content);
+       	print "question $q_title $q_content\n";
+#	my $sql = 
 	$db_conn->do("replace into question(qid, bid, sbid, title, content) values($qid, $board_id, $sb_id, ".add_slashes($q_title).", ".add_slashes($q_content).")");
 #	$db_conn->do("replace into question(qid, bid, sbid, title, content) values($qid, $board_id, $sb_id, '$q_title', '$q_content')");
 	#print "replace into question(qid, bid, sbid, title, content) values($qid, $board_id, $sb_id, '$q_title', '$q_content')\n";
@@ -109,6 +132,7 @@ sub get_zhihu_question {
 #                my $ups = $1 if ($item =~ /<span class="count">([\-\d]+)<\/span>/);
 		my $ups = $1 if ($item =~ /data\-votecount="(\d+)">/);
                 my $aid = $1 if ($item =~ /name="answer-(\d+)"/);
+                next if (!defined($aid));
                 my ($author, $nick) = ('', '');
 #($author, $nick) = ($1, $2) if ($item =~ /href="\/people\/[\w\-]+?">([^<]+?)<\/a>，<strong title="([\d\D]+?)"/);
                 $author = $1 if ($item =~ /href="\/people\/[\w\-]+?">([^<]+?)<\/a>/);
@@ -128,15 +152,15 @@ sub get_zhihu_question {
 		}
                 my $comment_num = 0;
                 $comment_num = $1 if ($item =~ /<i class="z-icon-comment"><\/i>(\d+)/);
-                next if (!defined($aid));
 		$author = decode('utf8', $author);
 		$nick = decode('utf8', $nick);
 		$content = decode('utf8', $content);
 		$content = process_answer_content($content);
+		my $pic = is_pic_answer($content, $ups);
 		my $good = is_good_answer($content, $ups);
 		my $hot = ($ups >= 50 ? 1 : 0);
 		if (execute_scalar("select count(*) from answer where aid = $aid") == 0) {
-                	$db_conn->do("insert into answer(aid, bid, sbid, qid, ups, author, nick, pub_time, content, good, hot) values($aid, $board_id, $sb_id, $qid, $ups, ".add_slashes($author).", ".add_slashes($nick).", '$pub_time', ".add_slashes($content).", $good, $hot)");
+                	$db_conn->do("insert into answer(aid, bid, sbid, qid, ups, author, nick, pub_time, content, good, hot, pic) values($aid, $board_id, $sb_id, $qid, $ups, ".add_slashes($author).", ".add_slashes($nick).", '$pub_time', ".add_slashes($content).", $good, $hot, $pic)");
 		}
                 print "answer\t$aid $ups $comment_num $author $nick $pub_time ".substr($content, 0, 20)."\n";
 #               print "item $item\n";
@@ -152,9 +176,11 @@ sub get_zhihu_question {
                 my @comments = split('zm-item-comment', $comment_html);
                 foreach my $comment (@comments) {
                         my $comment_id = $1 if ($comment =~ /name="comment\-(\d+)"/);
+                        next if (!defined($comment_id));
                         my $commenter = '';
                         $commenter = $1 if ($comment =~ /class="zg\-link" title="([\d\D]+?)"/);
-                        my $comment_content = $1 if ($comment =~ /<div class="zm-comment-content">\s*([\d\D]+?)\s*<\/div>/);
+                        my $comment_content = $1 if ($comment =~ /<div class="zm-comment-content">\s*([\d\D]*?)\s*<\/div>/);
+			next if ($comment_content eq '');
                         my $comment_ups = $1 if ($comment =~ /<em>(\d+)<\/em>/);
 			if ($comment_ups_max < $comment_ups) {
 				$comment_ups_max = $comment_ups;
@@ -173,7 +199,6 @@ sub get_zhihu_question {
 			else {
 				$comment_date = get_date_str(0);
 			}
-                        next if (!defined($comment_id));
 #                       next if (execute_scalar("select count(*) from comment where cid = $comment_id") > 0);
                         print "comment $comment_id $commenter $comment_ups $comment_date $comment_content\n";
 #                       print $comment;
@@ -191,16 +216,16 @@ sub get_zhihu_question {
 
 sub process_answer_content {
 	my $content = shift;
-
+	return $content;
 }
 
 sub is_good_answer {
 	my ($content, $ups) = @_;
-	if ($ups < 30) {
+	if ($ups < 25) {
 		return 0;
 	}
 	return 0 if (length($content) < 2);
-	return 0 if (index($content, '<img') > 0);
+#	return 0 if (index($content, '<img') > 0);
 	$content =~ s/<script.*?<\/script>//sg;
 	$content =~ s/<.+?>//sg;
 	if (length($content) < 70) {
@@ -209,4 +234,22 @@ sub is_good_answer {
 	return 0;
 }
 
+sub is_pic_answer {
+	my ($content, $ups) = @_;
+	if ($ups < 3) {
+		return 0;
+	}
+	my ($pos, $pic_count) = (-1, 0);
+	do {
+		$pos = index($content, '<img', $pos + 1);
+		$pic_count++ if ($pos >= 0);
+	} while ($pos >= 0);
+	return 0 if ($pic_count == 0);
+	$content =~ s/<script.*?<\/script>//sg;
+	$content =~ s/<.+?>//sg;
+	if (length($content) / $pic_count < 70) {
+		return 1;
+	}
+	return 0;
+}
 1;
