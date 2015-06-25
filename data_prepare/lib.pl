@@ -156,7 +156,8 @@ sub post_url {
 	$ua->agent("Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.9.0.4)Gecko/2008111217 Fedora/3.0.4-1.fc10 Firefox/3.0.5");
 	my $response = $ua->post($url, $form);
 	if ($response->is_success) {
-		return $response->content;
+#		return $response->content;
+		return $response->decoded_content;
 	}
 	else {
 		return $response->status_line;
