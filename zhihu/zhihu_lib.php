@@ -17,11 +17,18 @@ function process_answer_content($content, $aid) {
 			$content = str_replace('`', '<br>', $content);
 		}
 	}
+	$div_open_count = substr_count($content, '<div');
+	$div_close_count = substr_count($content, '</div>');
+	for ($i = $div_close_count; $i < $div_open_count; ++$i) {
+		$content .= '</div>';
+	}
+	/*
 	if (strpos($content, '<div class="highlight">') === false) {}
 	else {
 //		echo 'contains';
 		$content .= '</div>';
 	}
+	*/
 	return $content;
 }
 ?>
