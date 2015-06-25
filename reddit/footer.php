@@ -1,4 +1,4 @@
-</div>
+</div></div>
 <script> 
 var interval = setInterval(function(){
 	$("img").lazyload();

@@ -4,6 +4,7 @@ use DBI;
 
 require('config.pl');
 require('lib.pl');
+require('dmm_lib.pl');
 
 my @boards = (
 ['av', 'http://www.dmm.co.jp/digital/videoa/-/list/=/limit=120/sort=date/'],
@@ -109,11 +110,12 @@ for (my $channel = 1; $channel <= @boards; ++$channel) {
 			while ($detail_html =~ /sample-image(\d+)/g) {
 				$sample_image_num = $1 if ($1 > $sample_image_num);
 			}
-			print "$title, $release_date, $runtime, $director, $series, $company, $sn, $fav_count, $rating, $desc, $sample_image_num\n";
+			my $snn = normalize_sn($sn);
+			print "$title, $release_date, $runtime, $director, $series, $company, $sn, $snn, $fav_count, $rating, $desc, $sample_image_num\n";
 			print "genres ".join(',', @genres)."\n";
 			print "stars ".join(', ', @stars)."\n";
 			if (execute_scalar("select count(*) from video where sn = '$sn'") == 0) {
-				$db_conn->do("insert into video(title, release_date, runtime, director, series, company, sn, fav_count, rating, description, sample_image_num, channel) values('$title', '$release_date', $runtime, '$director', '$series', '$company', '$sn', $fav_count, $rating, ".$db_conn->quote($desc).", $sample_image_num, $channel)");
+				$db_conn->do("insert into video(title, release_date, runtime, director, series, company, sn, sn_normalized, fav_count, rating, description, sample_image_num, channel) values('$title', '$release_date', $runtime, '$director', '$series', '$company', '$sn', '$snn', $fav_count, $rating, ".$db_conn->quote($desc).", $sample_image_num, $channel)");
 #				$db_conn->do("delete from genre where sn = '$sn'");
 				foreach my $genre (@genres) {
 					$db_conn->do("replace into genre(sn, genre) values('$sn', '$genre')");
@@ -123,6 +125,7 @@ for (my $channel = 1; $channel <= @boards; ++$channel) {
 					$db_conn->do("replace into star(sn, star) values('$sn', '$star')");
 				}
 			}
+			get_seeds($sn, $snn, $db_conn);
 		}
 		last if (@detail_urls < 120);
 =cutklfa

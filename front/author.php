@@ -48,7 +48,7 @@ if (!$is_spider) {
 	$html .= $scupio_video_expand;
 }
 if (!$is_loyal_user) {
-	$html .= $adcash_popunder;
+//	$html .= $adcash_popunder;
 }
 
 require_once('header.php');

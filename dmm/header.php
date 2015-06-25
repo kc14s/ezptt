@@ -7,17 +7,16 @@ require_once('i18n.php');
 <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>
-<?php
+<meta name="applicable-device" content="pc,mobile">
+<title><?php
 if (isset($html_title)) {
 	echo $html_title;
 }
-?>
-</title>
+?> dmm</title>
 <link rel="stylesheet" href="http://cdn.bootcss.com/twitter-bootstrap/3.0.3/css/bootstrap.min.css">
 <script src="http://cdn.bootcss.com/jquery/1.10.2/jquery.min.js"></script>
 <script src="http://cdn.bootcss.com/twitter-bootstrap/3.0.3/js/bootstrap.min.js"></script>
-<script src="<?echo $static_host;?>/js/jquery.lazyload.min.js"></script>
+<script src="http://libs.useso.com/js/jquery.lazyload/1.9.1/jquery.lazyload.min.js"></script>
 <meta name="baidu-site-verification" content="c3FkX097v5" />
 <?
 if (isset($target)) {
@@ -27,6 +26,14 @@ if (isset($target)) {
 <script>var _hmt = _hmt || [];(function() {  var hm = document.createElement("script");  hm.src = "//hm.baidu.com/hm.js?0b4a6c1a6eedf10ee1f1702eced53914";  var s = document.getElementsByTagName("script")[0];   s.parentNode.insertBefore(hm, s);})();</script>
 </head>
 <body>
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+ (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+ m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+ })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+ga('create', 'UA-17088225-8', 'auto');
+ga('send', 'pageview');
+</script>
 <div class="row"><div class="col-md-8 col-md-offset-2 col-xs-12">
 <nav class="navbar navbar-default" role="navigation">
 	<div class="container-fluid">

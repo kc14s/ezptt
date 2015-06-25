@@ -183,6 +183,21 @@ sub execute_vector {
 	return $request->fetchrow_array;
 } 
 
+sub execute_column {
+	my ($sql, $conn) = @_;  
+	$conn = $ENV{'db_conn'} if (!defined($conn));
+	my $request = $conn->prepare($sql);
+	$request->execute();
+	my @ret;
+	while (my ($result) = $request->fetchrow_array) {
+		if (defined($result)) {
+			push @ret, $result;
+		}
+	}                       
+	return @ret;     
+
+}
+
 sub get_all_boards {
 	my @boards;
 	my $sql = 'select en_name, cn_name from board';
@@ -276,6 +291,77 @@ my %en_months = (
 'Dec'=>'12'
 );
 
+my %blocked_users = (
+'minekuo' => 0,
+'eqer' => 0,
+'ioiocala' => 0,
+'shibachan' => 0,
+'Andersan524' => 0,
+'vivi303030' => 0,
+'yt1122' => 0,
+'a9wh61ks' => 0,
+'mmcat1991' => 0,
+'jkbull' => 0,
+'RAYZY' => 0,
+'cat1234f' => 0,
+'jwutnpo' => 0,
+'tyus' => 0,
+'c314333' => 0,
+'bella5267' => 0,
+'botany' => 0,
+'joseph0318' => 0,
+'kakoisme' => 0,
+'whoam' => 0,
+'sunrise1202' => 0,
+'hink2003' => 0,
+'BOIAN05' => 0,
+'XuXin' => 0,
+'deathhead' => 0,
+'cyijiun' => 0,
+'j511042000' => 0,
+'Acutie' => 0,
+'Ababy' => 0,
+'Anmilus' => 0,
+'kacey' => 0,
+'im014' => 0,
+'bomakoto' => 0,
+'yungting1989' => 0,
+'pierrere' => 0,
+'bear15328' => 0,
+'OWer' => 0,
+'iphonegirl' => 0,
+'thisisme' => 0,
+'theleo' => 0,
+'tinidot' => 0,
+'Leverager' => 0,
+'aries0419' => 0,
+'hjfreehappy' => 0,
+'twoice' => 0,
+'rrcmjp' => 0,
+'sanajp' => 0,
+'xjp' => 0,
+'aries0419' => 0,
+'hollowkiki' => 0,
+'weibabe' => 0,
+'zu0110' => 0,
+'muhsin' => 0,
+'' => 0,
+'' => 0,
+'' => 0,
+'' => 0,
+'' => 0,
+'' => 0,
+'' => 0,
+'' => 0,
+'' => 0,
+'' => 0,
+'' => 0,
+'' => 0,
+'' => 0,
+'' => 0,
+'' => 0
+);
+
 sub month_en_to_number {
 	return $en_months{$_[0]};
 }
@@ -297,6 +383,10 @@ sub download_topic {
 		$user = 'unknown';
 		$nick = '';
 		print STDERR "parse user failed\t$url\n";
+	}
+	if (defined($blocked_users{$user})) {
+		print "blocked user $user\n";
+		return;
 	}
 	if ($content =~ /<span class="article-meta-value">\w+ (\w+)\s+(\d+) ([\d:]+) (\d+)<\/span><\/div>\s*([\d\D]+?)\s*\-\-[\d\D]*(<\/span>)?<span class="f2">/) {}
 	elsif ($content =~ /<span class="article-meta-value">\w+ (\w+)\s+(\d+) ([\d:]+) (\d+)<\/span><\/div>\s*([\d\D]+?)\s*<div class="push"/) {}

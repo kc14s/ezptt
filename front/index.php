@@ -23,7 +23,7 @@ $json = json_decode(file_get_contents('data/ptt_index'));
 $categories = array('活動中心', '生活娛樂館', '戰略高手', '臺灣大學', '國家研究院', '卡漫夢工廠', '視聽劇場', '國家體育場', '青蘋果樹', '政治大學');
 //print_r($json);
 
-$html = '<h3 align="center">PTT BBS</h3>';
+$html = '<h3 class="text-center">PTT BBS</h3>';
 $html .= "<div class=\"col-md-6 col-md-offset-2 col-xs-12\">";
 //$html .= $google_320_100;
 foreach ($categories as $category) {
@@ -41,7 +41,7 @@ foreach ($categories as $category) {
 			$html .= '<br>';
 			$file_names = explode("\t", $attachments);
 			foreach ($file_names as $attachment) {
-				$html .= "<img data-original=\"$static_host/att/$attachment\" height=\"200\" />";
+				$html .= "<img src=\"data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs%3D\" alt=\"\" data-original=\"$static_host/att/$attachment\" height=\"200\" />";
 			}
 		}
 		$html .= '</a>';
@@ -60,7 +60,7 @@ while (count($beauty_indexes) < 10) {
 	$beauty_indexes[$index] = 0;
 	list($en_name, $tid1, $tid2, $title, $file_name) = $dataset[$index];
 	$html .= '<div class="row">';
-	$html .= '<div class="thumbnail"><a href="'."/article/$en_name/$tid1/$tid2".'"><img src="'.$static_host.'/att/'.$file_name.'" width="300" /></a><div class="caption"><p><a href="'."/article/$en_name/$tid1/$tid2".'">'.i18n($title).'</a></p></div></div></div>';
+	$html .= '<div class="thumbnail"><a href="'."/article/$en_name/$tid1/$tid2".'"><img src="'.$static_host.'/att/'.$file_name.'" alt="" width="300" /></a><div class="caption"><p><a href="'."/article/$en_name/$tid1/$tid2".'">'.i18n($title).'</a></p></div></div></div>';
 }
 $html .= '</div>';
 require_once('header.php');

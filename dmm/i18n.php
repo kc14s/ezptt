@@ -36,6 +36,17 @@ $i18n = array(
 'select_language' => '选择语言',
 'video_not_found' => '抱歉，未找到您要找的AV。',
 'chengrenwenxue' => '成人文学',
+'seed_name' => '种子名称',
+'seed_size' => '大小',
+'seed_file_num' => '文件数',
+'seed_created' => '创建日期',
+'seed_popularity' => '人气',
+'seed_torrent' => 'BT种子',
+'seed_magnet' => '磁力链',
+'seed_download_bt' => '下载',
+'seed_download_magnet' => '下载',
+'download' => '下载',
+'' => '',
 '' => ''
 ),
 'zh_TW' => array(
@@ -56,6 +67,16 @@ $i18n = array(
 'select_language' => '選擇語言',
 'video_not_found' => '抱歉，未找到您要的AV。',
 'chengrenwenxue' => '成人文學',
+'seed_name' => '種子名稱',
+'seed_size' => '大小',
+'seed_file_num' => '文件數',
+'seed_created' => '創建日期',
+'seed_popularity' => '人氣',
+'seed_torrent' => 'BT種子',
+'seed_magnet' => '磁力鏈',
+'seed_download_bt' => '下載',
+'seed_download_magnet' => '下載',
+'download' => '下載',
 '' => '',
 '' => '',
 '' => '',
@@ -78,6 +99,16 @@ $i18n = array(
 'page_down' => 'Page Down',
 'select_language' => 'Select Language',
 'video_not_found' => 'Sorry, we can not find the video.',
+'seed_name' => 'Name',
+'seed_size' => 'Size',
+'seed_file_num' => 'Number of Files',
+'seed_created' => 'Creation Date',
+'seed_popularity' => 'Popularity',
+'seed_torrent' => 'Torrent File',
+'seed_magnet' => 'Magnet Link',
+'seed_download_bt' => 'Download',
+'seed_download_magnet' => 'Download',
+'download' => 'Download',
 '' => '',
 '' => '',
 '' => ''
@@ -108,13 +139,11 @@ $i18n = array(
 function i18n($key) {
 	global $lang, $i18n;
 	if (isset($i18n[$lang][$key])) return $i18n[$lang][$key];
+	if ($lang == 'ja_JP') {
+		if (!isset($i18n[$lang][$key]) && isset($i18n['en_US'][$key])) {
+			return $i18n['en_US'][$key];
+		}
+	}
 	return $key;
-	if ($lang == 'zh_TW') {
-		return $key;
-	}
-	else {
-		global $zh2Hans, $zh2CN;
-		return strtr(strtr($key, $zh2CN), $zh2Hans);
-	}
 }
 ?>

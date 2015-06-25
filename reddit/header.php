@@ -4,6 +4,7 @@
 <html lang="en">
 <head>
 <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="applicable-device" content="pc,mobile">
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>
@@ -14,9 +15,9 @@ if (isset($html_title)) {
 echo ' reddit';
 ?>
 </title>
-<link rel="stylesheet" href="http://cdn.bootcss.com/twitter-bootstrap/3.0.3/css/bootstrap.min.css">
-<script src="http://cdn.bootcss.com/jquery/1.10.2/jquery.min.js"></script>
-<script src="<?echo $static_host;?>/js/jquery.lazyload.min.js"></script>
+<link rel="stylesheet" href="http://cdn.bootcss.com/twitter-bootstrap/3.3.4/css/bootstrap.min.css">
+<script src="http://libs.useso.com/js/jquery/2.1.1/jquery.min.js"></script>
+<script src="http://libs.useso.com/js/jquery.lazyload/1.9.1/jquery.lazyload.min.js"></script>
 <meta name="baidu-site-verification" content="frFxVvLfy9" />
 <?
 if (isset($target)) {
@@ -32,6 +33,9 @@ var _hmt = _hmt || [];
  s.parentNode.insertBefore(hm, s);
  })();
 </script>
+<style>
+body { overflow-x: hidden;}
+</style>
 </head>
 <body>
-<div class="row">
+<div class="container"><div class="row">

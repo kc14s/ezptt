@@ -206,6 +206,8 @@ function is_loyal_user() {
 	global $is_from_search_engine;
 	$loyal_user_uris = array(
 	'/' => 1,
+	'/author.php' => 1,
+	'/user.php' => 1,
 	'/disp.php' => 1
 	);
 	if ($is_from_search_engine) {}
@@ -214,9 +216,9 @@ function is_loyal_user() {
 	}
 	else {
 		if (!isset($_COOKIE['is_loyal']) || $_COOKIE['is_loyal'] == 0) {
-			$is_loyal = isset($loyal_user_uris[$_SERVER['REQUEST_URI']]) ? 1 : 0;
+			$is_loyal = isset($loyal_user_uris[$_SERVER['REQUEST_URI']]) || isset($loyal_user_uris[$_SERVER['SCRIPT_NAME']]) ? 1 : 0;
 			if ($is_loyal) {
-				setcookie('is_loyal', $is_loyal, time() + 3600 * 24 * 365);
+				setcookie('is_loyal', $is_loyal, time() + 3600 * 24 * 365, '/');
 			}
 		}
 		else {
@@ -400,5 +402,23 @@ function is_from_china() {
 	}
 	list($begin, $end) = execute_vector("select begin, end from ezptt.ip_china where begin <= $sum order by begin desc limit 1");
 	return $sum <= $end;
+}
+
+function get_jandan_pics($type, $size = 20) {
+		$types = array('jandan_beauty', 'jandan_funny');
+		//$counts = array(23564, 63592);
+		$ret = array();
+		while (count($ret) < $size) {
+				list($max, $min) = execute_vector('select max(id), min(id) from '.$types[$type]);
+				$rand = rand($min, $max);
+				$result = mysql_query("select id, url, enabled, width, height from ".$types[$type]." where id >= $rand limit ".($size * 2));
+				while ($row = mysql_fetch_array($result)) {
+						if (count($ret) >= $size) break;
+						if (!isset($row['enabled']) || $row['enabled'] == 0 || $row['height'] > 400) continue;
+						$ret[$row['id']] = array($row['id'], $row['url'], $row['width'], $row['height']);
+				}
+		}
+		//*/
+		return $ret;
 }
 ?>

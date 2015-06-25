@@ -38,7 +38,7 @@ if (!$is_loyal_user) {
 //	$html .= $bloggerads_banner;
 //	$html .= $digitalpoint_468_60;
 	$html .= $scupio_728_90;
-	$html .= $adcash_popunder;
+//	$html .= $adcash_popunder;
 }
 $floor = 1;
 foreach ($articles as $article) {
@@ -64,6 +64,9 @@ foreach ($articles as $article) {
 		$content = preg_replace("/http:\/\/miupix.cc\/pm\-(\w+)/", "<br><a href=\"http://miupix.cc/dm/$1/uploadFromiPhone.jpg\" target=\"_blank\"><img data-original=\"http://miupix.cc/dm/$1/uploadFromiPhone.jpg\" /></a>", $content);
 	}
 	$html .= $content;
+	if ($floor == 1) {
+		$html .= '<div class="addthis_sharing_toolbox"></div>';
+	}
 	$html .= '</div>';
 	$html .= '</div>';
 	if (!$is_loyal_user) {
@@ -72,6 +75,10 @@ foreach ($articles as $article) {
 		}
 		else if ($floor == 3) {
 //			$html .= $bloggerads_banner;
+			$html .= $gg91_click;
+		}
+		else {
+			$html .= $ads360_960_90;
 		}
 	}
 	++$floor;
@@ -96,6 +103,8 @@ $html .= '</div>';
 require_once('header.php');
 echo $html;
 require_once('footer.php');
+//echo $_SERVER['SCRIPT_FILENAME'];
+//echo $_SERVER['SCRIPT_NAME'];
 
 $author_links = array();
 function get_author_link($author) {

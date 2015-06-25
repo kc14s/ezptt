@@ -33,6 +33,7 @@ while (list($prev_title, $prev_tid) = mysql_fetch_array($result)) {
 }
 
 $html = "<div class=\"col-md-8 col-md-offset-2 col-xs-12\"><a href=\"/disp\">Disp</a> &gt; $en_name<h3>".i18n($topic_title)."</h3>";
+$floor = 1;
 foreach ($articles as $article) {
 	list($author, $time, $content, $attachments) = $article;
 	$html .= '<div class="panel panel-info">';
@@ -55,8 +56,12 @@ foreach ($articles as $article) {
 			}
 		}
 	}
+	if ($floor == 1) {
+		$html .= '<div class="addthis_sharing_toolbox"></div>';
+	}
 	$html .= '</div>';
 	$html .= '</div>';
+	++$floor;
 }
 if (isset($prev_topics)) {
 		$html .= '<div class="panel panel-default"><div class="panel-heading">'.i18n('jixuyuedu').'</div>';

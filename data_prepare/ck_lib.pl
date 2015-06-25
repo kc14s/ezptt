@@ -8,6 +8,7 @@ sub get_ck_boards {
 	my %board_groups;
 	while ($html =~ /<li id="mn_(\w+)" onmouseover="showMenu\({'ctrlid':this\.id,'ctrlclass':'hover','duration':2}\)"><a  onclick="ga\('send','event', 'navs','([\d\D]+?)'\);"/g) {
 		$board_groups{$1} = $2;
+		print "$1 $2\n";
 	}
 	my %boards;
 	while ($html =~ /<div class="forumList([\d\D]+?)<\/div>/g) {
@@ -18,6 +19,7 @@ sub get_ck_boards {
 				while ($board_group_html =~ /ck101.com\/forum-(\d+)-1\.html" title="([\d\D]+?)"/g) {
 					if (!defined($boards{$1})) {
 						$boards{$1} = [$board_group_name, $2];
+						print "$1 $board_group_name $2\n";
 					}
 				}
 			}
@@ -41,6 +43,7 @@ sub get_ck_boards {
 				$board_group_name = '成人';
 			}
 			$boards{$bid} = [$board_group_name, $cn_name];
+			print "$bid $board_group_name $cn_name\n";
 		}
 	}
 	while (my ($bid, $pa) = each %boards) {
@@ -69,7 +72,7 @@ sub get_ck_topics {
 				$title = $1;
 			}
 			if (!defined($author) || !defined($pub_time) || !defined($title)) {
-				print "ERROR	$bid $page $tid $author $pub_time $title\n";
+				print "ERROR list $bid $page $tid $author $pub_time $title\n";
 			}
 			else {
 				push @topics, [$bid, $tid, $title, $author, $pub_time];
@@ -79,6 +82,7 @@ sub get_ck_topics {
 		if (!download_ck_topics(@topics)) {
 			last;
 		}
+#		last;
 	}
 }
 
@@ -90,6 +94,7 @@ sub download_ck_topics {
 		my ($bid, $tid, $title, $author, $pub_time) = @$topic;
 		my $saved_article_num = execute_scalar("select count(*) from article where tid = $tid");
 		next if ($saved_article_num == 10);
+#		$tid = 3255106;
 		my $url = "http://ck101.com/thread-$tid-1-1.html";
 		my $html = get_url($url);
 		my @spans = split(/div id="post_\d+" class="plhin">/, $html);
@@ -98,9 +103,12 @@ sub download_ck_topics {
 			my ($aid, $author, $pub_time, $content);
 #			$aid = $1 if ($span =~ /<table id="pid(\d+)" class="plhin"/);
 			$aid = $1 if ($span =~ /div id="favatar(\d+)/);
-			$author = $1 if ($span =~ /title="([^"]+?)" class="xw1 xi2"/);
+			$author = $1 if (!defined($author) && $span =~ /title="([^"]+?)" class="xw1 xi2"/);
 			if (!defined($author)) {
 				$author = $1 if ($span =~ /<div class="pi">\s*([\d\D]+?)\s*<em>該用戶已被刪除<\/em>/);
+			}
+			if (!defined($author)) {
+				$author = '';
 			}
 			$pub_time = $1 if ($span =~ /發表於 ([\d\-\s:]+)<\/em>/);
 			if (!defined($pub_time)) {
@@ -108,13 +116,13 @@ sub download_ck_topics {
 					$pub_time = $articles[@articles - 1]->[2];
 				}
 				else {
-					$pub_time = '2000-01-01 00:00:00';
+					$pub_time = '2000-01-01 00:00';
 				}
 			}
 			$content = $1 if ($span =~ /id="postmessage_\d+">\s*([\d\D]+?)\s*<\/td>/);
 			next if (!defined($aid));
 			if (!defined($author) || !defined($pub_time) || !defined($content)) {
-				print "ERROR\t$aid\t$url\t$author\t$pub_time\t$content\n";
+				print "ERROR $aid $url $author $pub_time $content\n";
 				next;
 			}
 			$pub_time = "$pub_time:00";

@@ -12,7 +12,7 @@ list($title, $release_date, $runtime, $director, $series, $company, $fav_count, 
 
 $stars = execute_column("select star from star where sn = '$sn'");
 $genres = execute_column("select genre from genre where sn = '$sn'");
-$html_title = "$title $snn ".implode(' ', $stars);
+$html_title = "$title $snn ".implode(' ', $stars).' bittorrent '.i18n('download');
 
 $html = '<div class="row"><div class="col-md-6 col-md-offset-2 col-xs-12">';
 //$html .= "<div class=\"row\"><div class=\"col-md-12\"><h3>$html_title</h3></div></div>";
@@ -55,8 +55,19 @@ if (count($stars) > 0) {
 	if ($counter % 4 != 0) $html .= '</div></div>';
 	$html .= '</div></div>';
 }
+
+$seed_set = execute_dataset("select name, size_text, file_num, created, hot, seed_url, magnet from seed where sn = '$sn'");
+if (count($seed_set) > 0) {
+	$html .= '<div class="panel panel-info"><table class="table table-striped">';
+	$html .= '<tr><th>'.i18n('seed_name').'</th><th>'.i18n('seed_size').'</th><th>'.i18n('seed_file_num').'</th><th>'.i18n('seed_created').'</th><th>'.i18n('seed_popularity').'</th><th>'.i18n('seed_torrent').'</th><th>'.i18n('seed_magnet').'</th></tr>';
+	foreach ($seed_set as $seed_row) {
+		$html .= '<tr><td>'.$seed_row['name'].'</td><td>'.$seed_row['size_text'].'</td><td>'.$seed_row['file_num'].'</td><td>'.$seed_row['created'].'</td><td>'.$seed_row['hot'].'</td><td><a href="'.$seed_row['seed_url'].'" target="_blank">'.i18n('seed_download_bt').'</a></td><td><a href="'.$seed_row['magnet'].'">'.i18n('seed_download_magnet').'</a></td></tr>';
+	}
+	$html .= '</table></div>';
+}
+
 if ($lang_short == 'zh') {
-	$html .= $ueads_av_pic;
+//	$html .= $ueads_av_pic;
 	$html .= get_ck101_board_random_topic(70);
 }
 $html .= get_rand_dmm_topic_html();

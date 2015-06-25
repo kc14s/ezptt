@@ -1,5 +1,6 @@
 <?
 require_once("init.php");
+$db_conn = conn_ck101_db();
 require_once("i18n.php");
 $is_spider = is_spider();
 $is_from_search_engine = is_from_search_engine();
@@ -8,7 +9,6 @@ $page = 1;
 if (isset($_GET['page'])) {
 	$page = $_GET['page'];
 }
-$db_conn = conn_ck101_db();
 $result = mysql_query("select cn_name, bid, tid, title, pub_time from topic, board where author = '$author' and bid = id order by pub_time desc limit ".(($page - 1) * $page_size).", $page_size");
 $result_num = mysql_num_rows($result);
 while (list($cn_name, $bid, $tid, $title, $pub_time) = mysql_fetch_array($result)) {

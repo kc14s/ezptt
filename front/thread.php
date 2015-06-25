@@ -13,6 +13,10 @@ $tid1 = (int)$_GET['tid1'];
 $tid2 = $_GET['tid2'];
 $bid = execute_scalar("select id from board where en_name = '$en_name'");
 list($author, $pub_time, $title, $content, $attachment) = execute_vector("select author, pub_time, title, content, attachment from topic where tid1 = $tid1 and tid2 = '$tid2'");
+if (!isset($title)) {
+		header('HTTP/1.1 404 Not Found');
+		exit();
+}
 $title = i18n($title);
 $topic_title = $title;
 $html_title = "$title $author";
@@ -53,22 +57,23 @@ if (false || $is_spider) {
 	}
 }
 
-if (false || !$is_spider) {
+if (!$is_loyal_user && !$is_spider) {
 	$html .= $scupio_video_expand;
 }
-$html .= "<div class=\"col-md-8 col-md-offset-2 col-xs-12\"><ol class=\"breadcrumb\"><li><a href=\"/\">PTT</a></li><li><a href=\"/board/$en_name/\">$en_name</a></li></ol><h3>".i18n($topic_title)."</h3>";
+$html .= "<div class=\"col-md-8 col-md-offset-2 col-xs-12\"><ol class=\"breadcrumb\"><li><a href=\"/\">PTT</a></li><li><a href=\"/board/$en_name/\">$en_name</a></li></ol><h3>".i18n($topic_title)."</h3></div>";
 if (false || !$is_loyal_user) {
 //	$html .= $google_320_100;
 //	$html .= $chitika_468_60;
 //	$html .= $bloggerads_banner;
-	$html .= $scupio_728_90;
+//	$html .= $scupio_728_90;
 //	$html .= "<p>$qadabra_728_90</p>";
 //	$html .= $infolinks;
 //	$html .= $qadabra_800_440_lightbox;
 //	$html .= $qadabra_160_600_left_slider;
 //	$html .= $qadabra_160_600_right_slider;
-	$html .= $revenuehits_popunder;
+//	$html .= $revenuehits_popunder;
 }
+$html .= "<div class=\"col-md-6 col-md-offset-2 col-xs-12\">";
 $floor = 1;
 foreach ($articles as $article) {
 	list($author, $time, $content, $attachments, $nick, $author_link) = $article;
@@ -101,24 +106,28 @@ foreach ($articles as $article) {
 			}
 		}
 	}
+	if ($floor == 1) {
+		$html .= '<div class="addthis_sharing_toolbox"></div>';
+	}
 	$html .= '</div>';
 	$html .= '</div>';
 	if (!$is_loyal_user) {
-		if ($floor == 1 || $floor == 2) {
+		if ($floor == 1 || $floor == 2 || $floor == 3) {
 			$html .= $scupio_728_90;
 		}
 		else if ($floor >= 3 && $floor <= 5) {
-			$html .= $sogou_760_90;
+			//$html .= $sogou_760_90;
 			//$html .= $av_show_468_60_1;
 			//$html .= $digitalpoint_468_60;
 			//$html .= $bloggerads_banner;
+			$html .= $xu9_980_90;
 		}
-		else if ($floor == 6) {
-			//$html .= $clicksor_728_90;
+		else if ($floor >= 6) {
+//			$html .= $lianmeng9_cpc_950_90;
 			$html .= $gg91_click;
 		}
 		else if ($floor >= 7 && $floor <= 9){
-			$html .= $ads360_960_90;
+//			$html .= $lianmeng9_cpv_950_90;
 		}
 	}
 	++$floor;
@@ -153,6 +162,15 @@ if (false || $is_spider) {
 if (false || $is_spider) {
 	$html .= get_old_ck101_topic_html();
 }
+$html .= '</div>';
+$html .= '<div class="col-md-2 hidden-xs hidden-sm">';
+//$jandan_pics = get_jandan_pics(rand(0, 1), $floor);
+$jandan_pics = get_jandan_pics(0, $floor > 10 ? 10 : $floor);
+foreach ($jandan_pics as $jandan_pic) {
+	list($id, $url, $width, $height) = $jandan_pic;
+	$html .= '<div class="row"><div class="thumbnail"><a href="'."/jd/0/$id".'"><img data-original="'.$url.'" class="img-responsive" /></a></div></div>';
+}
+$html .= '</div>';
 $html .= '<p><a href="/">PTT</a> <a href="/disp">disp</a></p></div>';
 //$html .= '<script type="text/javascript">var zx_aid = 1;var zx_uid = 10799;var zoneid = 11554;</script><script type="text/javascript" charset="utf-8" src="http://click.9cpc.com/view.js"></script>';
 

@@ -1,7 +1,4 @@
 <?php header("Content-type: text/html; charset=UTF-8");
-require("hm.php");
-$_hmt = new _HMT("3e35fb8628ca01f87b121531ca7e1371");
-$_hmtPixel = $_hmt->trackPageView();
 ?>
 <!DOCTYPE HTML>
 <html>
@@ -23,12 +20,13 @@ else {
 ?>
 </title>
 <link rel="stylesheet" href="http://cdn.bootcss.com/twitter-bootstrap/3.0.3/css/bootstrap.min.css">
-<link rel="stylesheet" href="<?echo $static_host;?>/css/jquery-ui.css">
-<script src="<?echo $static_host;?>/js/jquery.min.js"></script>
+<link rel="stylesheet" href="http://libs.useso.com/js/jqueryui/1.10.0/css/smoothness/jquery-ui-1.10.0.custom.min.css">
+<script src="http://libs.useso.com/js/jquery/2.1.1/jquery.min.js"></script>
 <script src="http://cdn.bootcss.com/twitter-bootstrap/3.0.3/js/bootstrap.min.js"></script>
-<script src="<?echo $static_host;?>/js/jquery-ui.js"></script>
-<script src="<?echo $static_host;?>/js/jquery.lazyload.min.js"></script>
-<script src="<?echo $static_host;?>/js/auto_complete.js?v=2"></script>
+<script src="http://libs.useso.com/js/jqueryui/1.10.4/jquery-ui.min.js"></script>
+<script src="http://libs.useso.com/js/jquery.lazyload/1.9.1/jquery.lazyload.min.js"></script>
+<script src="/js/auto_complete.js?v=2"></script>
+<meta name="applicable-device" content="pc,mobile">
 <meta name="baidu-site-verification" content="uo47eIda6W" />
 <meta property="qc:admins" content="2746676521624354063757" />
 <style>
@@ -39,9 +37,27 @@ if ($_SERVER['SCRIPT_NAME'] == '/index.php') {
 	echo '<base target="_blank" />';
 }
 ?>
+<script>
+var _hmt = _hmt || [];
+(function() {
+ var hm = document.createElement("script");
+ hm.src = "//hm.baidu.com/hm.js?2d58a718ed27960a97f3c1be42d842ff";
+ var s = document.getElementsByTagName("script")[0]; 
+ s.parentNode.insertBefore(hm, s);
+ })();
+</script>
+
 </head>
 <body>
-<script>  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');  ga('create', 'UA-17088225-4', 'ezptt.com');  ga('send', 'pageview');</script>
+<script type="text/javascript" src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-54c4990a04963235" async="async"></script>
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+ (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+ m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+ })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+ga('create', 'UA-17088225-6', 'auto');
+ga('send', 'pageview');
+</script>
 <div class="row">
 <div class="col-md-8 col-md-offset-2 col-xs-12">
 <nav class="navbar navbar-default" role="navigation">

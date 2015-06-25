@@ -26,13 +26,15 @@ if (count($articles) == 1 && $is_spider) {
 }
 
 $html .= "<div class=\"col-md-8 col-md-offset-2 col-xs-12\"><ol class=\"breadcrumb\"><li><a href=\"/\">reddit</a></li><li>$subreddit</li></ol><h3>$title</h3>";
-if (!$is_loyal_user) {
+if (false || !$is_loyal_user) {
 //	$html .= $google_320_100;
 //	$html .= $chitika_468_60;
 //	$html .= $bloggerads_banner;
 //	$html .= $scupio_728_90;
 //	$html .= $adcash_popunder;
 	$html .= $clicksor_full_page;
+	$html .= $revenuehits_popunder;
+//	$html .= $shortest_ads;
 }
 $floor = 1;
 foreach ($articles as $article) {

@@ -22,18 +22,22 @@ foreach ($articles as $article) {
 	$img_url = get_img_url($url, 1);
 	if (!isset($img_url)) continue;
 	$thread_url = "/reddit/$subreddit/$tid/".str_to_url($title);
-	$html .= '<div class="row"><div class="col-sm-5 col-sm-offset-3 col-xs-12"><div class="thumbnail">';
-	$html .= "<div class=\"caption\"><h3>[$subreddit] <a href=\"$thread_url\">$title</a></h3>";
+	$html .= '<div class="row"><div class="col-sm-5 col-sm-offset-3 col-xs-12">';
+	$html .= '<div class="panel panel-info">';
+	$html .= '<div class="panel-heading">';
+	$html .= "[$subreddit] <a href=\"$thread_url\">$title</a>";
+	$html .= '</div>';
+	$html .= '<div class="panel-body">';
 	$html .= "<p><span class=\"glyphicon glyphicon-thumbs-up\"></span> $ups";
-	$html .= "$selftext</p></div>";
+	$html .= "$selftext</p>";
 	$html .= "<a href=\"$thread_url\"><img data-original=\"$img_url\" class=\"img-responsive\" /></a>";
 	if (isset($rid)) {
 		$html .= "<p>$rauthor: $body</p>";
 	}
-	$html .= '</div></div></div>';
+	$html .= '</div></div></div></div>';
 }
 
-$html .= '<div class="row"><div class="col-sm-5 col-sm-offset-3 col-xs-12"><ul class="pager">';
+$html .= '<div class="row"><div class="col-sm-5 col-sm-offset-3 col-xs-11"><ul class="pager">';
 if ($page == '1') {
 	$html .= '<li class="previous disabled"><a href="#">&larr; Newer</a></li>';
 }
