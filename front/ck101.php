@@ -2,8 +2,11 @@
 require_once("init.php");
 $db_conn = conn_ck101_db();
 require_once("i18n.php");
+require_once("../Mobile-Detect/Mobile_Detect.php");
 $is_spider = is_spider();
 $is_from_search_engine = is_from_search_engine();
+$detect = new Mobile_Detect;
+$baidu_ad = $detect->isMobile() && !$detect->isTablet() ? $ucptt_mobile_native_pic : $ucptt_pc_native;
 $bid = (int)$_GET['bid'];
 $tid = (int)$_GET['tid'];
 $board_cn_name = execute_scalar("select cn_name from board where id = $bid");
@@ -37,8 +40,8 @@ if (!$is_loyal_user) {
 //	$html .= $chitika_468_60;
 //	$html .= $bloggerads_banner;
 //	$html .= $digitalpoint_468_60;
-	$html .= $scupio_728_90;
 //	$html .= $adcash_popunder;
+	$html .= $baidu_ad;
 }
 $floor = 1;
 foreach ($articles as $article) {
@@ -70,8 +73,9 @@ foreach ($articles as $article) {
 	$html .= '</div>';
 	$html .= '</div>';
 	if (!$is_loyal_user) {
-		if ($floor == 1 || $floor == 2) {
-			$html .= $scupio_728_90;
+		if (true || $floor == 1 || $floor == 2) {
+//			$html .= $scupio_728_90;
+			$html .= $baidu_ad;
 		}
 		else if ($floor == 3) {
 //			$html .= $bloggerads_banner;

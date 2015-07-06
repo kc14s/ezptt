@@ -21,7 +21,7 @@ while (list($title, $sn, $channel) = mysql_fetch_array($result)) {
 	$video = array($title, $sn, $channel);
 	$videos[] = $video;
 }
-$html = '<div class="row"><div class="col-md-8 col-md-offset-2 col-xs-10">';
+$html = '<div class="row"><div class="col-md-8 col-md-offset-2 col-xs-12">';
 $html .= '<div class="panel panel-info">';
 $html .= '<div class="panel-heading">'.i18n($group_name_key).'</div>';
 $html .= '<div class="panel-body">';

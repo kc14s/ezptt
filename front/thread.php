@@ -2,6 +2,7 @@
 require_once("init.php");
 $db_conn = conn_ezptt_db();
 require_once("i18n.php");
+require_once("../Mobile-Detect/Mobile_Detect.php");
 $is_spider = is_spider();
 $is_from_search_engine = is_from_search_engine();
 if ($ptt_allow == 0 && !$is_spider && !$is_from_search_engine) {
@@ -61,6 +62,8 @@ if (!$is_loyal_user && !$is_spider) {
 	$html .= $scupio_video_expand;
 }
 $html .= "<div class=\"col-md-8 col-md-offset-2 col-xs-12\"><ol class=\"breadcrumb\"><li><a href=\"/\">PTT</a></li><li><a href=\"/board/$en_name/\">$en_name</a></li></ol><h3>".i18n($topic_title)."</h3></div>";
+$detect = new Mobile_Detect;
+$baidu_ad = $detect->isMobile() && !$detect->isTablet() ? $ucptt_mobile_native_pic : $ucptt_pc_native;
 if (false || !$is_loyal_user) {
 //	$html .= $google_320_100;
 //	$html .= $chitika_468_60;
@@ -72,6 +75,7 @@ if (false || !$is_loyal_user) {
 //	$html .= $qadabra_160_600_left_slider;
 //	$html .= $qadabra_160_600_right_slider;
 //	$html .= $revenuehits_popunder;
+	$html .= $baidu_ad;
 }
 $html .= "<div class=\"col-md-6 col-md-offset-2 col-xs-12\">";
 $floor = 1;
@@ -112,8 +116,8 @@ foreach ($articles as $article) {
 	$html .= '</div>';
 	$html .= '</div>';
 	if (!$is_loyal_user) {
-		if ($floor == 1 || $floor == 2 || $floor == 3) {
-			$html .= $scupio_728_90;
+		if (true || $floor == 1 || $floor == 2 || $floor == 3) {
+			$html .= $baidu_ad;
 		}
 		else if ($floor >= 3 && $floor <= 5) {
 			//$html .= $sogou_760_90;
@@ -127,6 +131,7 @@ foreach ($articles as $article) {
 			$html .= $gg91_click;
 		}
 		else if ($floor >= 7 && $floor <= 9){
+			$html .= $scupio_728_90;
 //			$html .= $lianmeng9_cpv_950_90;
 		}
 	}

@@ -1,6 +1,6 @@
 <?
 foreach (array_values($_REQUEST) as $v) {
-	if (strpos($v, ' ') !== false || strpos($v, '/') !== false || strpos($v, '*') !== false || strpos($v, "\t") !== false) {
+	if (strpos($v, '/') !== false || strpos($v, '*') !== false || strpos($v, "\t") !== false) {
 		header('HTTP/1.0 403 Forbidden');
 		exit;
 	}

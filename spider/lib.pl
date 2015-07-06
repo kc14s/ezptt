@@ -65,7 +65,7 @@ sub get_url {
 			load_proxy();
 		}
 		$proxy_idx = int(rand(scalar @proxies));
-		if (index($url, 'disp.cc') > 0) {
+		if (1 && index($url, 'disp.cc') > 0) {
 			$ua->proxy('http', "http://".$proxies[$proxy_idx]);
 		}
 		my $request = HTTP::Request->new(GET=>$url);

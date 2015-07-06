@@ -82,10 +82,12 @@ ga('send', 'pageview');
 <button type="button" class="btn btn-default dropdown-toggle navbar-btn" data-toggle="dropdown">
 <? echo i18n('xuanzeyuyan')?><span class="caret"></span>
 </button>
+<? if (!$is_spider) { ?>
 <ul class="dropdown-menu" role="menu">
 <li><a href="http://www.ucptt.com<? echo $_SERVER['REQUEST_URI']; ?>">正體中文</a></li>
 <li><a href="http://cn.ucptt.com<? echo $_SERVER['REQUEST_URI']; ?>">简体中文</a></li>
 </ul>
+<? } ?>
 </div>
 </div>
 </nav>

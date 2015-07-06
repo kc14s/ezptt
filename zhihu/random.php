@@ -11,6 +11,7 @@ $char = 'h';
 if (isset($_GET['reply']) && $_GET['reply'] == 1) $char = 'r';
 else if (isset($_GET['good']) && $_GET['good'] == 1) $char = 's';
 else if (isset($_GET['hot']) && $_GET['hot'] == 1) $char = 'h';
+else if (isset($_GET['pic']) && $_GET['pic'] == 1) $char = 'p';
 header("Location: /${char}before/$ts", true, 302);
 ?>
 
