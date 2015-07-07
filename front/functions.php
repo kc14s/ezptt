@@ -206,6 +206,9 @@ function is_loyal_user() {
 	global $is_from_search_engine;
 	$loyal_user_uris = array(
 	'/' => 1,
+	'/hot/' => 1,
+	'/pic/' => 1,
+	'/comment/' => 1,
 	'/author.php' => 1,
 	'/user.php' => 1,
 	'/disp.php' => 1
@@ -229,6 +232,10 @@ function is_loyal_user() {
 //		error_log('not loyal');
 	}
 	return $is_loyal;
+}
+
+function set_loyal_user() {
+	setcookie('is_loyal', $is_loyal, time() + 3600 * 24 * 365, '/');
 }
 
 function get_old_ck101_topic_html() {

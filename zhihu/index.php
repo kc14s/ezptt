@@ -5,6 +5,7 @@ $page = 1;
 $db_conn = conn_db();
 mysql_select_db('zhihu', $db_conn);
 mysql_query('set names utf8');
+set_loyal_user();
 
 $condition = '';
 if (isset($_GET['before'])) {

@@ -58,35 +58,36 @@ sub get_zhihu_questions {
         my $time = time();
 	my $now = time();
         my %questions;
-        while (1) {
-                my %form = (
-                                start => 0,
-                                offset => $time.'.0',
-                                _xsrf => '777e3e3c5616ac059706b4d409203647'
-                           );
-                my $html = post_url($url, \%form);
-		if (index($html, '{') != 0) {
-			print "skip malformed json\n$html\n";
-			sleep(60);
-			next;
-		}
-                my $json = $json_parser->decode($html);
-                my @arr = split('http://schema.org/Question', $json->{'msg'}->[1]);
-                foreach my $item (@arr) {
-                        $time = $1 if ($item =~ /data-timestamp="(\d+?)000"/ && $time > $1);
-#                        my ($sb_id, $sb_name) = (0, '');
-#                        ($sb_id, $sb_name) = ($1, $2) if ($item =~ /href="\/topic\/(\d+)">([\d\D]+?)<\/a>/);
-                        my ($qid, $title) = ($1, $2) if ($item =~ / href="\/question\/(\d+)">([\d\D]+?)<\/a>/);
-                        next if (!defined($qid));
-			my $author = $1 if ($item =~ /href="\/people\/.+?">([\d\D]+?)<\/a>/);
-						if (!defined($author)) {
-							print "question id $qid author not found\n";
-						}
-                        print "question\t$time\t$sbid\t$sb_name\t$qid\t$author\t$title\n";
-                        $questions{$qid} = [$board_id, $board_name, $sbid, $sb_name, $time, $qid, $title];
-                }
-                last if (@arr < 20);
-                last if ($now - $time > 60 * 60 * 24 * 2);
+		while (1) {
+			my %form = (
+				start => 0,
+				offset => $time.'.0',
+				_xsrf => '777e3e3c5616ac059706b4d409203647'
+		   );
+			my $html = post_url($url, \%form);
+			if (index($html, '{') != 0) {
+				print "skip malformed json\n$html\n";
+				sleep(60);
+				next;
+			}
+			my $json = $json_parser->decode($html);
+			my @arr = split('http://schema.org/Question', $json->{'msg'}->[1]);
+			foreach my $item (@arr) {
+				$time = $1 if ($item =~ /data-timestamp="(\d+?)000"/ && $time > $1);
+#               my ($sb_id, $sb_name) = (0, '');
+#               ($sb_id, $sb_name) = ($1, $2) if ($item =~ /href="\/topic\/(\d+)">([\d\D]+?)<\/a>/);
+				my ($qid, $title) = ($1, $2) if ($item =~ / href="\/question\/(\d+)">([\d\D]+?)<\/a>/);
+				next if (!defined($qid));
+				my $author = $1 if ($item =~ /href="\/people\/.+?">([\d\D]+?)<\/a>/);
+				if (!defined($author)) {
+#					print "question id $qid author not found\n";
+					$author = '';
+				}
+				print "question\t$time\t$sbid\t$sb_name\t$qid\t$author\t$title\n";
+				$questions{$qid} = [$board_id, $board_name, $sbid, $sb_name, $time, $qid, $title];
+			}
+			last if (@arr < 20);
+			last if ($now - $time > 60 * 60 * 24 * 2);
 #		last;
         }
         return \%questions;
@@ -125,7 +126,7 @@ sub get_zhihu_question {
 #       print "question $q_title $q_content\n";
 #	$q_title = decode('Guess', $q_title);
 #	$q_content = decode('Guess', $q_content);
-       	print "question $q_title $q_content\n";
+# 	print "question $q_title $q_content\n";
 #	my $sql = 
 	$db_conn->do("replace into question(qid, bid, sbid, title, content) values($qid, $board_id, $sb_id, ".add_slashes($q_title).", ".add_slashes($q_content).")");
 #	$db_conn->do("replace into question(qid, bid, sbid, title, content) values($qid, $board_id, $sb_id, '$q_title', '$q_content')");
@@ -165,7 +166,8 @@ sub get_zhihu_question {
 		if (execute_scalar("select count(*) from answer where aid = $aid") == 0) {
                 	$db_conn->do("insert into answer(aid, bid, sbid, qid, ups, author, nick, pub_time, content, good, hot, pic) values($aid, $board_id, $sb_id, $qid, $ups, ".add_slashes($author).", ".add_slashes($nick).", '$pub_time', ".add_slashes($content).", $good, $hot, $pic)");
 		}
-                print "answer\t$aid $ups $comment_num $author $nick $pub_time ".substr($content, 0, 20)."\n";
+                #print "answer\t$aid $ups $comment_num $author $nick $pub_time ".substr($content, 0, 20)."\n";
+                print "answer\t$aid $ups $comment_num $author $nick $pub_time\n";
 #               print "item $item\n";
 #               exit;
                 next if ($comment_num == 0);
@@ -203,7 +205,7 @@ sub get_zhihu_question {
 				$comment_date = get_date_str(0);
 			}
 #                       next if (execute_scalar("select count(*) from comment where cid = $comment_id") > 0);
-                        print "comment $comment_id $commenter $comment_ups $comment_date $comment_content\n";
+                        print "comment $comment_id $commenter $comment_ups $comment_date\n";
 #                       print $comment;
 #                       exit;
 			if (execute_scalar("select count(*) from comment where cid = $comment_id") == 0) {

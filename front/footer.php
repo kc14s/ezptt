@@ -19,14 +19,14 @@ $("img").load(function(){
 if (false || !$is_loyal_user) {
 //	echo $adcash_popunder;
 //	echo $clicksor_full_page;
-//	echo $ads360_320_270;
+	echo $ads360_320_270;
 	echo $ads360_popup;
-//	echo $gg91_popup;
-//	echo $gg91_richmedia;
+	echo $gg91_popup;
+	echo $gg91_richmedia;
 //	echo $revenuehits_popunder;
-	//echo $v9_popup;
-//	echo $v9_richmedia;
-//	echo $r181_popup;
+	echo $v9_popup;
+	echo $v9_richmedia;
+	echo $r181_popup;
 //	echo $lianmeng9_popup;
 //	echo $lianmeng9_couplet;
 #	echo $shortest_ads;
