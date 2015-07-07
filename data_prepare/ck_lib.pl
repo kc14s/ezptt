@@ -11,7 +11,7 @@ sub get_ck_boards {
 		print "$1 $2\n";
 	}
 	my %boards;
-	while ($html =~ /<div class="forumList([\d\D]+?)<\/div>/g) {
+	while ($html =~ /<ul class="f\w+">([\d\D]+?)<\/ul>/g) {
 		my $board_group_html = $1;
 		if ($board_group_html =~ /<h2>([\d\D]+?)<\/h2>/) {
 			if ($1 =~ /title="([\d\D]+?)"/) {
@@ -62,13 +62,16 @@ sub get_ck_topics {
 		while ($html =~ /<tbody id="normalthread_(\d+)"([\d\D]+?)<\/tbody>/g) {
 			my ($tid, $span) = ($1, $2);
 			my ($author, $pub_time, $title);
-			if ($span =~ /ck101\.com\/space-uid-\d+.html" c="1">([\d\D]+?)<\/a><\/cite>/) {
+			if ($span =~ /ck101\.com\/space-uid-\d+.html"\s*>([\d\D]+?)<\/a><\/cite>/) {
 				$author = $1;
 			}
-			if ($span =~ /([\d\-\s:]+)<\/span><\/em>/) {
+			if ($span =~ /<\/cite>\s*<span>([\d\-\s:]+)<\/span>/) {
 				$pub_time = "$1:00";
 			}
-			if ($span =~ /ck101\.com\/thread-\d+-1-1.html'\);atarget\(this\);" class="s xst"><h2>([\d\D]+?)<\/h2>/g) {
+			if (!defined($pub_time)) {
+				$pub_time = "$1:00" if ($span =~ /<span class="xi1">([\d\-\s:]+)<\span>/)
+			}
+			if ($span =~ /<h2>([\d\D]+?)<\/h2>/g) {
 				$title = $1;
 			}
 			if (!defined($author) || !defined($pub_time) || !defined($title)) {
@@ -103,14 +106,14 @@ sub download_ck_topics {
 			my ($aid, $author, $pub_time, $content);
 #			$aid = $1 if ($span =~ /<table id="pid(\d+)" class="plhin"/);
 			$aid = $1 if ($span =~ /div id="favatar(\d+)/);
-			$author = $1 if (!defined($author) && $span =~ /title="([^"]+?)" class="xw1 xi2"/);
+			$author = $1 if (!defined($author) && $span =~ /title="([^"]+?)"\s+class="authorName"/);
 			if (!defined($author)) {
 				$author = $1 if ($span =~ /<div class="pi">\s*([\d\D]+?)\s*<em>該用戶已被刪除<\/em>/);
 			}
 			if (!defined($author)) {
 				$author = '';
 			}
-			$pub_time = $1 if ($span =~ /發表於 ([\d\-\s:]+)<\/em>/);
+			$pub_time = $1 if ($span =~ /class="postDateLine">([\d\-\s:]+)<\/span>/);
 			if (!defined($pub_time)) {
 				if (@articles > 0) {
 					$pub_time = $articles[@articles - 1]->[2];

@@ -79,6 +79,9 @@ sub get_zhihu_questions {
                         my ($qid, $title) = ($1, $2) if ($item =~ / href="\/question\/(\d+)">([\d\D]+?)<\/a>/);
                         next if (!defined($qid));
 			my $author = $1 if ($item =~ /href="\/people\/.+?">([\d\D]+?)<\/a>/);
+						if (!defined($author)) {
+							print "question id $qid author not found\n";
+						}
                         print "question\t$time\t$sbid\t$sb_name\t$qid\t$author\t$title\n";
                         $questions{$qid} = [$board_id, $board_name, $sbid, $sb_name, $time, $qid, $title];
                 }

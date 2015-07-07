@@ -7,7 +7,7 @@ function process_answer_content($content, $aid) {
 	$content = str_replace('<div class="fixed-summary-mask">', '', $content);
 	$content = preg_replace('/<img [^>]+?src="\/\/.+?>/', '', $content);
 	$content = str_replace('<noscript>', '', $content);
-	$content = str_replace('</noscript>', '', $content);
+	$content = preg_replace('/[^>]*?<\/noscript>/', '', $content);
 	$content = preg_replace('/pic\d+.zhimg.com/', 'image.duanzhihu.com', $content);
 	if (!$is_spider && ($type == 'hot' || $type == 'reply')) {
 		if (mb_strlen($content, 'utf8') > 140) {

@@ -3,7 +3,12 @@ require_once("init.php");
 require_once("zhihu_lib.php");
 $is_spider = is_spider();
 $is_from_search_engine = is_from_search_engine();
-
+if (!$is_loyal_user) {
+	require_once('ads.php');
+	require_once("../Mobile-Detect/Mobile_Detect.php");
+	$detect = new Mobile_Detect;
+	$baidu_ad = $detect->isMobile() && !$detect->isTablet() ? $baidu_zhihu_mobile_native_pic : $baidu_zhihu_pc_native;
+}
 $aid = $_GET['aid'];
 $db_conn = conn_db();
 mysql_select_db('zhihu', $db_conn);
@@ -74,7 +79,8 @@ foreach ($articles as $article) {
 		$html .= '</div>';
 	}
 	if (!$is_loyal_user) {
-		if ($floor == 1 || $floor == 2) {
+		if (true || $floor == 1 || $floor == 2) {
+			$html .= $baidu_ad;
 //			$html .= $scupio_728_90;
 		}
 		else if ($floor == 3) {
