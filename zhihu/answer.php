@@ -96,7 +96,13 @@ foreach ($articles as $article) {
 				list($other_aid, $other_author, $other_ups, $other_content) = $other_answer;
 				if ($aid == $other_aid) continue;
 				$other_content = mb_substr(strip_tags($other_content), 0, 70, 'utf-8');
-				$html .= "<a href=\"/answer/$other_aid\" class=\"list-group-item\">$other_author：$other_content<span class=\"pull-right\"><span class=\"glyphicon glyphicon-thumbs-up\"></span> $other_ups</span></a>";
+				if (isset($other_author) && $other_author != '') {
+					$other_author .= '：';
+				}
+				else {
+					$other_author = '';
+				}
+				$html .= "<a href=\"/answer/$other_aid\" class=\"list-group-item\">$other_author$other_content<span class=\"pull-right\"><span class=\"glyphicon glyphicon-thumbs-up\"></span> $other_ups</span></a>";
 			}
 			$html .= '</div></div>';
 		}

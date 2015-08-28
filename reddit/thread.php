@@ -4,6 +4,7 @@ require_once("reddit_lib.php");
 $is_spider = is_spider();
 $is_from_search_engine = is_from_search_engine();
 
+$html = '';
 $subreddit = $_GET['subreddit'];
 $id = (int)$_GET['id'];
 $db_conn = conn_reddit_db();
@@ -19,7 +20,7 @@ while(list($author, $ups, $body, $created) = mysql_fetch_array($result)) {
 	if ($is_spider) {
 		$created = date("Y-m-d").substr($created, 10);
 	}
-	$articles[] = array($author, $ups, $body, $created);
+	$articles[] = array($author, $ups, $body, $created, '', '');
 }
 if (count($articles) == 1 && $is_spider) {
 	$articles[] = $articles[0];
@@ -46,7 +47,7 @@ foreach ($articles as $article) {
 	$html .= "<span class=\"pull-right\">$created</span>";
 	$html .= '</div>';
 	$html .= '<div class="panel-body">';
-	if (isset($domain)) {
+	if (isset($domain) && $domain != '') {
 		if ($domain == 'i.imgur.com') {
 			$img_url = $url;
 		}

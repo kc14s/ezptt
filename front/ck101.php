@@ -6,7 +6,7 @@ require_once("../Mobile-Detect/Mobile_Detect.php");
 $is_spider = is_spider();
 $is_from_search_engine = is_from_search_engine();
 $detect = new Mobile_Detect;
-$baidu_ad = $detect->isMobile() && !$detect->isTablet() ? $ucptt_mobile_native_pic : $ucptt_pc_native;
+$baidu_ad = $detect->isMobile() && !$detect->isTablet() ? $baidu_ucptt_mobile_6_5 : $baidu_ucptt_pc_960_90;
 $bid = (int)$_GET['bid'];
 $tid = (int)$_GET['tid'];
 $board_cn_name = execute_scalar("select cn_name from board where id = $bid");
@@ -14,8 +14,9 @@ list($title, $author) = execute_vector("select title, author from topic where ti
 $title = i18n($title);
 $topic_title = $title;
 $html_title = "$title $author";
+$html = '';
 $lz = $author;
-$topic_pub_time = $pub_time;
+$topic_pub_time = isset($pub_time) ? $pub_time : '';
 $result = mysql_query("select author, pub_time, content from article where tid = $tid order by aid");
 while(list($author, $pub_time, $content) = mysql_fetch_array($result)) {
 	$articles[] = array($author, $pub_time, $content, get_author_link($author));

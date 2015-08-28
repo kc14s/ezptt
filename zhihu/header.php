@@ -7,6 +7,7 @@
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
 <meta name="applicable-device" content="pc,mobile" />
+<meta name="baidu-site-verification" content="EviUseUxzL" />
 <title>
 <?php
 if (isset($html_title)) {

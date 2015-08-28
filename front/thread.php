@@ -9,6 +9,7 @@ if ($ptt_allow == 0 && !$is_spider && !$is_from_search_engine) {
 	header('HTTP/1.1 404 Not Found');
 	exit();
 }
+$html = '';
 $en_name = $_GET['en_name'];
 $tid1 = (int)$_GET['tid1'];
 $tid2 = $_GET['tid2'];
@@ -63,19 +64,19 @@ if (!$is_loyal_user && !$is_spider) {
 }
 $html .= "<div class=\"col-md-8 col-md-offset-2 col-xs-12\"><ol class=\"breadcrumb\"><li><a href=\"/\">PTT</a></li><li><a href=\"/board/$en_name/\">$en_name</a></li></ol><h3>".i18n($topic_title)."</h3></div>";
 $detect = new Mobile_Detect;
-$baidu_ad = $detect->isMobile() && !$detect->isTablet() ? $ucptt_mobile_native_pic : $ucptt_pc_native;
+$baidu_ad = $detect->isMobile() && !$detect->isTablet() ? $baidu_ucptt_mobile_6_5 : $baidu_ucptt_pc_960_90;
 if (false || !$is_loyal_user) {
 //	$html .= $google_320_100;
 //	$html .= $chitika_468_60;
 //	$html .= $bloggerads_banner;
-//	$html .= $scupio_728_90;
+	$html .= $scupio_728_90;
 //	$html .= "<p>$qadabra_728_90</p>";
 //	$html .= $infolinks;
 //	$html .= $qadabra_800_440_lightbox;
 //	$html .= $qadabra_160_600_left_slider;
 //	$html .= $qadabra_160_600_right_slider;
 //	$html .= $revenuehits_popunder;
-	$html .= $baidu_ad;
+//	$html .= $baidu_ad;
 }
 $html .= "<div class=\"col-md-6 col-md-offset-2 col-xs-12\">";
 $floor = 1;
@@ -116,23 +117,23 @@ foreach ($articles as $article) {
 	$html .= '</div>';
 	$html .= '</div>';
 	if (!$is_loyal_user) {
-		if (true || $floor == 1 || $floor == 2 || $floor == 3) {
-			$html .= $baidu_ad;
+		if (false || $floor == 1 || $floor == 2 || $floor == 3) {
+			$html .= $scupio_728_90;
 		}
 		else if ($floor >= 3 && $floor <= 5) {
+			$html .= $baidu_ad;
 			//$html .= $sogou_760_90;
 			//$html .= $av_show_468_60_1;
 			//$html .= $digitalpoint_468_60;
 			//$html .= $bloggerads_banner;
-			$html .= $xu9_980_90;
 		}
 		else if ($floor >= 6) {
 //			$html .= $lianmeng9_cpc_950_90;
 			$html .= $gg91_click;
 		}
 		else if ($floor >= 7 && $floor <= 9){
-			$html .= $scupio_728_90;
 //			$html .= $lianmeng9_cpv_950_90;
+//			$html .= $xu9_980_90;
 		}
 	}
 	++$floor;

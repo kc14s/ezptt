@@ -154,8 +154,8 @@ sub get_zhihu_question {
 			$content = $1 if ($item =~ /<div class="fixed-summary zm-editable-content clearfix">\s*([\d\D]+?)\s*<\div>/);
 			$content =~ s/<div class="fixed-summary-mask">//;
 		}
-                my $comment_num = 0;
-                $comment_num = $1 if ($item =~ /<i class="z-icon-comment"><\/i>(\d+)/);
+		my $comment_num = 0;
+		$comment_num = $1 if ($item =~ /<i class="z-icon-comment"><\/i>(\d+)/);
 		$author = decode('utf8', $author);
 		$nick = decode('utf8', $nick);
 		$content = decode('utf8', $content);
@@ -164,16 +164,19 @@ sub get_zhihu_question {
 		my $good = is_good_answer($content, $ups);
 		my $hot = ($ups >= 50 ? 1 : 0);
 		if (execute_scalar("select count(*) from answer where aid = $aid") == 0) {
-                	$db_conn->do("insert into answer(aid, bid, sbid, qid, ups, author, nick, pub_time, content, good, hot, pic) values($aid, $board_id, $sb_id, $qid, $ups, ".add_slashes($author).", ".add_slashes($nick).", '$pub_time', ".add_slashes($content).", $good, $hot, $pic)");
+				$db_conn->do("insert into answer(aid, bid, sbid, qid, ups, author, nick, pub_time, content, good, hot, pic) values($aid, $board_id, $sb_id, $qid, $ups, ".add_slashes($author).", ".add_slashes($nick).", '$pub_time', ".add_slashes($content).", $good, $hot, $pic)");
 		}
-                #print "answer\t$aid $ups $comment_num $author $nick $pub_time ".substr($content, 0, 20)."\n";
-                print "answer\t$aid $ups $comment_num $author $nick $pub_time\n";
+		else {
+			$db_conn->do("update answer set ups = $ups, content = ".add_slashes($content).", ups = $ups, good = $good, hot = $hot, pic = $pic where aid = $aid");
+		}
+#print "answer\t$aid $ups $comment_num $author $nick $pub_time ".substr($content, 0, 20)."\n";
+		print "answer\t$aid $ups $comment_num $author $nick $pub_time\n";
 #               print "item $item\n";
 #               exit;
-                next if ($comment_num == 0);
+		next if ($comment_num == 0);
 		next if (execute_scalar("select count(*) from comment where aid = $aid") >= $comment_num);
-                my $comment_url = "http://www.zhihu.com/node/AnswerCommentListV2?params=%7B%22answer_id%22%3A%22$aid%22%7D";
-                my $comment_html = get_url($comment_url);
+		my $comment_url = "http://www.zhihu.com/node/AnswerCommentListV2?params=%7B%22answer_id%22%3A%22$aid%22%7D";
+		my $comment_html = get_url($comment_url);
 #               print $comment_html;
 #               next;
 		my $comment_ups_max = 0;
@@ -210,6 +213,9 @@ sub get_zhihu_question {
 #                       exit;
 			if (execute_scalar("select count(*) from comment where cid = $comment_id") == 0) {
                         	$db_conn->do("insert into comment(cid, aid, author, ups, pub_date, content) values($comment_id, $aid, ".add_slashes($commenter).", $comment_ups, '$comment_date', ".add_slashes($comment_content).")");
+			}
+			else {
+				$db_conn->do("update comment set ups = $comment_ups where cid = $comment_id");
 			}
                 }
 		my $reply = ($ups >= 30 && $comment_ups_max * 2 >= $ups && $best_comment_length < 140) ? 1 : 0;

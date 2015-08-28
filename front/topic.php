@@ -11,7 +11,7 @@ if ($ptt_allow == 0 && !$is_spider && !$is_from_search_engine) {
 	exit();
 }
 $detect = new Mobile_Detect;
-$baidu_ad = $detect->isMobile() && !$detect->isTablet() ? $ucptt_mobile_native_pic : $ucptt_pc_native;
+$baidu_ad = $detect->isMobile() && !$detect->isTablet() ? $baidu_ucptt_mobile_6_5 : $baidu_ucptt_pc_960_90;
 $bid = (int)$_GET['bid'];
 $tid = $_GET['tid'];
 $en_name = execute_scalar("select en_name from board where id = $bid");
@@ -65,7 +65,12 @@ foreach ($articles as $article) {
 	}
 	$html .= '</div>';
 	$html .= '</div>';
-	$html .= $baidu_ad;
+	if ($floor <= 3) {
+		$html .= $scupio_728_90;
+	}
+	else {
+		$html .= $baidu_ad;
+	}
 	++$floor;
 }
 if (isset($prev_topics)) {

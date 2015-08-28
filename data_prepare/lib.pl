@@ -371,12 +371,31 @@ my %blocked_users = (
 'stu85162' => 0,
 'xxxiiixxx' => 0,
 'lot' => 0,
-'' => 0,
-'' => 0,
-'' => 0,
-'' => 0,
-'' => 0,
-'' => 0,
+'w0919n' => 0,
+'openfor75' => 0,
+'JhihChao' => 0,
+'JSON' => 0,
+'Minusheart' => 0,
+'keyboard22k' => 0,
+'zhanren' => 0,
+'viviru' => 0,
+'AVIDITY' => 0,
+'katy0507' => 0,
+'wish15150507' => 0,
+'gn00363899' => 0,
+'ysl325' => 0,
+'JIE8' => 0,
+'pc010710' => 0,
+'shwpdbg' => 0,
+'fantasychiu' => 0,
+'samolin' => 0,
+'pain99' => 0,
+'wewe2152155' => 0,
+'zixer' => 0,
+'Autherape' => 0,
+'angelatim' => 0,
+'k40711abc' => 0,
+'chachaer' => 0,
 '' => 0,
 '' => 0,
 '' => 0,
@@ -408,7 +427,8 @@ sub download_topic {
 		$nick = '';
 		print STDERR "parse user failed\t$url\n";
 	}
-	if (defined($blocked_users{$user})) {
+	if (execute_scalar("select count(*) from blocked_user where user_id = '$user'") > 0) {
+#	if (defined($blocked_users{$user})) {
 		print "blocked user $user\n";
 		return;
 	}

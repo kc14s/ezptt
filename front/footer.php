@@ -42,6 +42,6 @@ if ($is_spider) {
     echo '<p class="text-center"><a href="http://www.btsmth.org/">水木清华社区</a> <a href="http://www.ucptt.com/">ptt</a> <a href="http://www.jporndb.com/">japan av porn</a> <a href="http://www.redditfun.com/">reddit</a> <a href="http://www.duanzhihu.com/">短知乎</a></p>';
 }
 ?>
-<p class="text-center">Links <a href="http://www.duanzhihu.com/">短知乎</a> <a href="http://www.redditfun.com/">reddit fun</a> <a href="http://booklink.me/">booklink</a><img width="0" height="0" src="/pb.gif?ts=<?echo time();?>"></p>
+<p class="text-center">Links <a href="http://www.duanzhihu.com/">短知乎</a> <a href="http://www.redditfun.com/">reddit fun</a> <a href="http://booklink.me/">booklink</a></p>
 <p class="text-center">Contact Us: admin [ a t ] ucptt.com</p>
 </body></html>
