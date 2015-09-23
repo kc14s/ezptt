@@ -169,14 +169,16 @@ if (false || $is_spider) {
 	$html .= get_old_ck101_topic_html();
 }
 $html .= '</div>';
-$html .= '<div class="col-md-2 hidden-xs hidden-sm">';
-//$jandan_pics = get_jandan_pics(rand(0, 1), $floor);
-$jandan_pics = get_jandan_pics(0, $floor > 10 ? 10 : $floor);
-foreach ($jandan_pics as $jandan_pic) {
-	list($id, $url, $width, $height) = $jandan_pic;
-	$html .= '<div class="row"><div class="thumbnail"><a href="'."/jd/0/$id".'"><img data-original="'.$url.'" class="img-responsive" /></a></div></div>';
+if (!$is_loyal_user) {
+	$html .= '<div class="col-md-2 hidden-xs hidden-sm">';
+	//$jandan_pics = get_jandan_pics(rand(0, 1), $floor);
+	$jandan_pics = get_jandan_pics(0, $floor > 10 ? 10 : $floor);
+	foreach ($jandan_pics as $jandan_pic) {
+		list($id, $url, $width, $height) = $jandan_pic;
+		$html .= '<div class="row"><div class="thumbnail"><a href="'."/jd/0/$id".'"><img data-original="'.$url.'" class="img-responsive" /></a></div></div>';
+	}
+	$html .= '</div>';
 }
-$html .= '</div>';
 $html .= '<p><a href="/">PTT</a> <a href="/disp">disp</a></p></div>';
 //$html .= '<script type="text/javascript">var zx_aid = 1;var zx_uid = 10799;var zoneid = 11554;</script><script type="text/javascript" charset="utf-8" src="http://click.9cpc.com/view.js"></script>';
 

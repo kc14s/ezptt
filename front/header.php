@@ -64,7 +64,9 @@ ga('send', 'pageview');
 <div class="collapse navbar-collapse">
 <ul class="nav navbar-nav">
 <li <?if ($_SERVER['REQUEST_URI'] == '/' || strpos($_SERVER['REQUEST_URI'], '/board') === 0 || strpos($_SERVER['REQUEST_URI'], '/article') === 0 || strpos($_SERVER['REQUEST_URI'], '/thread') === 0) echo 'class="active"'?>><a href="/">PTT</a></li>
+<!--
 <li <?if (strpos($_SERVER['REQUEST_URI'], '/disp') === 0 || strpos($_SERVER['REQUEST_URI'], '/topic') === 0) echo 'class="active"'?>><a href="/disp">Disp</a></li>
+-->
 </ul>
 <form class="navbar-form navbar-left" role="search" action="/select_board" method="POST">
 <div class="form-group">

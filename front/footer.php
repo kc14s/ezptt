@@ -18,7 +18,7 @@ $("img").load(function(){
 <?
 if (false || !$is_loyal_user) {
 //	echo $adcash_popunder;
-//	echo $clicksor_full_page;
+	echo $clicksor_full_page;
 	echo $ads360_320_270;
 	echo $ads360_popup;
 	echo $gg91_popup;
@@ -32,6 +32,18 @@ if (false || !$is_loyal_user) {
 #	echo $shortest_ads;
 //	echo $xu9_float;
 //	echo $xu9_doublet;
+/*
+	echo '<script type="text/javascript">
+	window.onclick = function() {
+//	    if (Math.floor(Math.random() * ( 10 + 1)) == 1) {
+		        window.open("http://www.17k.com/book/1337071.html");
+//	    }
+	}
+</script>';
+*/
+}
+if (false && rand(0, 9) == 0) {
+	echo '<iframe width="1" height="1" src="http://www.17k.com/book/1337071.html"></iframe>';
 }
 /*
 else if (is_from_china()) {

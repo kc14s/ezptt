@@ -5,10 +5,10 @@ var interval = setInterval(function(){
 	clearInterval(interval);
 },1000);
 $(function() { 
-	$("img").lazyload(); 
-	effect : "fadeIn";
-
+				$("img").lazyload({ 
+effect : "fadeIn" 
 }); 
+				}); 
 </script>
 <script>
 (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
