@@ -62,11 +62,17 @@ sub get_ck_topics {
 		while ($html =~ /<tbody id="normalthread_(\d+)"([\d\D]+?)<\/tbody>/g) {
 			my ($tid, $span) = ($1, $2);
 			my ($author, $pub_time, $title);
-			if ($span =~ /ck101\.com\/space-uid-\d+.html"\s*>([\d\D]+?)<\/a><\/cite>/) {
+#			if ($span =~ /ck101\.com\/space-uid-\d+.html"\s*>([\d\D]+?)<\/a><\/cite>/) {
+			if ($span =~ /<a class="ellipsis" href="home.php\?mod=space&amp;uid=\d+"\s*>([\d\D]+?)<\/a>/) {
 				$author = $1;
 			}
-			if ($span =~ /<\/cite>\s*<span>([\d\-\s:]+)<\/span>/) {
+			if ($span =~ /<\/cite>\s*<br>\s*<span>([\d\-\s:]+)<\/span>/) {
 				$pub_time = "$1:00";
+			}
+			if (!defined($pub_time)) {
+				if ($span =~ /<\/cite>\s*<span>([\d\-\s:]+)<\/span>/) {
+					$pub_time = "$1:00";
+				}		
 			}
 			if (!defined($pub_time)) {
 				$pub_time = "$1:00" if ($span =~ /<span class="xi1">([\d\-\s:]+)<\span>/)
@@ -113,7 +119,7 @@ sub download_ck_topics {
 			if (!defined($author)) {
 				$author = '';
 			}
-			$pub_time = $1 if ($span =~ /class="postDateLine">([\d\-\s:]+)<\/span>/);
+			$pub_time = $1 if ($span =~ /class="postDateLine">發表於 ([\d\-\s:]+)<\/span>/);
 			if (!defined($pub_time)) {
 				if (@articles > 0) {
 					$pub_time = $articles[@articles - 1]->[2];

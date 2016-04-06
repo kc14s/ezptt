@@ -383,7 +383,7 @@ function get_ck101_board_random_topic($bid) {
 	global $sub_domain;
 	list($tid_min, $tid_max) = execute_vector("select min(tid), max(tid) from ck101.topic where bid = $bid");
 	$random_tid = rand($tid_min, $tid_max);
-	$result = mysql_query("select tid, title, author from ck101.topic where bid = $bid and tid <= $random_tid order by tid desc limit 20");
+	$result = mysql_query("select tid, title, author from ck101.topic where bid = $bid and tid <= $random_tid order by tid desc limit 6");
 	$html = '<div class="panel panel-default"><div class="panel-heading">'.i18n('chengrenwenxue').'</div>';
 	$html .= '<div class="list-group">';
 	while (list($tid, $title, $author) = mysql_fetch_array($result)) {
@@ -400,6 +400,7 @@ function get_ck101_board_random_topic($bid) {
 }
 
 function is_from_china() {
+//	return false;
 	$ip = $_SERVER['REMOTE_ADDR'];
 	$nums = explode('.', $ip);
 	$sum = 0;
@@ -408,6 +409,7 @@ function is_from_china() {
 		$sum += $num;
 	}
 	list($begin, $end) = execute_vector("select begin, end from ezptt.ip_china where begin <= $sum order by begin desc limit 1");
+//	error_log("china $sum $begin $end");
 	return $sum <= $end;
 }
 

@@ -10,12 +10,16 @@ else if ($is_spider && !$is_google_spider) {
 else if (is_from_cn_search_engine()) {
 	$lang = 'zh_CN';
 }
-else if (is_from_china()) {
+else if (strtolower(substr($_SERVER["HTTP_ACCEPT_LANGUAGE"], 0, 5)) == 'zh-cn') {
+	$lang = 'zh_CN';
+}
+else if (false && is_from_china()) {
 	$lang = 'zh_CN';
 //	error_log('from china');
 }
 else {
 	$lang = 'zh_TW';
+//	error_log('zh_TW');
 }
 
 $i18n = array(

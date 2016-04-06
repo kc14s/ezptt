@@ -1,4 +1,5 @@
 <?php header("Content-type: text/html; charset=UTF-8");
+require_once('i18n.php');
 ?>
 <!DOCTYPE HTML>
 <html lang="en">
@@ -8,18 +9,19 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
 <meta name="applicable-device" content="pc,mobile" />
 <meta name="baidu-site-verification" content="EviUseUxzL" />
+<link rel="icon" href="data:;base64,iVBORw0KGgo=">
 <title>
 <?php
 if (isset($html_title)) {
 	echo $html_title;
 }
-echo ' 短知乎';
+echo ' '.i18n('duanzhihu');
 ?>
 </title>
-<link rel="stylesheet" href="http://cdn.bootcss.com/twitter-bootstrap/3.3.4/css/bootstrap.min.css">
-<link rel="stylesheet" href="http://static.zhihu.com/static/ver/d6d1d8af46437d8edc24966ce70eafdd.z.css">
-<script src="http://cdn.bootcss.com/jquery/1.10.2/jquery.min.js"></script>
-<script src="<?echo $static_host;?>/js/jquery.lazyload.min.js"></script>
+<link rel="stylesheet" href="//cdn.bootcss.com/twitter-bootstrap/3.3.4/css/bootstrap.min.css">
+<link rel="stylesheet" href="//static.zhihu.com/static/revved/-/css/z.42898cd6.css">
+<script src="//cdn.bootcss.com/jquery/1.10.2/jquery.min.js"></script>
+<script src="//cdn.bootcss.com/jquery.lazyload/1.9.1/jquery.lazyload.min.js"></script>
 <?
 if (isset($target)) {
 	echo "<base target=\"$target\" />";
@@ -69,10 +71,10 @@ ga('send', 'pageview');
 <div class="container-fluid">
 <!-- Brand and toggle get grouped for better mobile display -->
 <div class="navbar-header">
-<a class="navbar-brand" href="/" target="_self">短知乎</a>
-<a class="navbar-brand" href="/hot/" target="_self">热知乎</a>
-<a class="navbar-brand" href="/comment/" target="_self">神回复</a>
-<a class="navbar-brand" href="/pic/" target="_self">有真相</a>
+<a class="navbar-brand" href="/" target="_self"><?echo i18n('duanzhihu')?></a>
+<a class="navbar-brand" href="/hot/" target="_self"><?echo i18n('rezhihu')?></a>
+<a class="navbar-brand" href="/comment/" target="_self"><?echo i18n('shenhuifu')?></a>
+<a class="navbar-brand" href="/pic/" target="_self"><?echo i18n('youzhenxiang')?></a>
 </div>
 </div><!-- /.container-fluid -->
 </nav>

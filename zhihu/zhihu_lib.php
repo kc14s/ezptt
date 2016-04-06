@@ -10,7 +10,7 @@ function process_answer_content($content, $aid) {
 //	$content = str_replace('"//', '"http://', $content);
 	$content = str_replace('data-actualsrc', 'data-original', $content);
 	$content = preg_replace('/[^>]*?<\/noscript>/', '', $content);
-	$content = preg_replace('/http:\/\/pic\d+.zhimg.com/', 'http://image.duanzhihu.com', $content);
+	$content = preg_replace('/(http:|https:)?\/\/pic\d+.zhimg.com/', 'http://image.duanzhihu.com', $content);
 //	$content = preg_replace('/https:\/\/pic\d+.zhimg.com/', 'http://zhimg.ucptt.com', $content);
 	if (!$is_spider && ($type == 'hot' || $type == 'reply')) {
 		if (mb_strlen($content, 'utf8') > 140) {

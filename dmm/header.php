@@ -8,15 +8,16 @@ require_once('i18n.php');
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <meta name="applicable-device" content="pc,mobile">
+<link rel="icon" href="data:;base64,iVBORw0KGgo=">
 <title><?php
 if (isset($html_title)) {
 	echo $html_title;
 }
 ?> dmm</title>
-<link rel="stylesheet" href="http://cdn.bootcss.com/twitter-bootstrap/3.0.3/css/bootstrap.min.css">
-<script src="http://cdn.bootcss.com/jquery/1.10.2/jquery.min.js"></script>
-<script src="http://cdn.bootcss.com/twitter-bootstrap/3.0.3/js/bootstrap.min.js"></script>
-<script src="http://libs.useso.com/js/jquery.lazyload/1.9.1/jquery.lazyload.min.js"></script>
+<link rel="stylesheet" href="//cdn.bootcss.com/twitter-bootstrap/3.0.3/css/bootstrap.min.css">
+<script src="//cdn.bootcss.com/jquery/1.10.2/jquery.min.js"></script>
+<script src="//cdn.bootcss.com/twitter-bootstrap/3.0.3/js/bootstrap.min.js"></script>
+<script src="//cdn.bootcss.com/jquery.lazyload/1.9.1/jquery.lazyload.min.js"></script>
 <meta name="baidu-site-verification" content="c3FkX097v5" />
 <?
 if (isset($target)) {
@@ -34,7 +35,7 @@ if (isset($target)) {
 ga('create', 'UA-17088225-8', 'auto');
 ga('send', 'pageview');
 </script>
-<div class="row"><div class="col-md-8 col-md-offset-2 col-xs-12">
+<div class="row"><div class="col-md-10 col-md-offset-1 col-xs-12">
 <nav class="navbar navbar-default" role="navigation">
 	<div class="container-fluid">
 		<div class="navbar-header">
@@ -42,8 +43,10 @@ ga('send', 'pageview');
 		</div>
 		<div class="collapse navbar-collapse">
 			<ul class="nav navbar-nav">
+				<li><a href="/list/popularity/1"><?echo i18n('popularity');?></a></li>
 				<li><a href="/list/rank/1"><?echo i18n('hottest');?></a></li>
-				<li><a href="/list/release_date/1"><?echo i18n('latest');?></a></li>
+				<li><a href="/stars/1"><?echo i18n('top_stars');?></a></li>
+				<li><a href="/best_seller/2015/1"><?echo i18n('best_seller');?></a></li>
 			</ul>
 			<form class="navbar-form navbar-left" role="search" action="/search" method="POST">
 				<div class="form-group">
@@ -56,10 +59,10 @@ ga('send', 'pageview');
 					<? echo i18n('select_language')?><span class="caret"></span>
 				</button>
 				<ul class="dropdown-menu" role="menu">
-					<li><a href="http://www.jporndb.com<? echo $_SERVER['REQUEST_URI']; ?>" target="_self">English</a></li>
-					<li><a href="http://jp.jporndb.com<? echo $_SERVER['REQUEST_URI']; ?>" target="_self">日本語</a></li>
-					<li><a href="http://tw.jporndb.com<? echo $_SERVER['REQUEST_URI']; ?>" target="_self">正體中文</a></li>
-					<li><a href="http://cn.jporndb.com<? echo $_SERVER['REQUEST_URI']; ?>" target="_self">简体中文</a></li>
+					<li><a href="//www.jporndb.com<? echo $_SERVER['REQUEST_URI']; ?>" target="_self">English</a></li>
+					<li><a href="//jp.jporndb.com<? echo $_SERVER['REQUEST_URI']; ?>" target="_self">日本語</a></li>
+					<li><a href="//tw.jporndb.com<? echo $_SERVER['REQUEST_URI']; ?>" target="_self">正體中文</a></li>
+					<li><a href="//cn.jporndb.com<? echo $_SERVER['REQUEST_URI']; ?>" target="_self">简体中文</a></li>
 				</ul>
 			</div>
 		</div>

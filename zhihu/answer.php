@@ -1,5 +1,6 @@
 <?
 require_once("init.php");
+require_once("i18n.php");
 require_once("zhihu_lib.php");
 $is_spider = is_spider();
 $is_from_search_engine = is_from_search_engine();
@@ -14,6 +15,10 @@ $db_conn = conn_db();
 mysql_select_db('zhihu', $db_conn);
 mysql_query('set names utf8');
 list($bid, $sbid, $qid, $title, $q_content, $ups, $author, $nick, $a_content, $pub_time) = execute_vector("select question.bid, answer.sbid, question.qid, title, question.content, ups, author, nick, answer.content, pub_time from question, answer where aid = $aid and question.qid = answer.qid");
+if (!isset($q_content) || !isset($a_content)) {
+	header('HTTP/1.1 301 Moved Permanently');
+	header('Location: /404');
+}
 if (strpos($q_content, '</div>') === 0) {
 	$q_content = '';
 }
@@ -21,6 +26,13 @@ $bname = execute_scalar("select name from board where bid = $bid");
 if ($sbid != 0) {
 	$sb_name = execute_scalar("select name from sub_board where sbid = $sbid");
 }
+$title = i18n($title);
+$q_content = i18n($q_content);
+$author = i18n($author);
+$nick = i18n($nick);
+$a_content = i18n($a_content);
+$b_name = i18n($b_name);
+$sb_name = i18n($sb_name);
 $html_title = "$title $author";
 $articles[] = array('', '', 0, $title, $q_content, '');
 $articles[] = array($author, $nick, $ups, '', $a_content, $pub_time);
@@ -29,6 +41,8 @@ while(list($author, $ups, $content, $pub_date) = mysql_fetch_array($result)) {
 	if ($is_spider) {
 		$pub_date = date("Y-m-d");
 	}
+	$author = i18n($author);
+	$content = i18n($content);
 	$articles[] = array($author, '', $ups, '', $content, $pub_date);
 }
 if (count($articles) == 1 && $is_spider) {
@@ -36,7 +50,7 @@ if (count($articles) == 1 && $is_spider) {
 }
 $other_answers = execute_dataset("select aid, author, ups, content from answer where qid = $qid order by ups desc limit 6");
 
-$html = "<div class=\"row\"><div class=\"col-md-8 col-md-offset-2 col-xs-12\"><ol class=\"breadcrumb\"><li><a href=\"/\">知乎</a></li><li><a href=\"/topic/$bid/\">$bname</a></li><li><a href=\"/topic/$sbid\">$sb_name</a></li>";
+$html = "<div class=\"row\"><div class=\"col-md-8 col-md-offset-2 col-xs-12\"><ol class=\"breadcrumb\"><li><a href=\"/\">知乎</a></li><li>$bname</li><li>$sb_name</li>";
 if (false && isset($sb_name)) {
 	$html .= "<li>$sb_name</li>";
 }
@@ -53,7 +67,7 @@ $floor = 1;
 foreach ($articles as $article) {
 	list($author, $nick, $ups, $title, $content, $pub_time) = $article;
 	if ($floor == 1) {
-		$content = preg_replace('/pic\d+.zhimg.com/', 'image.duanzhihu.com', $content);
+		$content = preg_replace('/https:\/\/pic\d+.zhimg.com/', 'http://image.duanzhihu.com', $content);
 	}
 	if ($floor > 1 || $content != '') {
 		$html .= '<div class="panel panel-info">';
@@ -90,10 +104,12 @@ foreach ($articles as $article) {
 	}
 	if ($floor == 2) {
 		if (count($other_answers) > 1) {
-			$html .= '<div class="panel panel-default"><div class="panel-heading">其他回答</div>';
+			$html .= '<div class="panel panel-default"><div class="panel-heading">'.i18n('qitahuida').'</div>';
 			$html .= '<div class="list-group">';
 			foreach ($other_answers as $other_answer) {
 				list($other_aid, $other_author, $other_ups, $other_content) = $other_answer;
+				$other_author = i18n($other_author);
+				$other_content = i18n($other_content);
 				if ($aid == $other_aid) continue;
 				$other_content = mb_substr(strip_tags($other_content), 0, 70, 'utf-8');
 				if (isset($other_author) && $other_author != '') {

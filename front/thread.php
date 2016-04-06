@@ -16,8 +16,9 @@ $tid2 = $_GET['tid2'];
 $bid = execute_scalar("select id from board where en_name = '$en_name'");
 list($author, $pub_time, $title, $content, $attachment) = execute_vector("select author, pub_time, title, content, attachment from topic where tid1 = $tid1 and tid2 = '$tid2'");
 if (!isset($title)) {
-		header('HTTP/1.1 404 Not Found');
-		exit();
+    header('HTTP/1.1 301 Moved Permanently');
+	header('Location: /404');
+	exit();
 }
 $title = i18n($title);
 $topic_title = $title;
@@ -94,12 +95,12 @@ foreach ($articles as $article) {
 	$html .= '</div>';
 	$html .= '<div class="panel-body">';
 	$content = i18n(preg_replace("/\n+/", "\n", trim($content)));
-	if (strlen($content) < 2000 && !(strpos($content, 'http://') === false)) {
+	if ($is_loyal_user && !$is_spider && strlen($content) < 2000 && !(strpos($content, 'http://') === false)) {
 		$content = preg_replace("/(http:\/\/[\w\/\.\_\-]+\.jpg)/", "<br><a href=\"$1\" target=\"_blank\"><img data-original=\"$1\" class=\"img-responsive\" /></a>", $content);
 		$content = preg_replace("/(http:\/\/[\w\/\.\_\-]+\.png)/", "<br><a href=\"$1\" target=\"_blank\"><img data-original=\"$1\" class=\"img-responsive\" /></a>", $content);
 		$content = preg_replace("/(http:\/\/[\w\/\.\_\-]+\.gif)/", "<br><a href=\"$1\" target=\"_blank\"><img data-original=\"$1\" class=\"img-responsive\" /></a>", $content);
 		$content = preg_replace("/(http:\/\/ppt.cc[\w\/\.\_\-\~]+)/", "<br><a href=\"$1\" target=\"_blank\"><img data-original=\"$1@.jpg\" class=\"img-responsive\" /></a>", $content);
-		$content = preg_replace("/http:\/\/(imgur.com[\w\/\.\_\-]+)/", "<br><a href=\"$1\" target=\"_blank\"><img data-original=\"http://i.$1.jpg\" class=\"img-responsive\" /></a>", $content);
+		$content = preg_replace("/http:\/\/(imgur.com[\w\/\.\_\-]+)/", "<br><img data-original=\"http://i.$1.jpg\" class=\"img-responsive\" />", $content);
 		$content = preg_replace("/http:\/\/miupix.cc\/pm\-(\w+)/", "<br><a href=\"http://miupix.cc/dm/$1/uploadFromiPhone.jpg\" target=\"_blank\"><img data-original=\"http://miupix.cc/dm/$1/uploadFromiPhone.jpg\" class=\"img-responsive\" /></a>", $content);
 	}
 	//$content = preg_replace("/(http:\/\/ppt.cc[\w\/\.\_\-]+)</", "<a href=\"$1\" target=\"_blank\"><img src=\"$1@.jpg\" /></a><", $content);
@@ -118,10 +119,10 @@ foreach ($articles as $article) {
 	$html .= '</div>';
 	if (!$is_loyal_user) {
 		if (false || $floor == 1 || $floor == 2 || $floor == 3) {
-			$html .= $scupio_728_90;
+			$html .= $baidu_ad;
 		}
 		else if ($floor >= 3 && $floor <= 5) {
-			$html .= $baidu_ad;
+			$html .= $scupio_728_90;
 			//$html .= $sogou_760_90;
 			//$html .= $av_show_468_60_1;
 			//$html .= $digitalpoint_468_60;
@@ -129,7 +130,8 @@ foreach ($articles as $article) {
 		}
 		else if ($floor >= 6) {
 //			$html .= $lianmeng9_cpc_950_90;
-			$html .= $gg91_click;
+//			$html .= $gg91_click;
+			$html .= $ads360_960_90;
 		}
 		else if ($floor >= 7 && $floor <= 9){
 //			$html .= $lianmeng9_cpv_950_90;
@@ -179,7 +181,7 @@ if (!$is_loyal_user) {
 	}
 	$html .= '</div>';
 }
-$html .= '<p><a href="/">PTT</a> <a href="/disp">disp</a></p></div>';
+//$html .= '<p><a href="/">PTT</a> <a href="/disp">disp</a></p></div>';
 //$html .= '<script type="text/javascript">var zx_aid = 1;var zx_uid = 10799;var zoneid = 11554;</script><script type="text/javascript" charset="utf-8" src="http://click.9cpc.com/view.js"></script>';
 
 require_once('header.php');

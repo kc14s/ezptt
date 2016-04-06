@@ -201,11 +201,11 @@ sub execute_column {
 
 sub get_all_boards {
 	my @boards;
-	my $sql = 'select en_name, cn_name from board';
+	my $sql = 'select id, en_name, cn_name from board';
 	my $request = $db_conn->prepare($sql);
 	$request->execute;
-	while (my ($en_name, $cn_name) = $request->fetchrow_array) {
-		push @boards, [$en_name, $cn_name];
+	while (my ($bid, $en_name, $cn_name) = $request->fetchrow_array) {
+		push @boards, [$en_name, $cn_name, $bid];
 	}
 	return @boards;
 }
@@ -430,13 +430,13 @@ sub download_topic {
 	if (execute_scalar("select count(*) from blocked_user where user_id = '$user'") > 0) {
 #	if (defined($blocked_users{$user})) {
 		print "blocked user $user\n";
-		return;
+		return 1;
 	}
 	if ($content =~ /<span class="article-meta-value">\w+ (\w+)\s+(\d+) ([\d:]+) (\d+)<\/span><\/div>\s*([\d\D]+?)\s*\-\-[\d\D]*(<\/span>)?<span class="f2">/) {}
 	elsif ($content =~ /<span class="article-meta-value">\w+ (\w+)\s+(\d+) ([\d:]+) (\d+)<\/span><\/div>\s*([\d\D]+?)\s*<div class="push"/) {}
 	else {
 		print STDERR "parse failed $url $1 $2 $3 $4\n";
-		return $ret;
+		return 1;
 	}
 	$topic_pub_time = sprintf("%d-%s-%02d %s", $4, month_en_to_number($1), $2, $3);
 	my $html = $5;
@@ -723,6 +723,12 @@ sub add_slashes {
 	$text =~ s/'/\\'/g;
 	$text =~ s/"/\\"/g;
 	return "'$text'";
+}
+
+sub substr_count {
+	my ($haystack, $needle) = @_;
+	my @matches = $haystack =~ /$needle/g;
+	return scalar @matches;
 }
 
 1;

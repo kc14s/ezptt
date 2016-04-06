@@ -17,13 +17,13 @@ if (!init_db()) {
 
 #update_board_category();
 my @boards = get_all_boards();
-update_all_boards(@boards);
+#update_all_boards(@boards);
 foreach my $board (@boards) {
 #	next if ($board->[2] ne 'Beauty');
-	leaktrace {
+#	leaktrace {
 		my $topics = get_topics($board);
-	} -verbose;
-	last;
+#	} -verbose;
+#	last;
 #	} sub {
 #		my($ref, $file, $line) = @_;
 #		warn "leaked $ref from $file $line\n";

@@ -1,5 +1,6 @@
 <?
 require_once('init.php');
+require_once('i18n.php');
 require_once('zhihu_lib.php');
 $page = 1;
 $db_conn = conn_db();
@@ -27,14 +28,16 @@ $result = mysql_query("select aid, ups, author, nick, answer.content, pub_time, 
 while (list($aid, $ups, $author, $nick, $content, $pub_time, $qid) = mysql_fetch_array($result)) {
 	list($title, $bid, $sbid) = execute_vector("select title, bid, sbid from question where qid = $qid");
 	if (!isset($title) || $title == '') continue;
-	$board_name = execute_scalar("select name from board where bid = $bid");
-	$sub_board_name = execute_scalar("select name from sub_board where sbid = $sbid");
+	$title = i18n($title);
+	$author = i18n($author);
+	$nick = i18n($nick);
+	$content = i18n($content);
+	$board_name = i18n(execute_scalar("select name from board where bid = $bid"));
+	$sub_board_name = i18n(execute_scalar("select name from sub_board where sbid = $sbid"));
 	$article = array($bid, $sbid, $board_name, $sub_board_name, $title, $aid, $ups, $author, $nick, $content, $pub_time);
 	if ($type == 'reply') {
 		list($comment_author, $comment_ups, $comment_pub_date, $comment_content) = execute_vector("select author, ups, pub_date, content from comment where aid = $aid order by ups desc limit 1");
-		if (true || $comment_ups * 3 > $ups) {
-			array_push($article, $comment_author, $comment_ups, $comment_pub_date, $comment_content);
-		}
+		array_push($article, i18n($comment_author), $comment_ups, $comment_pub_date, i18n($comment_content));
 	}
 	$articles[] = $article;
 }
@@ -43,12 +46,12 @@ $html = '<div class="row"><div class="col-md-6 col-md-offset-3 col-xs-12">';
 list($pubtime_min, $pubtime_max) = array(0, 0);
 foreach ($articles as $article) {
 	list($bid, $sbid, $board_name, $sub_board_name, $title, $aid, $ups, $author, $nick, $content, $pub_time, $comment_author, $comment_ups, $comment_pub_date, $comment_content) = $article;
-#	if (strpos($content, '<img') > 0) continue;
 	$answer_url = "/answer/$aid";
 //	$html .= '<div class="row"><div class="col-sm-6 col-sm-offset-3 col-xs-12">';
 	$html .= '<div class="panel panel-info">';
 	$html .= '<div class="panel-heading">';
-	$html .= "[<a href=\"/topic/$bid\">$board_name</a>/<a href=\"/topic/$sbid\">$sub_board_name</a>] <a href=\"$answer_url\">$title</a>";
+	//$html .= "[<a href=\"/topic/$bid\">$board_name</a>/<a href=\"/topic/$sbid\">$sub_board_name</a>] <a href=\"$answer_url\">$title</a>";
+	$html .= "[$board_name/$sub_board_name] <a href=\"$answer_url\">$title</a>";
 	$html .= '</div>';
 	$html .= '<div class="panel-body">';
 	if ($author == '') $author = '知乎用户';
@@ -82,10 +85,10 @@ if (!isset($_GET['before']) && !isset($_GET['before'])) {
 	$html .= '<li class="previous disabled"><a href="#">&larr; 上一页</a></li>';
 }
 else {
-	$html .= '<li class="previous"><a href="/'.$char.'after/'.$pubtime_max.'" target="_self">&larr; 上一页</a></li>';
+	$html .= '<li class="previous"><a href="/'.$char.'after/'.$pubtime_max.'" target="_self">&larr; '.i18n('shangyiye').'</a></li>';
 }
-$html .= '<li class="next"><a href="/'.$char.'before/'.$pubtime_min.'" target="_self">下一页 &rarr;</a></li>';
-$html .= ' <li class="next"><a href="/random/'.$type.'" target="_self">随机</a></li>';
+$html .= '<li class="next"><a href="/'.$char.'before/'.$pubtime_min.'" target="_self">'.i18n('xiayiye').' &rarr;</a></li>';
+$html .= ' <li class="next"><a href="/random/'.$type.'" target="_self">'.i18n('suiji').'</a></li>';
 $html .= '</ul></div></div>';
 //*/
 

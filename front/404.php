@@ -1,0 +1,1 @@
+/root/ptt/zhihu/404.php

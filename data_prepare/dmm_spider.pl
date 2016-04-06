@@ -89,8 +89,11 @@ for (my $channel = 1; $channel <= @boards; ++$channel) {
 			my @stars;
 			if ($detail_html =~ /出演者：<\/td>([\d\D]+?)<\/td>/) {
 				my $span = $1;
-				while ($span =~ /article=actress\/id=\d+\/">([\d\D]+?)<\/a>/g) {
-					push @stars, $1;
+				while ($span =~ /article=actress\/id=(\d+)\/">([\d\D]+?)<\/a>/g) {
+					push @stars, $2;
+					if (execute_scalar("select count(*) from star_info where id = $1") == 0) {
+						$db_conn->do("insert into star_info(id, name) values($1, '$2')");
+					}
 				}
 			}
 #			while ($detail_html =~ /<a href="\/digital\/videoa\/\-\/list\/=\/article=actress\/id=\d+\/">([\d\D]+?)<\/a>/g) {
@@ -126,6 +129,19 @@ for (my $channel = 1; $channel <= @boards; ++$channel) {
 				}
 			}
 			get_seeds($sn, $snn, $db_conn);
+			next;
+			my %recommend_params;
+			$recommend_params{target_content_id} = $1 if ($detail_html =~ /target_content_id\s*:\s*'(\w+)'/);
+			$recommend_params{target_content_shoptable} = $1 if ($detail_html =~ /target_content_shoptable\s*:\s*'([\w\\]+)'/);
+			$recommend_params{target_content_shoptable} =~ s/\\u005/_/g;
+			$recommend_params{from_GET} = $1 if ($detail_html =~ /from_GET\s*:\s*'([\w\\]+)'/);
+			$recommend_params{from_GET} =~ s/\\u005/_/g;
+			#print "recommend: $target_content_id $target_content_shoptable\n";
+			if (scalar keys %recommend_params != 3) {
+				print "illegal recommend_params $sn\n";
+				next;
+			}
+			next;
 		}
 		last if (@detail_urls < 120);
 =cutklfa

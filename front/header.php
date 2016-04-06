@@ -1,4 +1,6 @@
 <?php header("Content-type: text/html; charset=UTF-8");
+require_once("init.php");
+require_once('i18n.php');
 ?>
 <!DOCTYPE HTML>
 <html>
@@ -6,6 +8,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<link rel="icon" href="data:;base64,iVBORw0KGgo=">
 <title>
 <?php
 if (isset($html_title)) {
@@ -25,9 +28,10 @@ else {
 <script src="http://cdn.bootcss.com/twitter-bootstrap/3.0.3/js/bootstrap.min.js"></script>
 <script src="http://libs.useso.com/js/jqueryui/1.10.4/jquery-ui.min.js"></script>
 <script src="http://libs.useso.com/js/jquery.lazyload/1.9.1/jquery.lazyload.min.js"></script>
-<script src="/js/auto_complete.js?v=2"></script>
+<script src="/js/auto_complete.js?v=3"></script>
 <meta name="applicable-device" content="pc,mobile">
 <meta name="baidu-site-verification" content="uo47eIda6W" />
+<meta baidu-gxt-verify-token="b91724952823a39fa8b5dffc2858ecbb"> 
 <meta property="qc:admins" content="2746676521624354063757" />
 <style>
 body,button, input, select, textarea,h1 ,h2, h3, h4, h5, h6 { font-family: 'Microsoft YaHei','宋体' , Tahoma, Helvetica, Arial, sans-serif;}

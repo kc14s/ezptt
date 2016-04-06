@@ -9,6 +9,7 @@ $index = $_GET['index'];
 $sn = $_GET['sn'];
 $db_conn = conn_dmm_db();
 list($title, $release_date, $runtime, $director, $series, $company, $fav_count, $rating, $sample_image_num, $description, $channel, $snn) = execute_vector("select title, release_date, runtime, director, series, company, fav_count, rating, sample_image_num, description, channel, sn_normalized from video where sn = '$sn'");
+$snn = snn_add_hyphen($snn);
 $stars = execute_column("select star from star where sn = '$sn'");
 $html_title = "$title $snn ".implode(' ', $stars);
 if ($index == 0) {
@@ -17,7 +18,7 @@ if ($index == 0) {
 else {
 	$img_url = get_sample_img_url($sn, $channel, $index);
 }
-$html = '<div class="row"><div class="col-md-8 col-md-offset-2 col-xs-10">';
+$html = '<div class="row"><div class="col-md-10 col-md-offset-1 col-xs-10">';
 $html .= '<div class="panel panel-info">';
 $html .= "<div class=\"panel-heading\"><h3><a href=\"/video/$sn\">$title <small>$snn ".implode(' ', $stars)."</small></a></h3></div>";
 $html .= '<div class="panel-body">';

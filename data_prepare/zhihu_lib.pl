@@ -2,6 +2,7 @@
 use strict;
 use utf8;
 use HTML::Entities;
+use Test::JSON;
 no warnings 'utf8';
 
 our $db_conn;
@@ -65,7 +66,8 @@ sub get_zhihu_questions {
 				_xsrf => '777e3e3c5616ac059706b4d409203647'
 		   );
 			my $html = post_url($url, \%form);
-			if (index($html, '{') != 0) {
+#			if (index($html, '{') != 0 || rindex($html, '}') != length($html) - 1) {
+			if (!is_valid_json($html)) {
 				print "skip malformed json\n$html\n";
 				sleep(60);
 				next;
@@ -131,7 +133,7 @@ sub get_zhihu_question {
 	$db_conn->do("replace into question(qid, bid, sbid, title, content) values($qid, $board_id, $sb_id, ".add_slashes($q_title).", ".add_slashes($q_content).")");
 #	$db_conn->do("replace into question(qid, bid, sbid, title, content) values($qid, $board_id, $sb_id, '$q_title', '$q_content')");
 	#print "replace into question(qid, bid, sbid, title, content) values($qid, $board_id, $sb_id, '$q_title', '$q_content')\n";
-        my @arr = split('class="zm-item-answer "', $html);
+        my @arr = split('class="zm-item-answer ', $html);
         foreach my $item (@arr) {
 #                my $ups = $1 if ($item =~ /<span class="count">([\-\d]+)<\/span>/);
 		my $ups = $1 if ($item =~ /data\-votecount="(\d+)">/);
@@ -163,6 +165,10 @@ sub get_zhihu_question {
 		my $pic = is_pic_answer($content, $ups);
 		my $good = is_good_answer($content, $ups);
 		my $hot = ($ups >= 50 ? 1 : 0);
+		if (!defined($content) || $content eq '') {
+			print "$qid $aid empty answer\n";
+			next;
+		}
 		if (execute_scalar("select count(*) from answer where aid = $aid") == 0) {
 				$db_conn->do("insert into answer(aid, bid, sbid, qid, ups, author, nick, pub_time, content, good, hot, pic) values($aid, $board_id, $sb_id, $qid, $ups, ".add_slashes($author).", ".add_slashes($nick).", '$pub_time', ".add_slashes($content).", $good, $hot, $pic)");
 		}
@@ -175,7 +181,8 @@ sub get_zhihu_question {
 #               exit;
 		next if ($comment_num == 0);
 		next if (execute_scalar("select count(*) from comment where aid = $aid") >= $comment_num);
-		my $comment_url = "http://www.zhihu.com/node/AnswerCommentListV2?params=%7B%22answer_id%22%3A%22$aid%22%7D";
+#		my $comment_url = "http://www.zhihu.com/node/AnswerCommentListV2?params=%7B%22answer_id%22%3A%22$aid%22%7D";
+		my $comment_url = "http://www.zhihu.com/node/AnswerCommentBoxV2?params=%7B%22answer_id%22%3A%22$aid%22%2C%22load_all%22%3Atrue%7D";
 		my $comment_html = get_url($comment_url);
 #               print $comment_html;
 #               next;
@@ -184,10 +191,13 @@ sub get_zhihu_question {
                 my @comments = split('zm-item-comment', $comment_html);
                 foreach my $comment (@comments) {
                         my $comment_id = $1 if ($comment =~ /name="comment\-(\d+)"/);
-                        next if (!defined($comment_id));
+                        next if (!defined($comment_id) || $comment_id == 0);
                         my $commenter = '';
                         $commenter = $1 if ($comment =~ /class="zg\-link" title="([\d\D]+?)"/);
                         my $comment_content = $1 if ($comment =~ /<div class="zm-comment-content">\s*([\d\D]*?)\s*<\/div>/);
+						if (!defined($comment_content)) {
+							print "undefined comment content $comment_url $comment\n";
+						}
 			next if ($comment_content eq '');
                         my $comment_ups = $1 if ($comment =~ /<em>(\d+)<\/em>/);
 			if ($comment_ups_max < $comment_ups) {
@@ -218,7 +228,7 @@ sub get_zhihu_question {
 				$db_conn->do("update comment set ups = $comment_ups where cid = $comment_id");
 			}
                 }
-		my $reply = ($ups >= 30 && $comment_ups_max * 2 >= $ups && $best_comment_length < 140) ? 1 : 0;
+		my $reply = (($ups >= 30 && $comment_ups_max * 2 >= $ups) || $ups >= 150 ) && $best_comment_length < 140 ? 1 : 0;
 		if ($reply) {
 			$db_conn->do("update answer set reply = $reply where aid = $aid");
 		}
