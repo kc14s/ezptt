@@ -96,7 +96,7 @@ if ($is_spider) {
 	$html .= get_rand_dmm_topic_html();
 }
 $html .= get_rand_dmm_thumb_html();
-//$html .= '<div id="uyan_frame"></div><script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=2084908"></script>';
+$html .= '<div id="uyan_frame"></div><script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=2084908"></script>';
 $html .= '</div>';	#left column end
 $html .= '<div class="col-md-3">';	//thumb
 if ($channel != 2) {

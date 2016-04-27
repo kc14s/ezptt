@@ -10,10 +10,10 @@ sub get_groups {
         my $url = 'http://www.zhihu.com/topics';
         my $html = get_url($url);
         my @groups = ();
-        while ($html =~ /<li data-id="(\d+)"><a href="#([\d\D]+?)">/g) {
-                push @groups, [$1, $2];
-		print "$1, $2\n";
-                $db_conn->do("replace into board values($1, '$2')");
+        while ($html =~ /<li .+?data-id="(\d+)"><a href="#([\d\D]+?)">/g) {
+			push @groups, [$1, $2];
+			print "$1, $2\n";
+			$db_conn->do("replace into board values($1, '$2')");
         }
         return \@groups;
 }

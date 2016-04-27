@@ -19,7 +19,7 @@ echo ' '.i18n('duanzhihu');
 ?>
 </title>
 <link rel="stylesheet" href="//cdn.bootcss.com/twitter-bootstrap/3.3.4/css/bootstrap.min.css">
-<link rel="stylesheet" href="//static.zhihu.com/static/revved/-/css/z.42898cd6.css">
+<link rel="stylesheet" href="//static.zhihu.com/static/revved/-/css/z.d4f4b4f3.css">
 <script src="//cdn.bootcss.com/jquery/1.10.2/jquery.min.js"></script>
 <script src="//cdn.bootcss.com/jquery.lazyload/1.9.1/jquery.lazyload.min.js"></script>
 <?

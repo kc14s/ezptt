@@ -71,7 +71,7 @@ sub download_douban_topic {
 		print "https://www.douban.com/group/topic/$tid/ uid not defined\n";
 		return 1;
 	}
-	if ($html =~ /<a href="https:\/\/www\.douban\.com\/people\/$uid\/">$uname<\/a>\(([\d\D]+?)\)<\/span>/) {
+	if ($html =~ /<a href="https:\/\/www\.douban\.com\/people\/$uid\/">\Q$uname\E<\/a>\(([\d\D]+?)\)<\/span>/) {
 		$nick =$1;
 	}
 	else {
@@ -121,7 +121,7 @@ sub download_douban_topic {
 		if ($reply =~ /<a href="https:\/\/www\.douban\.com\/people\/([\w\-]+)\/" class="">([\d\D]+?)<\/a>\(([\d\D]+?)\)/) {
 			($uid, $uname, $nick) = ($1, $2, $3);
 		}
-		elsif ($reply =~ /<a href="https:\/\/www\.douban\.com\/people\/(\w+)\/" class="">([\d\D]+?)<\/a>/) {
+		elsif ($reply =~ /<a href="https:\/\/www\.douban\.com\/people\/([\w\-]+)\/" class="">([\d\D]+?)<\/a>/) {
 			($uid, $uname, $nick) = ($1, $2, '');
 		}
 		else {

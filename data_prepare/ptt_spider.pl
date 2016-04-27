@@ -1,6 +1,7 @@
 #!/usr/bin/perl -w
 use strict;
 use DBI;
+use Test::LeakTrace;
 require('config.pl');
 require('lib.pl');
 
@@ -16,8 +17,13 @@ if (!init_db()) {
 update_board_category();
 my @boards = get_hot_boards();
 update_all_boards(@boards);
+leaktrace {
 foreach my $board (@boards) {
 #	next if ($board->[2] ne 'Beauty');
 	my $topics = get_topics($board);
 #	download_topics($board, $topics);
+}
+} sub {
+	my($ref, $file, $line) = @_;
+	warn "leaked $ref from $file $line\n";
 }

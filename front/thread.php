@@ -121,7 +121,7 @@ foreach ($articles as $article) {
 		if (false || $floor == 1 || $floor == 2 || $floor == 3) {
 			$html .= $baidu_ad;
 		}
-		else if ($floor >= 3 && $floor <= 5) {
+		else if ($floor >= 4 && $floor <= 5) {
 			$html .= $scupio_728_90;
 			//$html .= $sogou_760_90;
 			//$html .= $av_show_468_60_1;
@@ -131,7 +131,7 @@ foreach ($articles as $article) {
 		else if ($floor >= 6) {
 //			$html .= $lianmeng9_cpc_950_90;
 //			$html .= $gg91_click;
-			$html .= $ads360_960_90;
+//			$html .= $ads360_960_90;	//not support
 		}
 		else if ($floor >= 7 && $floor <= 9){
 //			$html .= $lianmeng9_cpv_950_90;

@@ -72,16 +72,18 @@ sub get_url {
 			$ua->timeout(10);
 		}
 		$proxy_idx = -1;
-		if (1 && scalar @proxies <= 50) {
+		if (1 && scalar @proxies <= 10) {
 			load_proxy();
 		}
 		my $request = HTTP::Request->new(GET=>$url);
 #		$request->header('Accept-Encoding' => HTTP::Message::decodable);
 		$request->header('Accept-Encoding' => 'utf8');
 #		$request->header('Referer' => 'https://www.ptt.cc/ask/over18?from=%2Fbbs%2FSex%2Findex.html');
-		if (index($url, 'ptt.cc') > 0) {
+		if (index($url, 'douban.com') > 0) {
 			$proxy_idx = int(rand(scalar @proxies));
-			$ua->proxy('http', "http://".$proxies[$proxy_idx]);
+			$ua->no_proxy();
+			$ua->proxy(['http', 'https'], "http://".$proxies[$proxy_idx].'/');
+			print "use proxy $proxies[$proxy_idx]\n";
 			$request->header('Cookie' => 'over18=1');
 		}
 		elsif (index($url, 'ck101.com') >= 0) {
@@ -273,6 +275,8 @@ sub get_topics {
 		if ($continue) {
 			$url = "https://www.ptt.cc$1" if ($content =~ /href="(\/bbs\/$en_name\/index\d+\.html)">&lsaquo;/);
 		}
+		undef(@slices);
+		undef($content);
 #		$continue = 0;	# remember to comment out
 	}
 }

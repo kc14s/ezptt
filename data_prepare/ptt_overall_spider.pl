@@ -21,7 +21,7 @@ my @boards = get_all_boards();
 foreach my $board (@boards) {
 #	next if ($board->[2] ne 'Beauty');
 #	leaktrace {
-		my $topics = get_topics($board);
+		get_topics($board);
 #	} -verbose;
 #	last;
 #	} sub {
