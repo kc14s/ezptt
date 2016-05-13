@@ -40,7 +40,7 @@ sub get_seeds {
 	}
 	else {
 		$title = execute_scalar("select title from video where sn = '$sn'", $db_conn);
-		request_btkitty($sn, $snn, '"$title"', $db_conn) if (length($title) > 20);
+		request_btkitty($sn, $snn, "\"$title\"", $db_conn) if (length($title) > 20);
 	}
 }
 
@@ -48,7 +48,9 @@ sub request_btkitty {
 	my ($sn, $snn, $query, $db_conn) = @_;
 	$query = uri_escape($query); 
 	#my $list_html = `curl -A 'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)' -s -L -d 'keyword=$query' http://btkitty.biz/`;
-	my $redirect_header = `curl -A 'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)' -s -d 'keyword=$query' http://btkitty.biz/ -D -`;
+#	my $redirect_header = `curl -A 'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)' -s -d 'keyword=$query' http://btkitty.biz/ -D -`;
+	my $redirect_header = post_url('http://btkitty.biz/', {'keyword' => $query, 'hidden' => 'true'}, 1);
+	print "response header\n$redirect_header\n";
 	my $list_html = '';
 	if ($redirect_header =~ /btkitty\.(\w+)\/search\/(\w+)\//) {
 		$list_html = `curl -A 'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)' -s http://btkitty.$1/search/$2/1/4/0.html`;

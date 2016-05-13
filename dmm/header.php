@@ -54,6 +54,12 @@ ga('send', 'pageview');
 				</div>
 				<button type="submit" class="btn btn-default">Search</button>
 			</form>
+			<form class="navbar-form navbar-left" role="search" action="/emule" method="POST">
+				<div class="form-group">
+					<input type="text" name="kw" class="form-control" placeholder="">
+				</div>
+				<button type="submit" class="btn btn-default"><?echo i18n('seed_download_emule')?></button>
+			</form>
 			<div class="btn-group navbar-right">
 				<button type="button" class="btn btn-default dropdown-toggle navbar-btn" data-toggle="dropdown">
 					<? echo i18n('select_language')?><span class="caret"></span>

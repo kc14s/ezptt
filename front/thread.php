@@ -5,7 +5,7 @@ require_once("i18n.php");
 require_once("../Mobile-Detect/Mobile_Detect.php");
 $is_spider = is_spider();
 $is_from_search_engine = is_from_search_engine();
-if ($ptt_allow == 0 && !$is_spider && !$is_from_search_engine) {
+if (0 && $ptt_allow == 0 && !$is_spider && !$is_from_search_engine) {
 	header('HTTP/1.1 404 Not Found');
 	exit();
 }

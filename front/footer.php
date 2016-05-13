@@ -24,6 +24,7 @@ if (false || !$is_loyal_user) {
 	echo $ads360_doublet;
 	echo $ads360_320_270;
 	echo $ads360_popup;
+	echo $ads360_float;
 #	echo $gg91_popup;
 	echo $gg91_richmedia;
 //	echo $revenuehits_popunder;

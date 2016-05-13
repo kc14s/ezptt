@@ -128,7 +128,7 @@ for (my $channel = 1; $channel <= @boards; ++$channel) {
 					$db_conn->do("replace into star(sn, star) values('$sn', '$star')");
 				}
 			}
-			get_seeds($sn, $snn, $db_conn);
+			#get_seeds($sn, $snn, $db_conn);
 			next;
 			my %recommend_params;
 			$recommend_params{target_content_id} = $1 if ($detail_html =~ /target_content_id\s*:\s*'(\w+)'/);

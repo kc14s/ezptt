@@ -2,6 +2,7 @@
 use strict;
 use DBI;
 use Test::LeakTrace;
+use Scalar::Util;
 require('config.pl');
 require('lib.pl');
 

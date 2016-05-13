@@ -31,7 +31,7 @@ sub init_db {
 	my $database = $ENV{"database"};
 	my $user = $ENV{"user"};
 	my $password = $ENV{"password"};
-	$db_conn = DBI->connect("DBI:mysql:database=$database;host=$db_server", $user, $password);
+	$db_conn = DBI->connect("DBI:mysql:database=$database;host=$db_server", $user, $password, {RaiseError => 1, AutoCommit =>1, mysql_auto_reconnect=>1});
 	$db_conn->do("set names UTF8");
 	$db_conn->do("SET time_zone = '+8:00'");
 	$db_conn->do('SET LOW_PRIORITY_UPDATES=1');
@@ -53,8 +53,14 @@ sub get_datetime_string {
 	return "$year-$mon-$day $hour:$min:$sec";
 }
 
+sub get_https {
+	my $url = $_[0];
+	return `curl -s -S '$url' -A 'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html) --compressed --connect-timeout 3 -m 10' -H 'Cookie: over18=1'`;
+}
+
 sub get_url {
 	my $url = $_[0];
+	return get_https($url) if (index($url, 'https') == 0);
 	my $retry_count = 0;
 	while (1) {
 		if (index($url, 'ptt.cc') >= 0 || index($url, 'ck101.com') >= 0 || index($url, 'tianya.cn') >= 0) {
@@ -83,7 +89,7 @@ sub get_url {
 			$proxy_idx = int(rand(scalar @proxies));
 			$ua->no_proxy();
 			$ua->proxy(['http', 'https'], "http://".$proxies[$proxy_idx].'/');
-			print "use proxy $proxies[$proxy_idx]\n";
+#			print "use proxy $proxies[$proxy_idx]\n";
 			$request->header('Cookie' => 'over18=1');
 		}
 		elsif (index($url, 'ck101.com') >= 0) {
@@ -152,17 +158,56 @@ sub get_url {
 }
 
 sub post_url {
-	my ($url, $form) = @_;
-	print "posting $url ".$json->encode($form)."\n";
-	my $ua = LWP::UserAgent->new;
-	$ua->agent("Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.9.0.4)Gecko/2008111217 Fedora/3.0.4-1.fc10 Firefox/3.0.5");
-	my $response = $ua->post($url, $form);
-	if ($response->is_success) {
-#		return $response->content;
-		return $response->decoded_content;
-	}
-	else {
-		return $response->status_line;
+	my ($url, $form, $response_headers_only) = @_;
+	my $retry_count = 0;
+	while (1) {
+		print "posting $url ".$json->encode($form)."\n";
+		my $ua = LWP::UserAgent->new;
+		$ua->agent("Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.9.0.4)Gecko/2008111217 Fedora/3.0.4-1.fc10 Firefox/3.0.5");
+		my $proxy_idx = -1;
+		if (scalar @proxies <= 5) {
+			load_proxy();
+		}
+		if (index($url, 'btkitty') > 0) {
+			$proxy_idx = int(rand(scalar @proxies));
+			$ua->proxy(['http', 'https'], "http://".$proxies[$proxy_idx].'/');
+		}
+		my $response = $ua->post($url, $form);
+		if ($response->is_success) {
+#			return $response->content;
+			if (defined($response_headers_only) && $response_headers_only == 1) {
+				print "succeed\tpost_url\t$url\t".$response->status_line."\n";
+				print $response->decoded_content;
+				return $response->headers->as_string;
+			}
+			else {
+				return $response->decoded_content;
+			}
+		}
+		else {
+			if (index($response->status_line, '302') == 0) {
+				print "succeed\tpost_url\t$url\t".$response->status_line."\n";
+				return $response->headers->as_string;
+			}
+			print "failure\tpost_url\t$url\t".$response->status_line."\n";
+			if (index($response->status_line, '404') == 0) {
+				return '';
+			}
+			if (++$retry_count >= 50) {
+				print "enough retries. give up $url\n";
+				return '';
+			}
+			if (scalar @proxies > 0 && $proxy_idx >= 0) {
+				print "remove proxy ".$proxies[$proxy_idx]."\n";
+				my @new_proxies;
+				foreach my $proxy (@proxies) {
+					push @new_proxies, $proxy if ($proxy ne $proxies[$proxy_idx]);
+				}
+				@proxies = @new_proxies;
+				print "".(scalar @proxies)." proxies left\n";
+			}
+			return $response->status_line;
+		}
 	}
 }
 
@@ -267,6 +312,7 @@ sub get_topics {
 		foreach my $slice (@slices) {
 			if ($slice =~ /<a href="\/bbs\/$en_name\/M\.(\d+)\.A\.(\w+)\.html">([\d\D]+?)<\/a>/) {
 				$continue |= download_topic($bid, $en_name, $1, $2, $3);
+#				$continue = 1;
 			}
 		}
 		if (++$page_count > 10) {
@@ -275,8 +321,6 @@ sub get_topics {
 		if ($continue) {
 			$url = "https://www.ptt.cc$1" if ($content =~ /href="(\/bbs\/$en_name\/index\d+\.html)">&lsaquo;/);
 		}
-		undef(@slices);
-		undef($content);
 #		$continue = 0;	# remember to comment out
 	}
 }

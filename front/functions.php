@@ -430,4 +430,16 @@ function get_jandan_pics($type, $size = 20) {
 		//*/
 		return $ret;
 }
+function human_filesize($bytes, $decimals = 2) {
+	$size = array('B','kB','MB','GB','TB','PB','EB','ZB','YB');
+	$factor = floor((strlen($bytes) - 1) / 3);
+	return sprintf("%.{$decimals}f", $bytes / pow(1024, $factor)) . @$size[$factor];
+}
+
+function show_error($message) {
+	$html = '<div class="row"><div class="col-md-10 col-md-offset-1 col-xs-10">';
+	$html .= '<div class="alert alert-danger" role="alert">'.$message.'</div>';
+	$html .= '</div></div>';
+	return $html;
+}
 ?>
