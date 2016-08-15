@@ -65,7 +65,7 @@ if (isset($articles)) {
 		$html .= '</div>';
 		$html .= '<div class="panel-body">';
 		$content = i18n($content);
-		if (false && strlen($content) < 1000 && !(strpos($content, 'http://') === false)) {
+		if (true && strlen($content) < 1000 && !(strpos($content, 'http://') === false)) {
 			$content = preg_replace("/(http:\/\/[\w\/\.\_\-]+\.jpg)/", "<br><a href=\"$1\" target=\"_blank\"><img data-original=\"$1\" /></a>", $content);
 			$content = preg_replace("/(http:\/\/[\w\/\.\_\-]+\.png)/", "<br><a href=\"$1\" target=\"_blank\"><img data-original=\"$1\" /></a>", $content);
 			$content = preg_replace("/(http:\/\/[\w\/\.\_\-]+\.gif)/", "<br><a href=\"$1\" target=\"_blank\"><img data-original=\"$1\" /></a>", $content);

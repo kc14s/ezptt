@@ -27,6 +27,7 @@ function get_sample_img_url($sn, $channel, $id) {
 	switch ($channel) {
 	case 1:
 	case 3:
+	case 4:
 		return "http://pics.dmm.co.jp/digital/video/$sn/${sn}jp-$id.jpg";
 	break;
 	case 2:

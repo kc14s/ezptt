@@ -32,7 +32,6 @@ sub get_seeds {
 	}
 	if (length($letters) > 1 && $num >= 10) {
 		request_btkitty($sn, $snn, "$letters $num", $db_conn);
-		request_btkitty($sn, $snn, "$letters$num", $db_conn);
 		if (0 && index($num, '0') == 0) {
 			$num = $1 if ($num =~ /0+(\d+)/);
 			request_btkitty($sn, $snn, "$letters$num", $db_conn) if ($num >= 10);
@@ -44,16 +43,76 @@ sub get_seeds {
 	}
 }
 
+sub get_emule {
+	my ($sn, $snn, $db_conn) = @_;
+	return if (defined($forbidden_seed_sns{$sn}));
+	my $query = $snn;
+	my $num = $1 if ($snn =~ /(\d+)/);
+	my $letters = $1 if ($snn =~ /([a-z]+)/);
+	if (defined($num)) {
+		if (length($num) == 1 || length($letters) == 1) {
+#			my @stars = execute_column("select star from star where sn = '$sn'");
+#			$query .= ' '.join(' ', @stars);
+		}
+		elsif (1 || length($num) >= 3) {
+			$query = "$letters $num";
+		}
+	}
+	else {
+		print "illegal snn $snn\n";
+	}
+	if (length($letters) > 1 && $num >= 10) {
+		request_mldonkey($sn, $snn, "$letters $num", $db_conn);
+		if (0 && index($num, '0') == 0) {
+			$num = $1 if ($num =~ /0+(\d+)/);
+			request_mldonkey($sn, $snn, "$letters$num", $db_conn) if ($num >= 10);
+		}
+	}
+	else {
+		$title = execute_scalar("select title from video where sn = '$sn'", $db_conn);
+		request_mldonkey($sn, $snn, "\"$title\"", $db_conn) if (length($title) > 20);
+	}
+}
+
+sub request_mldonkey {
+	my ($sn, $snn, $query, $db_conn) = @_;
+	print "requesting emule $query\n";
+	$query = uri_escape($query);
+	my $html = `curl -s 'http://mldonkey.ucptt.com/submit?custom=Complex+Search&keywords=$query&minsize=&minsize_unit=1048576&maxsize=&maxsize_unit=1048576&media=&media_propose=&format=&format_propose=&artist=&album=&title=&bitrate=&network='`;
+	my $search_id = $1 if ($html =~ /Query (\d+) sent to/);
+	if (!defined($search_id)) {
+		print "invalid search_id\n$html\n";
+	}
+	sleep(60);
+	$html = `curl -s 'http://mldonkey.ucptt.com/submit?q=vr+$search_id'`;
+	while ($html =~ /<td class="sr"><a href="ed2k:\/\/\|file\|([\d\D]+?)\|(\d+)\|(\w+)\|\/">Donkey<\/a><\/td><td [\d\D]+?<\/td><td class="sr ar">[\w\.]+<\/td>\s*<td class="sr ar">(\d*)<\/td>\s*<td class="sr ar">(\d*)<\/td>/g) {
+		my ($file_name, $file_size, $file_hash, $available_sources, $completed_sources) = ($1, $2, $3, $4, $5);
+		$available_sources = 0 if (!defined($available_sources) || $available_sources eq '');
+		$completed_sources = 0 if (!defined($completed_sources) || $completed_sources eq '');
+		if ($file_size < 512 * 1024 * 1024) {
+			next;
+		}
+		$file_name = uri_unescape($file_name);
+		if (validate_seed_name($snn, $file_name) == 0) {
+			print "seed name mismatch $snn $query $file_name\n";
+			next;
+		}
+		print "$sn $file_name $file_size $file_hash $available_sources $completed_sources\n";
+		$db_conn->do("replace into emule(sn, hash, name, size, available_sources, completed_sources) values('$sn', '$file_hash', ".$db_conn->quote($file_name).", $file_size, $available_sources, $completed_sources)");
+	}
+}
+
 sub request_btkitty {
 	my ($sn, $snn, $query, $db_conn) = @_;
 	$query = uri_escape($query); 
 	#my $list_html = `curl -A 'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)' -s -L -d 'keyword=$query' http://btkitty.biz/`;
 #	my $redirect_header = `curl -A 'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)' -s -d 'keyword=$query' http://btkitty.biz/ -D -`;
-	my $redirect_header = post_url('http://btkitty.biz/', {'keyword' => $query, 'hidden' => 'true'}, 1);
-	print "response header\n$redirect_header\n";
+	my $redirect_header = post_url('http://btkitty.red/', {'keyword' => $query, 'hidden' => 'true'}, 1);
+	#print "response header\n$redirect_header\n";
 	my $list_html = '';
 	if ($redirect_header =~ /btkitty\.(\w+)\/search\/(\w+)\//) {
-		$list_html = `curl -A 'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)' -s http://btkitty.$1/search/$2/1/4/0.html`;
+		#$list_html = `curl -A 'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)' -s http://btkitty.$1/search/$2/1/4/0.html`;
+		$list_html = get_url("http://btkitty.$1/search/$2/1/4/0.html");
 	}
 	else {
 		print "request btkitty $query failed\n";
@@ -61,8 +120,11 @@ sub request_btkitty {
 	}
 #	print $list_html;
 	while ($list_html =~ /(http:\/\/btkitty\.\w+\/torrent\/[\w\-]+\.html)/g) {
+		my $seed_info_url = $1;
 		print "$1\n";
-		my $html = `curl -s -A 'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)' '$1'`;
+		#my $html = `curl -s -A 'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)' '$1'`;
+		my $html = get_url($1);
+		next if (length($html) < 100);
 		my $name = $1 if ($html =~ /<meta name="description" content="([\d\D]+?)"/);
 		if (!defined($name)) {
 			$name = $1 if ($html =~ /<span>Name<\/span><\/dt><dd>([\d\D]+?)\.torrent<\/dd>/);
@@ -108,6 +170,10 @@ sub request_btkitty {
 			}
 		}
 		print "$name\t$size_text\t$size\t$file_num\t$created\t$recent_request\t$hot\t$seed_url\t$magnet\n";
+		if (!defined($name) || !defined($size_text) || !defined($magnet)) {
+			print STDERR "abnormal seed info\t$seed_info_url\n";
+			next;
+		}
 		$db_conn->do("replace into seed(sn, magnet, name, size_text, size, file_num, created, recent_request, hot, seed_url) values('$sn', '$magnet', ".$db_conn->quote($name).", '$size_text', $size, $file_num, '$created', '$recent_request', $hot, '$seed_url')");
 	}
 }
@@ -133,8 +199,8 @@ my %forbidden_snns = (
 'av099' => 0,
 'mi024' => 0,
 'goku61' => 0,
-'' => 0,
-'' => 0,
+'bm11' => 0,
+'dsd128' => 0,
 '' => 0,
 '' => 0,
 '' => 0
@@ -167,7 +233,7 @@ sub validate_seed_name {
 	}
 	if (0 || $seed_name =~ /[[:^ascii:]]/) {}
 	else {
-		my @forbidden_words = qw(legalporno bbc nba cocaine goldie ginger microsoft windows chrome google);
+		my @forbidden_words = qw(legalporno bbc nba cocaine goldie ginger microsoft windows chrome google world sql server debian freebsd);
 		foreach my $forbidden_word (@forbidden_words) {
 			return 0 if (defined($seg_index{$forbidden_word}));
 		}

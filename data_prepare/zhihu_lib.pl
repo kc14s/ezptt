@@ -1,6 +1,7 @@
 #!/usr/bin/perl -w
 use strict;
 use utf8;
+use Encode;
 use HTML::Entities;
 use Test::JSON;
 no warnings 'utf8';
@@ -33,7 +34,7 @@ sub get_boards {
                 my $html = post_url($url, \%form);
 		if (index($html, '{') != 0) {
 			print "skip malformed json\n$html\n";
-			sleep(60);
+			sleep(1);
 			next;
 		}
                 my $json = $json_parser->decode($html);
@@ -47,7 +48,7 @@ sub get_boards {
                         $db_conn->do("replace into sub_board values($sbid, $board_id, ".add_slashes($sb_name).")");
                 }
                 last if (@$pa < 20);
-#		last;
+		last;
         }
         return \@boards;
 }
@@ -62,16 +63,18 @@ sub get_zhihu_questions {
 		while (1) {
 			my %form = (
 				start => 0,
-				offset => $time.'.0',
+				#offset => $time.'.0',
+				offset => $time,
 				_xsrf => '777e3e3c5616ac059706b4d409203647'
 		   );
 			my $html = post_url($url, \%form);
 #			if (index($html, '{') != 0 || rindex($html, '}') != length($html) - 1) {
 			if (!is_valid_json($html)) {
 				print "skip malformed json\n$html\n";
-				sleep(60);
+				sleep(1);
 				next;
 			}
+			print $html;
 			my $json = $json_parser->decode($html);
 			my @arr = split('http://schema.org/Question', $json->{'msg'}->[1]);
 			foreach my $item (@arr) {
@@ -80,6 +83,8 @@ sub get_zhihu_questions {
 #               ($sb_id, $sb_name) = ($1, $2) if ($item =~ /href="\/topic\/(\d+)">([\d\D]+?)<\/a>/);
 				my ($qid, $title) = ($1, $2) if ($item =~ / href="\/question\/(\d+)">([\d\D]+?)<\/a>/);
 				next if (!defined($qid));
+				next if (index($title, 'itemprop="answerCount" content="0"') > 0);
+				next if ($qid == 41948235);
 				my $author = $1 if ($item =~ /href="\/people\/.+?">([\d\D]+?)<\/a>/);
 				if (!defined($author)) {
 #					print "question id $qid author not found\n";
@@ -103,7 +108,8 @@ sub get_zhihu_question {
         my $html = get_url($url);
 #       print $html;
 #       return;
-        my $q_title = $1 if ($html =~ /<h2 class="zm-item-title zm-editable-content">\s*([\d\D]+?)\s*<\/h2>/);
+        #my $q_title = $1 if ($html =~ /<h2 class="zm-item-title zm-editable-content">\s*([\d\D]+?)\s*<\/h2>/);
+	my $q_title = $1 if ($html =~ /<span class="zm-editable-content">([\d\D]+?)<\/span>/);
 	my $q_content = undef;
 	$q_content = $1 if ($html =~ /<textarea class="content hidden">\s*([\d\D]+?)\s*<\/textarea>/);
 	if (defined($q_content) && $q_content ne '') {
@@ -129,20 +135,31 @@ sub get_zhihu_question {
 #	$q_title = decode('Guess', $q_title);
 #	$q_content = decode('Guess', $q_content);
 # 	print "question $q_title $q_content\n";
-#	my $sql = 
-	$db_conn->do("replace into question(qid, bid, sbid, title, content) values($qid, $board_id, $sb_id, ".add_slashes($q_title).", ".add_slashes($q_content).")");
+#	my $q_log_html = get_url("http://www.zhihu.com/question/$qid/log");
+	my $q_uid = execute_scalar("select uid from question where qid = $qid");
+	if ($q_uid eq '0') {
+		$q_uid = '';
+		my $q_log_html = decode('utf-8', get_https("https://www.zhihu.com/question/$qid/log"));
+		$q_uid = $1 if ($q_log_html =~ /href="\/people\/([\w\-]+?)">[\S]+?<\/a>\s*<span class="zg-gray-normal">添加了问题<\/span>/);
+	}
+	$db_conn->do("replace into question(qid, bid, sbid, uid, title, content) values($qid, $board_id, $sb_id, '$q_uid', ".add_slashes($q_title).", ".add_slashes($q_content).")");
 #	$db_conn->do("replace into question(qid, bid, sbid, title, content) values($qid, $board_id, $sb_id, '$q_title', '$q_content')");
 	#print "replace into question(qid, bid, sbid, title, content) values($qid, $board_id, $sb_id, '$q_title', '$q_content')\n";
+	print "question $qid $board_id $sb_id $q_uid $q_title\n";
         my @arr = split('class="zm-item-answer ', $html);
         foreach my $item (@arr) {
 #                my $ups = $1 if ($item =~ /<span class="count">([\-\d]+)<\/span>/);
-		my $ups = $1 if ($item =~ /data\-votecount="(\d+)">/);
+		my $ups = 0;
+		$ups = $1 if ($item =~ /data\-votecount="(\d+)">/);
                 my $aid = $1 if ($item =~ /name="answer-(\d+)"/);
                 next if (!defined($aid));
-                my ($author, $nick) = ('', '');
+                my ($author, $uid, $nick) = ('', '', '');
 #($author, $nick) = ($1, $2) if ($item =~ /href="\/people\/[\w\-]+?">([^<]+?)<\/a>，<strong title="([\d\D]+?)"/);
-                $author = $1 if ($item =~ /href="\/people\/[\w\-]+?">([^<]+?)<\/a>/);
+        ($uid, $author) = ($1, $2) if ($item =~ /href="\/people\/([\w\-]+?)"\s*>([^<]+?)<\/a>/);
 		$nick = $1 if ($item =~ /<strong title="([\d\D]+?)"/g);
+		if ($nick eq '') {
+			$nick = $1 if ($item =~ /<span title="([\d\D]+?)" class="bio">/);
+		}
                 my $pub_time = $1 if ($item =~ /data-created="(\d+)"/);
                 if (defined($pub_time) && $pub_time =~ /:/) {
                         print "pub_time malform\n";
@@ -176,6 +193,7 @@ sub get_zhihu_question {
 			$db_conn->do("update answer set ups = $ups, content = ".add_slashes($content).", ups = $ups, good = $good, hot = $hot, pic = $pic where aid = $aid");
 		}
 #print "answer\t$aid $ups $comment_num $author $nick $pub_time ".substr($content, 0, 20)."\n";
+	#download_user_info($uid);
 		print "answer\t$aid $ups $comment_num $author $nick $pub_time\n";
 #               print "item $item\n";
 #               exit;
@@ -194,12 +212,15 @@ sub get_zhihu_question {
                         next if (!defined($comment_id) || $comment_id == 0);
                         my $commenter = '';
                         $commenter = $1 if ($comment =~ /class="zg\-link" title="([\d\D]+?)"/);
+						my $commenter_uid = '';
+						$commenter_uid = $1 if ($comment =~ /\/people\/([\w\-]+?)"/);
                         my $comment_content = $1 if ($comment =~ /<div class="zm-comment-content">\s*([\d\D]*?)\s*<\/div>/);
 						if (!defined($comment_content)) {
 							print "undefined comment content $comment_url $comment\n";
 						}
 			next if ($comment_content eq '');
-                        my $comment_ups = $1 if ($comment =~ /<em>(\d+)<\/em>/);
+			my $comment_ups = 0;
+            $comment_ups = $1 if ($comment =~ /<em>(\d+)<\/em>/);
 			if ($comment_ups_max < $comment_ups) {
 				$comment_ups_max = $comment_ups;
 				$best_comment_length = length($comment_content);
@@ -228,8 +249,8 @@ sub get_zhihu_question {
 				$db_conn->do("update comment set ups = $comment_ups where cid = $comment_id");
 			}
                 }
-		my $reply = (($ups >= 30 && $comment_ups_max * 2 >= $ups) || $ups >= 150 ) && $best_comment_length < 140 ? 1 : 0;
-		if ($reply) {
+		my $reply = ($comment_ups_max >= 30 && $comment_ups_max * 2 >= $ups) && $best_comment_length < 140 ? 1 : 0;
+		if (1 || $reply) {
 			$db_conn->do("update answer set reply = $reply where aid = $aid");
 		}
         }
@@ -257,7 +278,7 @@ sub is_good_answer {
 
 sub is_pic_answer {
 	my ($content, $ups) = @_;
-	if ($ups < 3) {
+	if ($ups < 30) {
 		return 0;
 	}
 	my ($pos, $pic_count) = (-1, 0);
@@ -273,4 +294,54 @@ sub is_pic_answer {
 	}
 	return 0;
 }
+
+sub download_user_info {
+	#return;
+	my $uid = shift;
+	return if (!defined($uid) || $uid eq '');
+	return if (execute_scalar("select count(*) from user where uid = '$uid'") == 1);
+	#my $html = get_https("https://www.zhihu.com/people/$uid/about");
+	my $html = get_https("https://www.zhihu.com/people/$uid");
+	#print $html;
+	#exit;
+	my ($name, $nick, $location, $business, $gender, $ups, $thanks, $asks, $answers, $posts, $collections, $education, $major, $employment, $position) = ('', '', '', '', 0, 0, 0, 0, 0, 0, 0, '', '', '', '');
+	#$name = $1 if ($html =~ /href="\/people\/$uid">([\d\D]+?)<\/a>/);
+	$name = $1 if ($html =~ /<title> ([\d\D]+?) /);
+	$nick = $1 if ($html =~ /<span class="bio" title="([\d\D]+?)">/);
+	$location = $1 if ($html =~ /<span class="location item" title="([\d\D]+?)">/);
+	$business = $1 if ($html =~ /<span class="business item" title="([\d\D]+?)">/);
+	if (index($html, '<i class="icon icon-profile-male">') > 0) {
+		$gender = 1;
+	}
+	elsif (index($html, '<i class="icon icon-profile-female">') > 0) {
+		$gender = 2;
+	}
+	$employment = $1 if ($html =~ /<span class="employment item" title="([\d\D]+?)">/);
+	$position = $1 if ($html =~ /<span class="position item" title="([\d\D]+?)">/);
+	$education = $1 if ($html =~ /<span class="education item" title="([\d\D]+?)">/);
+	$major = $1 if ($html =~ /<span class="education-extra item" title='([\d\D]+?)'>/);
+	$asks = $1 if ($html =~ /\/asks">\s*提问\s*<span class="num">(\d+)<\/span>/);
+	$answers = $1 if ($html =~ /\/answers">\s*回答\s*<span class="num">(\d+)<\/span>/);
+	$posts = $1 if ($html =~ /\/posts">\s*文章\s*<span class="num">(\d+)<\/span>/);
+	$ups = $1 if ($html =~ /<span class="zm-profile-header-user-agree"><span class="zm-profile-header-icon"><\/span><strong>(\d+)<\/strong>/);
+	$thanks = $1 if ($html =~ /<span class="zm-profile-header-user-thanks"><span class="zm-profile-header-icon"><\/span><strong>(\d+)<\/strong>/);
+	print "$uid, $name, $nick, $location, $business, $gender, $ups, $thanks, $asks, $answers, $posts, $collections, $education, $major, $employment\n";
+	$db_conn->do("replace into user(uid, name, nick, location, business, gender, education, major, employment, position, ups, thanks, asks, answers, posts, collections) values('$uid', 
+	".$db_conn->quote($name).",
+	".$db_conn->quote($nick).", "
+	.$db_conn->quote($location).", "
+	.$db_conn->quote($business).", "
+	."$gender, "
+	.$db_conn->quote($education).", "
+	.$db_conn->quote($major).", "
+	.$db_conn->quote($employment).", "
+	.$db_conn->quote($position).", "
+	."$ups, $thanks, $asks, $answers, $posts, $collections)");
+	$html = decode('utf-8', $html);
+	while ($html =~ /${name}在([\d\D]+?)下的回答"/g) {
+		print "topic selection $uid $1\n";
+		$db_conn->do("replace into topic_selection(uid, topic) values('$uid', ".$db_conn->quote($1).")");
+	}
+}
+
 1;

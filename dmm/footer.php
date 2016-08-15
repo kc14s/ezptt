@@ -10,7 +10,7 @@ $(function() {
 }); 
 </script>
 <?
-if (!$is_loyal_user) {
+if (false && !$is_loyal_user) {
 	echo $cpm365_popup;
 	echo $ads360_320_270_float_left;
 	echo $ads360_320_270_float_right;

@@ -55,7 +55,16 @@ sub get_datetime_string {
 
 sub get_https {
 	my $url = $_[0];
-	return `curl -s -S '$url' -A 'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html) --compressed --connect-timeout 3 -m 10' -H 'Cookie: over18=1'`;
+	my $cookie = '';
+	print "fetching $url\n";
+	if (index($url, 'www.zhihu.com') > 0) {
+		return `curl -s -S "$url" -H "Host: www.zhihu.com" -H "User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:38.0) Gecko/20100101 Firefox/38.0" -H "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8" -H "Accept-Language: zh-CN,zh;q=0.8,en-US;q=0.5,en;q=0.3" --compressed -H "Referer: https://www.zhihu.com/people/wang-ye-80" -H "Cookie: q_c1=f1497e92e7fd4f75b25f144bb2026e50|1463626449000|1458300724000; d_c0=""AGBA2nNzogmPTqWus3-2tPHI1nChmajAoHY=|1458300723""; __utma=155987696.1510435070.1464852944.1464852944.1464852944.1; __utmz=155987696.1464852944.1.1.utmcsr=zhihu.com|utmccn=(referral)|utmcmd=referral|utmcct=/people/wang-ye-80/about; _za=8a7641ba-086c-48ad-b84e-807114e90274; _zap=13ef5654-944a-4ff4-b226-624324edf4f6; _xsrf=cbd73748e7beec5149abbf2d928cfad5; l_n_c=1; l_cap_id=""OThkYjQzNTBiNGFiNGUxYmExYzcxOTYzOTdmNjNmNTI=|1464852098|9d9e40da9002a02acf28a58c4fe9039ce9aec5ba""; cap_id=""MWZlNmRlZmM2ZjczNGU0ZTlmZDdjNDBhMDYzMWRjMzA=|1464852098|e8a7037e69ec5b2f6f232b51ab8feaa572d78516""; n_c=1; __utmb=155987696.5.8.1464853004882; __utmc=155987696; a_t=""2.0AACA6F0sAAAXAAAAb2x3VwAAgOhdLAAAAGBA2nNzogkXAAAAYQJVTZprd1cAJ42MpjkKyZH8DaAbNDgxnemIJsOhs8_TM7cebnyAyz4FpVfeTFcitw==""; z_c0=Mi4wQUFDQTZGMHNBQUFBWUVEYWMzT2lDUmNBQUFCaEFsVk5tbXQzVndBbmpZeW1PUXJKa2Z3Tm9CczBPREdkNllnbXd3|1464852122|f0d0d77ad36834164527ace46ff272b073e86cca; __utmt=1" -H "Connection: keep-alive" -H "Cache-Control: max-age=0" --connect-timeout 6 -m 10`;
+		return `curl -s -S '$url' -A 'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)' --compressed --connect-timeout 3 -m 10 $cookie`;
+	}
+	elsif (index($url, 'ptt.cc') > 0) {
+		$cookie = "-H 'Cookie: over18=1'";
+	}
+	return `curl -s -S '$url' -A 'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)' --compressed --connect-timeout 3 -m 10 $cookie`;
 }
 
 sub get_url {
@@ -85,7 +94,7 @@ sub get_url {
 #		$request->header('Accept-Encoding' => HTTP::Message::decodable);
 		$request->header('Accept-Encoding' => 'utf8');
 #		$request->header('Referer' => 'https://www.ptt.cc/ask/over18?from=%2Fbbs%2FSex%2Findex.html');
-		if (index($url, 'douban.com') > 0) {
+		if (index($url, 'zhihu.com') > 0 || index($url, 'btkitty') > 0 || index($url, 'douban.com') > 0) {
 			$proxy_idx = int(rand(scalar @proxies));
 			$ua->no_proxy();
 			$ua->proxy(['http', 'https'], "http://".$proxies[$proxy_idx].'/');
@@ -168,7 +177,7 @@ sub post_url {
 		if (scalar @proxies <= 5) {
 			load_proxy();
 		}
-		if (index($url, 'btkitty') > 0) {
+		if (index($url, 'zhihu.com') > 0 || index($url, 'btkitty') > 0) {
 			$proxy_idx = int(rand(scalar @proxies));
 			$ua->proxy(['http', 'https'], "http://".$proxies[$proxy_idx].'/');
 		}
@@ -177,7 +186,7 @@ sub post_url {
 #			return $response->content;
 			if (defined($response_headers_only) && $response_headers_only == 1) {
 				print "succeed\tpost_url\t$url\t".$response->status_line."\n";
-				print $response->decoded_content;
+				#print $response->decoded_content;
 				return $response->headers->as_string;
 			}
 			else {

@@ -1,4 +1,17 @@
 
+my $ptt_db_conn;
+sub init_ptt_db {
+	my $db_server = '106.184.2.97';
+	my $database = 'douban';
+	my $user = 'root';
+	my $password = 'wy7951610';
+	$ptt_db_conn = DBI->connect("DBI:mysql:database=$database;host=$db_server", $user, $password,  {RaiseError => 1, AutoCommit =>1, mysql_auto_reconnect=>1});
+	$ptt_db_conn->do("set names UTF8");
+	$ptt_db_conn->do("SET time_zone = '+8:00'");
+	$ptt_db_conn->do('SET LOW_PRIORITY_UPDATES=1');
+	$ENV{'ptt_db_conn'} = $ptt_db_conn;
+	return $ptt_db_conn;
+}
 sub discover_boards {
 	my ($html, $featured) = @_;
 	my @arr = split("<li class=\"\">", $html);
@@ -24,6 +37,7 @@ sub discover_boards {
 		}
 		print "board $featured $bid, $pic_name, $bname, $member_num\n";
 		$db_conn->do("replace into board(bid, bname, pic_name, member_num, featured) values('$bid', '$bname', '$pic_name', $member_num, 1)");
+#		$ENV{'ptt_db_conn'}->do("replace into board(bid, bname, pic_name, member_num, featured) values('$bid', '$bname', '$pic_name', $member_num, 1)");
 	}
 
 	while ($html =~ /<span class="from">来自<a href="https:\/\/www\.douban\.com\/group\/(\w+)\/">([\d\D]+?)<\/a><\/span>/g) {
@@ -62,7 +76,7 @@ sub download_featured_topics {
 sub download_douban_topic {
 	my ($bid, $tid) = @_;
 	my $html = get_url("https://www.douban.com/group/topic/$tid/");
-	my ($uname, $nick, $uid, $uicon, $pub_time, $title, $content);
+	my ($uname, $nick, $uid, $uicon, $pub_time, $title, $content, $ups);
 	my %users;
 	if ($html =~ /<a href="https:\/\/www\.douban\.com\/people\/([\w\-]+)\/"><img class="pil" src="https:\/\/img\d\.doubanio\.com\/icon\/([\w\-]+)\.jpg" alt="([\d\D]+?)"\/><\/a>/) {
 		($uid, $uicon, $uname) = ($1, $2, $3);
@@ -84,7 +98,7 @@ sub download_douban_topic {
 		print "https://www.douban.com/group/topic/$tid/ pub_time not found\n";
 		$pub_time = '2000-01-01';
 	}
-	if ($html =~ /<h1>\s*([\d\D]+?)<\/h1>/) {
+	if ($html =~ /<h1>\s*([\d\D]+?)\s*<\/h1>/) {
 		$title = $1;
 	}
 	else {
@@ -98,12 +112,21 @@ sub download_douban_topic {
 		print "https://www.douban.com/group/topic/$tid/ content not found\n";
 		$content = '';
 	}
+	$ups = 0;
+	if ($html =~ /type=like#sep">(\d+)/) {
+		$ups = $1;
+	}
 	$users{$uid} = [$uname, $nick, $uid, $uicon];
 	my $continue = 0;
+	print "topic\t$bid $tid $uid $ups $title $pub_time\n";
 	if (execute_scalar("select count(*) from topic where tid = $tid") == 0) {
 		$continue = 1;
-		$db_conn->do("insert into topic(bid, tid, uid, title, pub_time, content) values('$bid', $tid, '$uid', ".$db_conn->quote($title).", '$pub_time', ".$db_conn->quote($content).")");
+		$db_conn->do("insert into topic(bid, tid, uid, ups, title, pub_time, content) values('$bid', $tid, '$uid', $ups, ".$db_conn->quote($title).", '$pub_time', ".$db_conn->quote($content).")");
 	}
+#	if (execute_scalar("select count(*) from topic where tid = $tid", $ptt_db_conn) == 0) {
+#		$continue = 1;
+#		$ptt_db_conn->do("insert into topic(bid, tid, uid, title, pub_time, content) values('$bid', $tid, '$uid', ".$db_conn->quote($title).", '$pub_time', ".$db_conn->quote($content).")");
+#	}
 	my $json_parser = new JSON;
 	my $commentUps = [];
 	if ($html =~ /var commentsVotes = '(.+?)'/) {
@@ -151,12 +174,16 @@ sub download_douban_topic {
 		my $ups = 0;
 		$ups = $commentUps{"c$cid"} if (defined $commentUps{"c$cid"});
 		$users{$uid} = [$uname, $nick, $uid, $uicon];
+		print "comment\t$tid $cid $uid $pub_time $ups\n";
 		$db_conn->do("replace into comment(tid, cid, uid, pub_time, ups, content) values($tid, $cid, '$uid', '$pub_time', $ups, ".$db_conn->quote($content).")");
+#		$ptt_db_conn->do("replace into comment(tid, cid, uid, pub_time, ups, content) values($tid, $cid, '$uid', '$pub_time', $ups, ".$db_conn->quote($content).")");
 #		print "replace into comment(tid, cid, uid, pub_time, ups, content) values($tid, $cid, $uid, '$pub_time', $ups, ".$db_conn->quote($content).")\n";
 	}
 	for $pa (values %users) {
 		my ($uname, $nick, $uid, $uicon) = @$pa;
+		print "user\t$uid $uname $nick\n";
 		$db_conn->do("replace into user(uid, uname, nick, uicon) values('$uid', ".$db_conn->quote($uname).", ".$db_conn->quote($nick).", '$uicon')");
+#		$ptt_db_conn->do("replace into user(uid, uname, nick, uicon) values('$uid', ".$db_conn->quote($uname).", ".$db_conn->quote($nick).", '$uicon')");
 #		print "replace into user(uid, uname, nick, uicon) values($uid, ".$db_conn->quote($uname).", ".$db_conn->quote($nick).", '$uicon')\n";
 	}
 	return $continue;

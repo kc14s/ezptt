@@ -3,7 +3,8 @@ use strict;
 use DBI;
 require('lib.pl');
 
-my $db_conn = DBI->connect("DBI:mysql:database=zhihu;host=localhost", 'root', '');
+my $db_conn = DBI->connect("DBI:mysql:database=zhihu;host=localhost", 'root', 'wy7951610');
+$db_conn->do('update answer set reply = 0 where reply = 1');
 my $sql = 'select aid, max(ups) from comment where length(content) < 210 and ups >= 30 group by aid';
 my $request = $db_conn->prepare($sql);
 $request->execute;

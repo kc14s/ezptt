@@ -34,8 +34,4 @@ require_once('header.php');
 echo $html;
 require_once('footer.php');
 
-function output_group($videos, $group_name, $sort_by) {
-	return $html;
-}
-
 ?>

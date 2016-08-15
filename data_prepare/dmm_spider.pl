@@ -22,9 +22,11 @@ for (my $channel = 1; $channel <= @boards; ++$channel) {
 	for (my $page = 1; ; ++$page) {
 		my $board_url = "${board_url_template}page=$page/";
 		my $board_html = get_url($board_url);
+		#print $board_html;
 		my @detail_urls;
-		while ($board_html =~ /<a href="(http:\/\/www\.dmm\.co\.jp\/digital\/\w+\/\-\/detail\/=\/cid=\w+\/)">/g) {
+		while ($board_html =~ /<a href="(http:\/\/www\.dmm\.co\.jp\/digital\/\w+\/\-\/detail\/=\/cid=\w+\/)/g) {
 			push @detail_urls, $1;
+			#print "$1\n";
 		}
 		foreach my $detail_url (@detail_urls) {
 			my $detail_html = get_url($detail_url);
@@ -87,10 +89,12 @@ for (my $channel = 1; $channel <= @boards; ++$channel) {
 				}
 			}
 			my @stars;
+			my %stars;
 			if ($detail_html =~ /出演者：<\/td>([\d\D]+?)<\/td>/) {
 				my $span = $1;
 				while ($span =~ /article=actress\/id=(\d+)\/">([\d\D]+?)<\/a>/g) {
 					push @stars, $2;
+					$stars{$2} = $1;
 					if (execute_scalar("select count(*) from star_info where id = $1") == 0) {
 						$db_conn->do("insert into star_info(id, name) values($1, '$2')");
 					}
@@ -115,20 +119,27 @@ for (my $channel = 1; $channel <= @boards; ++$channel) {
 			}
 			my $snn = normalize_sn($sn);
 			print "$title, $release_date, $runtime, $director, $series, $company, $sn, $snn, $fav_count, $rating, $desc, $sample_image_num\n";
+			next if (!defined($title) || !defined($sn));
 			print "genres ".join(',', @genres)."\n";
 			print "stars ".join(', ', @stars)."\n";
 			if (execute_scalar("select count(*) from video where sn = '$sn'") == 0) {
-				$db_conn->do("insert into video(title, release_date, runtime, director, series, company, sn, sn_normalized, fav_count, rating, description, sample_image_num, channel) values('$title', '$release_date', $runtime, '$director', '$series', '$company', '$sn', '$snn', $fav_count, $rating, ".$db_conn->quote($desc).", $sample_image_num, $channel)");
+				$db_conn->do("replace into video(title, release_date, runtime, director, series, company, sn, sn_normalized, fav_count, rating, description, sample_image_num, channel) values('$title', '$release_date', $runtime, '$director', '$series', '$company', '$sn', '$snn', $fav_count, $rating, ".$db_conn->quote($desc).", $sample_image_num, $channel)");
 #				$db_conn->do("delete from genre where sn = '$sn'");
 				foreach my $genre (@genres) {
 					$db_conn->do("replace into genre(sn, genre) values('$sn', '$genre')");
 				}
 #				$db_conn->do("delete from star where sn = '$sn'");
-				foreach my $star (@stars) {
-					$db_conn->do("replace into star(sn, star) values('$sn', '$star')");
-				}
+				#foreach my $star (@stars) {
 			}
-			#get_seeds($sn, $snn, $db_conn);
+			else {
+				$db_conn->do("update video set fav_count = $fav_count, rating = $rating where sn = '$sn'");
+			}
+			$db_conn->do("delete from star where sn = '$sn'");
+			while (my ($star, $star_id) = each %stars) {
+				$db_conn->do("replace into star(sn, star, star_id) values('$sn', '$star', $star_id)");
+			}
+			get_seeds($sn, $snn, $db_conn);
+			get_emule($sn, $snn, $db_conn);
 			next;
 			my %recommend_params;
 			$recommend_params{target_content_id} = $1 if ($detail_html =~ /target_content_id\s*:\s*'(\w+)'/);

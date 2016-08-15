@@ -47,10 +47,12 @@ foreach ($articles as $article) {
 	$html .= '</div>';
 	$html .= '<div class="panel-body">';
 	$content = i18n(preg_replace("/\n+/", "\n", trim($content)));
+	if (true) (
 	$content = preg_replace("/[^\"](http:\/\/[\w\/\.\_\-]+\.jpg)/", "<br><a href=\"$1\" target=\"_blank\"><img data-original=\"$1\" /></a>", $content);
 	$content = preg_replace("/[^\"](http:\/\/[\w\/\.\_\-]+\.png)/", "<br><a href=\"$1\" target=\"_blank\"><img data-original=\"$1\" /></a>", $content);
 	$content = preg_replace("/[^\"](http:\/\/[\w\/\.\_\-]+\.gif)/", "<br><a href=\"$1\" target=\"_blank\"><img data-original=\"$1\" /></a>", $content);
 	$content = preg_replace("/[^\"](http:\/\/ppt.cc[\w\/\.\_\-]+)/", "<br><a href=\"$1\" target=\"_blank\"><img data-original=\"$1@.jpg\" /></a>", $content);
+	}
 	//$content = preg_replace("/(http:\/\/ppt.cc[\w\/\.\_\-]+)</", "<a href=\"$1\" target=\"_blank\"><img src=\"$1@.jpg\" /></a><", $content);
 	$html .= str_replace("\n", '<br>', $content);
 	if (isset($attachments) && count($attachments) > 0) {
@@ -67,6 +69,7 @@ foreach ($articles as $article) {
 	$html .= '</div>';
 	if ($floor <= 3) {
 		$html .= $scupio_728_90;
+		$html .= $v3_960_130;
 	}
 	else {
 		$html .= $baidu_ad;

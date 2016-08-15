@@ -43,23 +43,21 @@ ga('send', 'pageview');
 		</div>
 		<div class="collapse navbar-collapse">
 			<ul class="nav navbar-nav">
-				<li><a href="/list/popularity/1"><?echo i18n('popularity');?></a></li>
-				<li><a href="/list/rank/1"><?echo i18n('hottest');?></a></li>
-				<li><a href="/stars/1"><?echo i18n('top_stars');?></a></li>
-				<li><a href="/best_seller/2015/1"><?echo i18n('best_seller');?></a></li>
+				<li><a href="/best_seller/2016/1"><?echo i18n('best_seller');?></a></li>
 			</ul>
 			<form class="navbar-form navbar-left" role="search" action="/search" method="POST">
 				<div class="form-group">
-					<input type="text" name="sn" class="form-control" placeholder="<?echo i18n('sn');?>">
+					<input type="text" name="sn" class="form-control" placeholder="<?echo i18n('sn');?>" size="10">
 				</div>
 				<button type="submit" class="btn btn-default">Search</button>
 			</form>
 			<form class="navbar-form navbar-left" role="search" action="/emule" method="POST">
 				<div class="form-group">
-					<input type="text" name="kw" class="form-control" placeholder="">
+					<input type="text" name="kw" class="form-control" placeholder="" size="10">
 				</div>
 				<button type="submit" class="btn btn-default"><?echo i18n('seed_download_emule')?></button>
 			</form>
+			<ul class="nav navbar-nav"><li><a href="/discuz/forum.php"><?echo i18n('forum');?></a></li></ul>
 			<div class="btn-group navbar-right">
 				<button type="button" class="btn btn-default dropdown-toggle navbar-btn" data-toggle="dropdown">
 					<? echo i18n('select_language')?><span class="caret"></span>

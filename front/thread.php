@@ -95,7 +95,7 @@ foreach ($articles as $article) {
 	$html .= '</div>';
 	$html .= '<div class="panel-body">';
 	$content = i18n(preg_replace("/\n+/", "\n", trim($content)));
-	if ($is_loyal_user && !$is_spider && strlen($content) < 2000 && !(strpos($content, 'http://') === false)) {
+	if (true && $is_loyal_user && !$is_spider && !(strpos($content, 'http://') === false)) {
 		$content = preg_replace("/(http:\/\/[\w\/\.\_\-]+\.jpg)/", "<br><a href=\"$1\" target=\"_blank\"><img data-original=\"$1\" class=\"img-responsive\" /></a>", $content);
 		$content = preg_replace("/(http:\/\/[\w\/\.\_\-]+\.png)/", "<br><a href=\"$1\" target=\"_blank\"><img data-original=\"$1\" class=\"img-responsive\" /></a>", $content);
 		$content = preg_replace("/(http:\/\/[\w\/\.\_\-]+\.gif)/", "<br><a href=\"$1\" target=\"_blank\"><img data-original=\"$1\" class=\"img-responsive\" /></a>", $content);
@@ -120,6 +120,7 @@ foreach ($articles as $article) {
 	if (!$is_loyal_user) {
 		if (false || $floor == 1 || $floor == 2 || $floor == 3) {
 			$html .= $baidu_ad;
+			$html .= $v3_960_130;
 		}
 		else if ($floor >= 4 && $floor <= 5) {
 			$html .= $scupio_728_90;

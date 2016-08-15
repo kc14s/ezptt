@@ -442,4 +442,21 @@ function show_error($message) {
 	$html .= '</div></div>';
 	return $html;
 }
+
+function duoshuo_html($site_id, $thread_id, $title, $url) {
+	$html = "<div class=\"ds-thread\" data-thread-key=\"$thread_id\" data-title=\"$title\" data-url=\"$url\"></div>
+	<script type=\"text/javascript\">
+	var duoshuoQuery = {short_name:\"$site_id\"};
+		(function() {
+		 var ds = document.createElement('script');
+		 ds.type = 'text/javascript';ds.async = true;
+		 ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		 ds.charset = 'UTF-8';
+		 (document.getElementsByTagName('head')[0] 
+		  || document.getElementsByTagName('body')[0]).appendChild(ds);
+		 })();
+	</script>'";
+	return $html;
+}
+
 ?>
