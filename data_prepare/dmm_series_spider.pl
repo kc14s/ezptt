@@ -38,7 +38,9 @@ for (my $page = 1; ; ++$page) {
 				}
 				$sns{$1} = 0;
 				++$video_found;
-				$db_conn->do("update video set series_id = $series_id where sn = '$1'");
+				my $detail_html = get_url("http://www.dmm.co.jp/digital/videoa/-/detail/=/cid=$1/");
+				my $sn = $1 if ($detail_html =~ /品番：<\/td>\s*<td>([\d\D]+?)<\/td>/);
+				$db_conn->do("update video set series_id = $series_id where sn = '$sn'");
 			}
 			last if ($video_found != 120);
 			last if ($video_continue == 0);

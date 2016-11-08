@@ -165,7 +165,9 @@ sub download_douban_topic {
 			$pub_time = '2000-01-01';
 		}
 		if ($reply =~ /<\/div>\s*([\d\D]+?)\s*<div class="operation_div" id="/) {
+			#$content = substr($1, rindex($1, '</div>') + 6);
 			$content = $1;
+			$content =~ s/[\d\D]+<\/div>\s*//;
 		}
 		else {
 			print "$tid $cid content not found\n";
@@ -174,7 +176,7 @@ sub download_douban_topic {
 		my $ups = 0;
 		$ups = $commentUps{"c$cid"} if (defined $commentUps{"c$cid"});
 		$users{$uid} = [$uname, $nick, $uid, $uicon];
-		print "comment\t$tid $cid $uid $pub_time $ups\n";
+		print "comment\t$tid $cid $uid $pub_time $ups $content\n";
 		$db_conn->do("replace into comment(tid, cid, uid, pub_time, ups, content) values($tid, $cid, '$uid', '$pub_time', $ups, ".$db_conn->quote($content).")");
 #		$ptt_db_conn->do("replace into comment(tid, cid, uid, pub_time, ups, content) values($tid, $cid, '$uid', '$pub_time', $ups, ".$db_conn->quote($content).")");
 #		print "replace into comment(tid, cid, uid, pub_time, ups, content) values($tid, $cid, $uid, '$pub_time', $ups, ".$db_conn->quote($content).")\n";

@@ -15,10 +15,26 @@ $("img").load(function(){
 	}
 });
 </script>
+<script>
+(function(){
+ var bp = document.createElement('script');
+ var curProtocol = window.location.protocol.split(':')[0];
+ if (curProtocol === 'https') {
+ bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+ }
+ else {
+ bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+ }
+ var s = document.getElementsByTagName("script")[0];
+ s.parentNode.insertBefore(bp, s);
+ })();
+</script>
 <?
 if (false || !$is_loyal_user) {
 //	echo $adcash_popunder;
 //	echo $clicksor_full_page;
+	echo $propellerads_ucptt_popunder;
+	echo $bidvertiser_popunder;
 	echo $ads360_320_270_float_left;
 	echo $ads360_320_270_float_right;
 	echo $ads360_doublet;
@@ -41,6 +57,7 @@ if (false || !$is_loyal_user) {
 	echo $zy825_popup;
 	echo $boyulm_cpv_120_240;
 	echo $iiad_phone_cpm_640_200;
+	//echo $propellerads_ucptt_popunder;
 //	echo $uxincm_popup;
 //	echo $lrs_cpc_right_bottom;
 //	echo $lrs_cpc_doublet;
@@ -57,6 +74,8 @@ if (false || !$is_loyal_user) {
 </script>';
 */
 }
+//	require_once('propellads_popunder.php');
+//	echo propellads_popunder();
 if (false && rand(0, 9) == 0) {
 	echo '<iframe width="1" height="1" src="http://www.17k.com/book/1337071.html"></iframe>';
 }
@@ -66,7 +85,7 @@ else if (is_from_china()) {
 }
 */
 if ($is_spider) {
-    echo '<p class="text-center"><a href="http://www.btsmth.com/">水木清华社区</a> <a href="http://www.ucptt.com/">ptt</a> <a href="https://cn.jporndb.com/">japan av porn</a> <a href="http://www.duanzhihu.com/">短知乎</a></p>';
+    echo '<p class="text-center"><a href="http://www.btsmth.com/">水木清华社区</a> <a href="https://www.ucptt.com/">ptt</a> <a href="https://cn.jporndb.com/">japan av porn</a> <a href="http://www.duanzhihu.com/">短知乎</a></p>';
 }
 ?>
 <p class="text-center">Links <a href="http://booklink.me/">booklink</a></p>

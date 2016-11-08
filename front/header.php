@@ -1,5 +1,6 @@
 <?php header("Content-type: text/html; charset=UTF-8");
 require_once("init.php");
+require_once("init_ptt.php");
 require_once('i18n.php');
 ?>
 <!DOCTYPE HTML>
@@ -9,6 +10,7 @@ require_once('i18n.php');
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <link rel="icon" href="data:;base64,iVBORw0KGgo=">
+<meta name="propeller" content="98d8ecc9b30b166f89d0410cd31b7cc0" />
 <title>
 <?php
 if (isset($html_title)) {
@@ -22,12 +24,12 @@ else {
 }
 ?>
 </title>
-<link rel="stylesheet" href="http://cdn.bootcss.com/twitter-bootstrap/3.0.3/css/bootstrap.min.css">
-<link rel="stylesheet" href="http://libs.useso.com/js/jqueryui/1.10.0/css/smoothness/jquery-ui-1.10.0.custom.min.css">
-<script src="http://libs.useso.com/js/jquery/2.1.1/jquery.min.js"></script>
-<script src="http://cdn.bootcss.com/twitter-bootstrap/3.0.3/js/bootstrap.min.js"></script>
-<script src="http://libs.useso.com/js/jqueryui/1.10.4/jquery-ui.min.js"></script>
-<script src="http://libs.useso.com/js/jquery.lazyload/1.9.1/jquery.lazyload.min.js"></script>
+<link rel="stylesheet" href="//cdn.bootcss.com/twitter-bootstrap/3.0.3/css/bootstrap.min.css">
+<link rel="stylesheet" href="//code.jquery.com/ui/1.11.3/themes/smoothness/jquery-ui.css">
+<script src="//code.jquery.com/jquery-2.1.4.min.js"></script>
+<script src="//cdn.bootcss.com/twitter-bootstrap/3.0.3/js/bootstrap.min.js"></script>
+<script src="//code.jquery.com/ui/1.11.4/jquery-ui.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery.lazyload/1.9.1/jquery.lazyload.min.js"></script>
 <script src="/js/auto_complete.js?v=3"></script>
 <meta name="applicable-device" content="pc,mobile">
 <meta name="baidu-site-verification" content="uo47eIda6W" />
@@ -40,6 +42,7 @@ body,button, input, select, textarea,h1 ,h2, h3, h4, h5, h6 { font-family: 'Micr
 if ($_SERVER['SCRIPT_NAME'] == '/index.php') {
 	echo '<base target="_blank" />';
 }
+echo get_hreflang();
 ?>
 <script>
 var _hmt = _hmt || [];
@@ -90,8 +93,8 @@ ga('send', 'pageview');
 </button>
 <? if (!$is_spider) { ?>
 <ul class="dropdown-menu" role="menu">
-<li><a href="http://www.ucptt.com<? echo $_SERVER['REQUEST_URI']; ?>">正體中文</a></li>
-<li><a href="http://cn.ucptt.com<? echo $_SERVER['REQUEST_URI']; ?>">简体中文</a></li>
+<li><a href="//www.ucptt.com<? echo $_SERVER['REQUEST_URI']; ?>">正體中文</a></li>
+<li><a href="//cn.ucptt.com<? echo $_SERVER['REQUEST_URI']; ?>">简体中文</a></li>
 </ul>
 <? } ?>
 </div>

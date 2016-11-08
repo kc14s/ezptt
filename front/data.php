@@ -33,6 +33,15 @@ function conn_ck101_db() {
 	return $db_conn;
 }
 
+function conn_douban_db() {
+	global $db_server, $db_user, $db_password, $douban_database;
+	$db_conn = mysql_pconnect($db_server, $db_user, $db_password);
+	mysql_select_db($douban_database, $db_conn);
+	mysql_query("set names utf8");
+	mysql_query("SET time_zone = '+8:00'");
+	return $db_conn;
+}
+
 function conn_reddit_db() {
 	global $db_server, $db_user, $db_password, $ck101_database;
 	$db_conn = mysql_pconnect($db_server, $db_user, $db_password);
@@ -395,9 +404,10 @@ function is_from_search_engine() {
 		return false;
 	}
 	$referer = $_SERVER['HTTP_REFERER'];
-	$search_engines = array('.google.', 'search.yahoo.com', '.baidu.com', '.sogou.com', 's.maxthon.com', 'web.gougou.com', 'g.firebird.cn', '.so.com', '.sm.cn', 'baidu.mobi');
+	$search_engines = array('.google.', 'yahoo.', '.baidu.', '.sogou.com', 's.maxthon.com', 'web.gougou.com', 'g.firebird.cn', '.so.com', '.sm.cn');
 	foreach ($search_engines as $se) {
 		if (strpos($referer, $se) > 0) {
+			setcookie('is_from_search_engine', 1, time() + 3600 * 24 * 365, '/');
 			return true;
 		}
 	}
@@ -409,7 +419,7 @@ function is_from_cn_search_engine() {
 		return false;
 	}
 	$referer = $_SERVER['HTTP_REFERER'];
-	$search_engines = array('.baidu.com', '.sogou.com', 's.maxthon.com', 'web.gougou.com', 'g.firebird.cn', '.so.com', '.sm.cn', 'baidu.mobi');
+	$search_engines = array('.baidu.', '.sogou.com', 's.maxthon.com', 'web.gougou.com', 'g.firebird.cn', '.so.com', '.sm.cn');
 	foreach ($search_engines as $se) {
 		if (strpos($referer, $se) > 0) {
 			return true;

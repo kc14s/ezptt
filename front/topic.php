@@ -3,15 +3,15 @@
 require_once("init.php");
 $db_conn = conn_db();
 require_once("i18n.php");
-require_once("../Mobile-Detect/Mobile_Detect.php");
+//require_once("../Mobile-Detect/Mobile_Detect.php");
 $is_spider = is_spider();
 $is_from_search_engine = is_from_search_engine();
 if ($ptt_allow == 0 && !$is_spider && !$is_from_search_engine) {
 	header('HTTP/1.1 404 Not Found');
 	exit();
 }
-$detect = new Mobile_Detect;
-$baidu_ad = $detect->isMobile() && !$detect->isTablet() ? $baidu_ucptt_mobile_6_5 : $baidu_ucptt_pc_960_90;
+//$detect = new Mobile_Detect;
+//$baidu_ad = $detect->isMobile() && !$detect->isTablet() ? $baidu_ucptt_mobile_6_5 : $baidu_ucptt_pc_960_90;
 $bid = (int)$_GET['bid'];
 $tid = $_GET['tid'];
 $en_name = execute_scalar("select en_name from board where id = $bid");
@@ -36,7 +36,7 @@ while (list($prev_title, $prev_tid) = mysql_fetch_array($result)) {
 }
 
 $html = "<div class=\"col-md-8 col-md-offset-2 col-xs-12\"><a href=\"/disp\">Disp</a> &gt; $en_name<h3>".i18n($topic_title)."</h3>";
-$html .= $baidu_ad;
+//$html .= $baidu_ad;
 $floor = 1;
 foreach ($articles as $article) {
 	list($author, $time, $content, $attachments) = $article;
@@ -47,7 +47,7 @@ foreach ($articles as $article) {
 	$html .= '</div>';
 	$html .= '<div class="panel-body">';
 	$content = i18n(preg_replace("/\n+/", "\n", trim($content)));
-	if (true) (
+	if (true) {
 	$content = preg_replace("/[^\"](http:\/\/[\w\/\.\_\-]+\.jpg)/", "<br><a href=\"$1\" target=\"_blank\"><img data-original=\"$1\" /></a>", $content);
 	$content = preg_replace("/[^\"](http:\/\/[\w\/\.\_\-]+\.png)/", "<br><a href=\"$1\" target=\"_blank\"><img data-original=\"$1\" /></a>", $content);
 	$content = preg_replace("/[^\"](http:\/\/[\w\/\.\_\-]+\.gif)/", "<br><a href=\"$1\" target=\"_blank\"><img data-original=\"$1\" /></a>", $content);
@@ -72,18 +72,12 @@ foreach ($articles as $article) {
 		$html .= $v3_960_130;
 	}
 	else {
-		$html .= $baidu_ad;
+//		$html .= $baidu_ad;
 	}
 	++$floor;
 }
-if (isset($prev_topics)) {
-		$html .= '<div class="panel panel-default"><div class="panel-heading">'.i18n('jixuyuedu').'</div>';
-		$html .= '<div class="list-group">';
-		foreach ($prev_topics as $topic) {
-				list($title, $tid) = $topic;
-				$html .= "<a href=\"/topic/$bid/$tid\" class=\"list-group-item\">".i18n($title)."</a>";
-		}
-		$html .= '</div></div>';
+if (false || $is_spider) {
+	$html .= get_old_ck101_topic_html();
 }
 $html .= '<p><a href="/">PTT</a> <a href="/disp">disp</a></p></div>';
 

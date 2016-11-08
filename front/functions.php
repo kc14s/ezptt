@@ -4,7 +4,7 @@ require_once("data.php");
 function is_spider() {
 	if (!isset($_SERVER['HTTP_USER_AGENT'])) return false;
 	$ua = $_SERVER['HTTP_USER_AGENT'];
-	if (strpos($ua, 'Baiduspider') === false && strpos($ua, 'Googlebot') === false && strpos($ua, 'baidu Transcoder') === false && strpos($ua, 'msnbot') === false && strpos($ua, 'Sogou') === false && strpos($ua, 'Sosospider') === false && strpos($ua, 'Yahoo!') === false && strpos($ua, 'Kmspider') === false && strpos($ua, 'Mediapartners-Google') === false && strpos($ua, 'YoudaoBot') === false && strpos($ua, '360Spider') === false && strpos($ua, 'bingbot') === false && strpos($ua, 'JikeSpider') === false && strpos($ua, 'EasouSpider') === false) {
+	if (strpos($ua, 'Baiduspider') === false && strpos($ua, 'Googlebot') === false && strpos($ua, 'baidu Transcoder') === false && strpos($ua, 'msnbot') === false && strpos($ua, 'Sogou') === false && strpos($ua, 'Sosospider') === false && strpos($ua, 'Yahoo!') === false && strpos($ua, 'Kmspider') === false && strpos($ua, 'Mediapartners-Google') === false && strpos($ua, 'YoudaoBot') === false && strpos($ua, '360Spider') === false && strpos($ua, 'bingbot') === false && strpos($ua, 'JikeSpider') === false && strpos($ua, 'EasouSpider') === false && strpos($ua, 'addthis') === false && strpos($ua, 'yandex.com') === false) {
 		return false;
 	}
 	else {
@@ -255,6 +255,25 @@ function get_old_ck101_topic_html() {
 	return $html;
 }
 
+function get_rand_douban_topic_html() {
+	require_once('i18n.php');
+	list($tid_max, $tid_min) = execute_vector('select max(tid), min(tid) from douban.topic');
+	//$result = mysql_query('select title, uname, tid from douban.topic force index tid_index, douban.user where douban.topic.uid = douban.user.uid and tid > '.rand($tid_min, $tid_max).' order by tid limit 10');
+	$result = mysql_query('select title, tid, uid from douban.topic where tid > '.rand($tid_min, $tid_max).' order by tid limit 10');
+	while (list($title, $tid, $uid) = mysql_fetch_array($result)) {
+		$uname = execute_scalar("select uname from douban.user where uid = '$uid'");
+		$old_topics[] = array($title, $uname, $tid);
+	}
+	$html = '<div class="panel panel-default"><div class="panel-heading">'.i18n('jixuyuedu').'</div>';
+	$html .= '<div class="list-group">';
+	foreach ($old_topics as $topic) {
+		list($title, $author,  $tid) = $topic;
+		$html .= "<a href=\"http://www.ucptt.com/douban/$tid\" class=\"list-group-item\">".i18n($title.' '.$uname)." </a>";
+	}
+	$html .= '</div></div>';
+	return $html;
+}
+
 function get_rand_reddit_topic_html() {
 	list($id_max, $id_min) = execute_vector('select max(sid), min(sid) from reddit.topic');
 	$result = mysql_query('select subreddit, title, author, id from reddit.topic where sid > '.rand($id_min, $id_max).' order by sid limit 10');
@@ -388,12 +407,13 @@ function get_ck101_board_random_topic($bid) {
 	$html .= '<div class="list-group">';
 	while (list($tid, $title, $author) = mysql_fetch_array($result)) {
 		$title = i18n($title);
-		$author = i18n($author);
+		//$author = i18n($author);
 		$lowcase_title = strtolower($title);
 		if (strpos($lowcase_title, 'line') > 0 || strpos($lowcase_title, 'wechat') > 0 || strpos($lowcase_title, 'qq') > 0 || strpos($lowcase_title, '茶') > 0) {
 			continue;
 		}
-		$html .= "<a href=\"http://$sub_domain.ucptt.com/ck101/$bid/$tid\" class=\"list-group-item\" target=\"_blank\">$title<span class=\"pull-right\">$author</span></a>";
+//		$html .= "<a href=\"https://$sub_domain.ucptt.com/ck101/$bid/$tid\" class=\"list-group-item\" target=\"_blank\">$title<span class=\"pull-right\">$author</span></a>";
+		$html .= "<a href=\"https://cn.jporndb.com/ck101/$bid/$tid\" class=\"list-group-item\" target=\"_blank\">$title<span class=\"pull-right\">$author</span></a>";
 	}
 	$html .= '</div></div>';
 	return $html;
@@ -457,6 +477,10 @@ function duoshuo_html($site_id, $thread_id, $title, $url) {
 		 })();
 	</script>'";
 	return $html;
+}
+
+function start_with($s1, $s2) {
+	return strpos($s1, $s2) === 0;
 }
 
 ?>

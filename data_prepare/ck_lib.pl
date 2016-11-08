@@ -25,9 +25,10 @@ sub get_ck_boards {
 			}
 		}
 	}
-	while ($html =~ /<ul class="p_pop h_pop" id="mn_(\w+)_menu" style="display: none">([\d\D]+?)<\/ul>/g) {
+	while ($html =~ /<ul class="p_pop h_pop" id="mn_(\w+?)_menu" style="display: none">([\d\D]+?)<\/ul>/g) {
 		my $board_group_id = $1;
 		my $boards_html = $2;
+		print "$1 $2\n";
 		while ($boards_html =~ /<a onclick="ga\('send','event', 'navs','([\d\D]+?)'\);"\s+href="http:\/\/(.+?)"/g) {
 			my $cn_name = $1;
 			my $bid = 0;
@@ -53,6 +54,17 @@ sub get_ck_boards {
 	return \%boards;
 }
 
+sub get_ck_boards_from_db {
+	$db_conn = $ENV{'db_conn'};
+	my $boards = execute_dataset("select id, group_name, cn_name from board");
+	my %boards;
+	for my $board (@$boards) {
+		$boards{$board->[0]} = [$board->[1], $board[2]];
+		print "$board->[0], $board->[1], $board->[2]\n";
+	}
+	return \%boards;
+}
+
 sub get_ck_topics {
 	my $bid = $_[0];
 	for (my $page = 1; $page < 1000000; ++$page) {
@@ -63,9 +75,9 @@ sub get_ck_topics {
 			my ($tid, $span) = ($1, $2);
 			my ($author, $pub_time, $title);
 #			if ($span =~ /ck101\.com\/space-uid-\d+.html"\s*>([\d\D]+?)<\/a><\/cite>/) {
-			if ($span =~ /<a class="ellipsis" href="home.php\?mod=space&amp;uid=\d+"\s*>([\d\D]+?)<\/a>/) {
-				$author = $1;
-			}
+#			if ($span =~ /<a class="ellipsis" href="home.php\?mod=space&amp;uid=\d+"\s*>([\d\D]+?)<\/a>/) {
+#				$author = $1;
+#			}
 			if ($span =~ /<\/cite>\s*<br>\s*<span>([\d\-\s:]+)<\/span>/) {
 				$pub_time = "$1:00";
 			}
@@ -80,12 +92,12 @@ sub get_ck_topics {
 			if ($span =~ /<h2>([\d\D]+?)<\/h2>/g) {
 				$title = $1;
 			}
-			if (!defined($author) || !defined($pub_time) || !defined($title)) {
+			if (!defined($pub_time) || !defined($title)) {
 				print "ERROR list $bid $page $tid $author $pub_time $title\n";
 			}
 			else {
 				push @topics, [$bid, $tid, $title, $author, $pub_time];
-				print "$tid, $title, $author, $pub_time\n";
+				print "$tid, $title, $pub_time\n";
 			}
 		}
 		if (!download_ck_topics(@topics)) {
@@ -107,8 +119,11 @@ sub download_ck_topics {
 		my $url = "http://ck101.com/thread-$tid-1-1.html";
 		my $html = get_url($url);
 		my @spans = split(/div id="post_\d+" class="plhin">/, $html);
+		#my @spans = split('class="plhin">', $html);
 		my @articles;
-		foreach my $span (@spans) {
+		for (my $i = 1; $i < @spans; ++$i) {
+			my $span = $spans[$i];
+			#print "spans $i $span\n";
 			my ($aid, $author, $pub_time, $content);
 #			$aid = $1 if ($span =~ /<table id="pid(\d+)" class="plhin"/);
 			$aid = $1 if ($span =~ /div id="favatar(\d+)/);

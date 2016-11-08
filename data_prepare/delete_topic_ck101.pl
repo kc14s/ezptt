@@ -5,7 +5,7 @@ require('config.pl');
 require('lib.pl');
 
 if (@ARGV < 1) {
-	print "usage: ./delete_topic.pl tid1\n";
+	print "usage: ./delete_topic.pl tid\n";
 	exit;
 }
 my $db_conn = init_db();

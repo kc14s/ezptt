@@ -2,11 +2,11 @@
 require_once("init.php");
 $db_conn = conn_ck101_db();
 require_once("i18n.php");
-require_once("../Mobile-Detect/Mobile_Detect.php");
+//require_once("../Mobile-Detect/Mobile_Detect.php");
 $is_spider = is_spider();
 $is_from_search_engine = is_from_search_engine();
-$detect = new Mobile_Detect;
-$baidu_ad = $detect->isMobile() && !$detect->isTablet() ? $baidu_ucptt_mobile_6_5 : $baidu_ucptt_pc_960_90;
+//$detect = new Mobile_Detect;
+//$baidu_ad = $detect->isMobile() && !$detect->isTablet() ? $baidu_ucptt_mobile_6_5 : $baidu_ucptt_pc_960_90;
 $bid = (int)$_GET['bid'];
 $tid = (int)$_GET['tid'];
 $board_cn_name = execute_scalar("select cn_name from board where id = $bid");
@@ -40,14 +40,14 @@ if (false || $is_spider) {
 if (!$is_spider) {
 	$html .= $scupio_video_expand;
 }
-$html .= "<div class=\"col-md-6 col-md-offset-2 col-xs-12\"><ol class=\"breadcrumb\"><li>CK101</li><li>$board_cn_name</li></ol><h3>".i18n($topic_title)."</h3>";
+$html .= "<div class=\"col-md-8 col-md-offset-1 col-xs-12\"><ol class=\"breadcrumb\"><li>CK101</li><li>$board_cn_name</li></ol><h3>".i18n($topic_title)."</h3>";
 if (!$is_loyal_user) {
 //	$html .= $google_320_100;
 //	$html .= $chitika_468_60;
 //	$html .= $bloggerads_banner;
 //	$html .= $digitalpoint_468_60;
 //	$html .= $adcash_popunder;
-	$html .= $baidu_ad;
+//	$html .= $baidu_ad;
 }
 $floor = 1;
 if (isset($articles)) {
@@ -81,8 +81,8 @@ if (isset($articles)) {
 		$html .= '</div>';
 		if (!$is_loyal_user) {
 			if (true || $floor == 1 || $floor == 2) {
-//				$html .= $scupio_728_90;
-				$html .= $baidu_ad;
+				$html .= $scupio_728_90;
+//				$html .= $baidu_ad;
 			}
 			else if ($floor == 3) {
 //				$html .= $bloggerads_banner;
@@ -112,7 +112,7 @@ if (false || $is_spider) {
 $html .= '</div>';
 require_once('../dmm/dmm_lib.php');
 $dmm_db = conn_dmm_db();
-$result = mysql_query("select title, sn, channel from video where rank >= ".rand(0, 40)." order by rank limit 10");
+$result = mysql_query("select title, sn, channel from video where rank >= ".rand(0, 100)." order by rank limit 10");
 while (list($title, $sn, $channel) = mysql_fetch_array($result)) {
 	$video = array($title, $sn, $channel);
 	$videos[] = $video;

@@ -26,6 +26,7 @@ else if (isset($_GET['reply']) && $_GET['reply'] == 1) $type = 'reply';
 else if (isset($_GET['pic']) && $_GET['pic'] == 1) $type = 'pic';
 $result = mysql_query("select aid, ups, author, nick, answer.content, pub_time, qid from answer where $type = 1 $condition limit $page_size");
 while (list($aid, $ups, $author, $nick, $content, $pub_time, $qid) = mysql_fetch_array($result)) {
+	if ($qid == 24495640 || $qid == 23420801) continue;
 	list($title, $bid, $sbid) = execute_vector("select title, bid, sbid from question where qid = $qid");
 	if (!isset($title) || $title == '') continue;
 	$title = i18n($title);

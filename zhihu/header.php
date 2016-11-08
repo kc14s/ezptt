@@ -9,6 +9,7 @@ require_once('i18n.php');
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
 <meta name="applicable-device" content="pc,mobile" />
 <meta name="baidu-site-verification" content="EviUseUxzL" />
+<meta name="propeller" content="44a0e10d0b8967e6ecc809d269aa6c7f" />
 <link rel="icon" href="data:;base64,iVBORw0KGgo=">
 <title>
 <?php

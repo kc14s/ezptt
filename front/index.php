@@ -36,6 +36,8 @@ foreach ($categories as $category) {
 	foreach ($topics as $topic) {
 		list($en_name, $bid, $tid1, $tid2, $title, $author, $attachments) = $topic;
 		$title = i18n($title);
+		$title = preg_replace('/<.+>/', '', $title);
+		$title = htmlspecialchars($title);
 		$html .="<a class=\"list-group-item\" href=\"/article/$en_name/$tid1/$tid2\">[$en_name] $title<span class=\"pull-right\">$author</span>";
 		if (isset($attachments) && strlen($attachments) > 0) {
 			$html .= '<br>';

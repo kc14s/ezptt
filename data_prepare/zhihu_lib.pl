@@ -48,7 +48,7 @@ sub get_boards {
                         $db_conn->do("replace into sub_board values($sbid, $board_id, ".add_slashes($sb_name).")");
                 }
                 last if (@$pa < 20);
-		last;
+#		last;
         }
         return \@boards;
 }
@@ -74,14 +74,13 @@ sub get_zhihu_questions {
 				sleep(1);
 				next;
 			}
-			print $html;
 			my $json = $json_parser->decode($html);
 			my @arr = split('http://schema.org/Question', $json->{'msg'}->[1]);
 			foreach my $item (@arr) {
 				$time = $1 if ($item =~ /data-timestamp="(\d+?)000"/ && $time > $1);
 #               my ($sb_id, $sb_name) = (0, '');
 #               ($sb_id, $sb_name) = ($1, $2) if ($item =~ /href="\/topic\/(\d+)">([\d\D]+?)<\/a>/);
-				my ($qid, $title) = ($1, $2) if ($item =~ / href="\/question\/(\d+)">([\d\D]+?)<\/a>/);
+				my ($qid, $title) = ($1, $2) if ($item =~ / href="\/question\/(\d+)".+?>([\d\D]+?)<\/a>/);
 				next if (!defined($qid));
 				next if (index($title, 'itemprop="answerCount" content="0"') > 0);
 				next if ($qid == 41948235);
@@ -211,7 +210,7 @@ sub get_zhihu_question {
                         my $comment_id = $1 if ($comment =~ /name="comment\-(\d+)"/);
                         next if (!defined($comment_id) || $comment_id == 0);
                         my $commenter = '';
-                        $commenter = $1 if ($comment =~ /class="zg\-link" title="([\d\D]+?)"/);
+                        $commenter = $1 if ($comment =~ /class="zg\-link author\-link" title="([\d\D]+?)"/);
 						my $commenter_uid = '';
 						$commenter_uid = $1 if ($comment =~ /\/people\/([\w\-]+?)"/);
                         my $comment_content = $1 if ($comment =~ /<div class="zm-comment-content">\s*([\d\D]*?)\s*<\/div>/);

@@ -1,4 +1,22 @@
 <?
+/*
+$protocol = $_SERVER['SERVER_PROTOCOL'];
+if (is_from_china()) {
+	if (strpos($protocol, 'HTTP/') === 0) {
+		header('Location: https://www.ucptt.com'.$_SERVER['REQUEST_URI'], TRUE, 301);
+		exit;
+	}
+}
+else {
+	if (strpos($protocol, 'HTTPS/') === 0) {
+		header('Location: http://www.ucptt.com'.$_SERVER['REQUEST_URI'], TRUE, 301);
+		exit;
+	}
+}
+//*/
+if ($is_google_spider && $_SERVER['HTTP_HOST'] == 'cn.ucptt.com') {
+	header('Location: http://www.ucptt.com'.$_SERVER['REQUEST_URI'], TRUE, 301);
+}
 require_once('ZhConversion.php');
 $lang = 'zh_TW';
 if ($_SERVER['HTTP_HOST'] == 'cn.ucptt.com') {
@@ -61,15 +79,40 @@ $i18n = array(
 )
 );
 
+$is_default_tw = strpos($_SERVER['PHP_SELF'], '/douban') === 0 ? false : true;
+
+function get_hreflang() {
+	global $lang;
+	$protocol = $_SERVER['HTTPS'] ? 'https' : 'http';
+	if ($lang == 'zh_TW') {
+		return '<link rel="alternate" hreflang="zh_CN" href="'.$protocol.'://cn.ucptt.com'.$_SERVER['REQUEST_URI'].'" />';
+	}
+	else if ($lang == 'zh_CN') {
+		return '<link rel="alternate" hreflang="zh_CN" href="'.$protocol.'://www.ucptt.com'.$_SERVER['REQUEST_URI'].'" />';
+	}
+	return '';
+}
+
 function i18n($key) {
-	global $lang, $i18n;
+	global $lang, $i18n, $is_default_tw;
 	if (isset($i18n[$lang][$key])) return $i18n[$lang][$key];
 	if ($lang == 'zh_TW') {
-		return $key;
+		if ($is_default_tw) {
+			return $key;
+		}
+		else {
+			global $zh2Hant, $zh2TW;
+			return strtr(strtr($key, $zh2TW), $zh2Hant);
+		}
 	}
 	else {
-		global $zh2Hans, $zh2CN;
-		return strtr(strtr($key, $zh2CN), $zh2Hans);
+		if ($is_default_tw) {
+			global $zh2Hans, $zh2CN;
+			return strtr(strtr($key, $zh2CN), $zh2Hans);
+		}
+		else {
+			return $key;
+		}
 	}
 }
 ?>

@@ -1,8 +1,9 @@
 <?
+//ptt
 require_once("init.php");
 $db_conn = conn_ezptt_db();
 require_once("i18n.php");
-require_once("../Mobile-Detect/Mobile_Detect.php");
+//require_once("../Mobile-Detect/Mobile_Detect.php");
 $is_spider = is_spider();
 $is_from_search_engine = is_from_search_engine();
 if (0 && $ptt_allow == 0 && !$is_spider && !$is_from_search_engine) {
@@ -64,8 +65,9 @@ if (!$is_loyal_user && !$is_spider) {
 	$html .= $scupio_video_expand;
 }
 $html .= "<div class=\"col-md-8 col-md-offset-2 col-xs-12\"><ol class=\"breadcrumb\"><li><a href=\"/\">PTT</a></li><li><a href=\"/board/$en_name/\">$en_name</a></li></ol><h3>".i18n($topic_title)."</h3></div>";
-$detect = new Mobile_Detect;
-$baidu_ad = $detect->isMobile() && !$detect->isTablet() ? $baidu_ucptt_mobile_6_5 : $baidu_ucptt_pc_960_90;
+//$detect = new Mobile_Detect;
+//$baidu_ad = $detect->isMobile() && !$detect->isTablet() ? $baidu_ucptt_mobile_6_5 : $baidu_ucptt_pc_960_90;
+$html .= "<div class=\"col-md-6 col-md-offset-2 col-xs-12\">";
 if (false || !$is_loyal_user) {
 //	$html .= $google_320_100;
 //	$html .= $chitika_468_60;
@@ -79,7 +81,6 @@ if (false || !$is_loyal_user) {
 //	$html .= $revenuehits_popunder;
 //	$html .= $baidu_ad;
 }
-$html .= "<div class=\"col-md-6 col-md-offset-2 col-xs-12\">";
 $floor = 1;
 foreach ($articles as $article) {
 	list($author, $time, $content, $attachments, $nick, $author_link) = $article;
@@ -119,7 +120,7 @@ foreach ($articles as $article) {
 	$html .= '</div>';
 	if (!$is_loyal_user) {
 		if (false || $floor == 1 || $floor == 2 || $floor == 3) {
-			$html .= $baidu_ad;
+//			$html .= $baidu_ad;
 			$html .= $v3_960_130;
 		}
 		else if ($floor >= 4 && $floor <= 5) {
@@ -170,9 +171,29 @@ if (false || $is_spider) {
 }
 if (false || $is_spider) {
 	$html .= get_old_ck101_topic_html();
+	$html .= get_rand_douban_topic_html();
 }
 $html .= '</div>';
-if (!$is_loyal_user) {
+if ($en_name == 'japanavgirls') {
+	require_once('../dmm/dmm_lib.php');
+	$dmm_db = conn_dmm_db();
+	$result = mysql_query("select title, sn, channel from video where rank >= ".rand(0, 100)." order by rank limit 5");
+	while (list($title, $sn, $channel) = mysql_fetch_array($result)) {
+		$video = array($title, $sn, $channel);
+		$videos[] = $video;
+	}
+	$html .= '<div class="col-md-2 hidden-xs hidden-sm">';
+	$dmm_domain = 'www';
+	if ($lang == 'zh_CN') $dmm_domain = 'cn';
+	else if ($lang = 'zh_TW') $dmm_domain = 'tw';
+	foreach ($videos as $video) {
+		list($title, $sn, $channel) = $video;
+		$html .= '<div class="row">';
+		$html .= "<div class=\"thumbnail\"><a href=\"https://$dmm_domain.jporndb.com/video/$sn\" target=\"_blank\"><img data-original=".get_cover_img_url($sn, $channel)."><br>$title</a></div></div>";
+	}
+	$html .= '</div>';
+}
+else if (!$is_loyal_user) {
 	$html .= '<div class="col-md-2 hidden-xs hidden-sm">';
 	//$jandan_pics = get_jandan_pics(rand(0, 1), $floor);
 	$jandan_pics = get_jandan_pics(0, $floor > 10 ? 10 : $floor);

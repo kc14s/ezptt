@@ -64,7 +64,16 @@ sub get_https {
 	elsif (index($url, 'ptt.cc') > 0) {
 		$cookie = "-H 'Cookie: over18=1'";
 	}
-	return `curl -s -S '$url' -A 'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)' --compressed --connect-timeout 3 -m 10 $cookie`;
+	my $proxy_idx = -1;
+	if (1 && scalar @proxies <= 10) {
+		load_proxy();
+	}
+	my $proxy = '';
+	if (index($url, 'zhihu.com') > 0 || index($url, 'btkitty') > 0 || index($url, 'douban.com') > 0) {
+		$proxy_idx = int(rand(scalar @proxies));
+		$proxy = "-x $proxies[$proxy_idx]";
+	}
+	return `curl -s -S '$url' -A 'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)' --compressed --connect-timeout 3 -m 10 $cookie $proxy`;
 }
 
 sub get_url {
@@ -103,6 +112,9 @@ sub get_url {
 		}
 		elsif (index($url, 'ck101.com') >= 0) {
 			$request->header('Cookie' => '__cfduid=d74ab99ef3072bdb47b0678f88d2b66681404958312957; Lre7_9bf0_saltkey=Icch8CNo; Lre7_9bf0_lastvisit=1404954713; Lre7_9bf0_sid=e71lWt; Lre7_9bf0_lastact=1404958570%09agree18.php%09; _ga=GA1.2.569121392.1404958318; _dc=1; __asc=ca80cb291471e0aa03d42d23cd6; __auc=ca80cb291471e0aa03d42d23cd6; Lre7_9bf0_sendmail=1; __gads=ID=a2c3135d0c4cc793:T=1404958325:S=ALNI_MZC58rdQnMM4XY-dB9FJKF-hugo-Q; Lre7_9bf0_viewid=tid_3024583; fbm_455878464472095=base_domain=.ck101.com; PHPSESSID=mp37ph8r1q1p512t3h7mj833n7; Lre7_9bf0_ulastactivity=44c14jhewCZ5NEWGynewy4zWTJD04p83%2FNfvfLJTpCpWbx6S30iL; Lre7_9bf0_auth=b49bCklr9l68I1l%2BZi7lhrl133l%2BK7h8aGBUE39yG6L%2F8uQYoitLwmsCxTVcTZxGXHt74nhuIEiGiZU7LcWFpFu%2BCHZx; Lre7_9bf0_checkpm=1; Lre7_9bf0_nofavfid=1; Lre7_9bf0_visitedfid=622D1226; Lre7_9bf0_forum_lastvisit=D_622_1404958563; fbsr_455878464472095=Rf-mzCfKzaIwtPV8SITQEx9UPgifUvkN_urebIoFIyI.eyJhbGdvcml0aG0iOiJITUFDLVNIQTI1NiIsImNvZGUiOiJBUUJ0S1dNRjk2cFJVQldEQXF0dTJ4SzY0akpZM044enk0U3BWWnBtcktYUEtMWDZ0blNOa2pNcWxpTHEwX2dZVDY5Mm9mYkRMaEtCc3JHRzZ3NkdPSk9DZzJSdjN0bzRSYmhyZ3FzUm4yNWw3RE11b1BPSmxyUVNHUk9lVXlhbExwcncwYVBCUHVpVnNoWDZBWWhaWHpsVmtQSHc0bnd1VC1JZmMza1ZWVm0wZ2s3R092UFJUZEc5M1cyNk4wbzUydlE3QU50RUxzRDVYMGU2RzdJaDV4b3ZCaVlPZTM1MWdZMjNiQ2FlRllwY0N2NC1sN3RCR0VJT0Q0T0FZUl9abXBqcTZCQU9UOExEQ0hTXzBqRy1mNV9ZSkpjTWowVS1NMDZsdnNxVFBVRG00SzlGY1lMMGRYb01GQWFXQ2VLaW5mcmFGaU9IdlI0NlN0OVBERGZ6N1ZaekJIei1mQzMxalR5TGhyU1VOSDh3SlEiLCJpc3N1ZWRfYXQiOjE0MDQ5NTg1NzMsInVzZXJfaWQiOiIxMDAwMDI5NTcxODU1NjQifQ; Lre7_9bf0_agree18=1');
+		}
+		elsif (index($url, 'mgstage.com') > 0) {
+			$request->header('Cookie' => 'PHPSESSID=v1eune0m1dnmo3p37r7l1jai92; uuid=7df6f701b55868ba9ccac4f2abe8e49d; coc=1; __ulfpc=201609051947438992; _ga=GA1.2.2022183794.1473076063; adc=1; _gat=1');
 		}
 		my $response = $ua->request($request);
 #               print $response->content."\n\n".$response->decoded_content(charset => 'none')."\n\n";
@@ -252,7 +264,20 @@ sub execute_column {
 		}
 	}                       
 	return @ret;     
+}
 
+sub execute_dataset {
+	my ($sql, $conn) = @_;  
+	$conn = $ENV{'db_conn'} if (!defined($conn));
+	my $request = $conn->prepare($sql);
+	$request->execute();
+	my @ret;
+	while (my @result = $request->fetchrow_array) {
+		if (@result) {
+			push @ret, \@result;
+		}
+	}                       
+	return \@ret;     
 }
 
 sub get_all_boards {

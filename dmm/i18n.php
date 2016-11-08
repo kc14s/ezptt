@@ -1,4 +1,15 @@
 <?
+#error_log("language ".$_SERVER["HTTP_ACCEPT_LANGUAGE"]);
+//*
+require_once('init.php');
+if (false || $is_spider || $is_from_search_engine || $_COOKIE['is_from_search_engine'] == 1 || isset($_COOKIE['xM2S_2132_auth']) || (isset($_SERVER["HTTP_ACCEPT_LANGUAGE"]) && str_contain($_SERVER["HTTP_ACCEPT_LANGUAGE"], 'zh'))) {}
+else {
+	header("HTTP/1.1 301 Moved Permanently"); 
+	header("Location: /discuz/forum.php?mod=forumdisplay&fid=2"); 
+	error_log("reject ".$_SERVER["HTTP_ACCEPT_LANGUAGE"].' '.$_SERVER['HTTP_USER_AGENT']);
+	exit;
+}
+//*/
 require_once('ZhConversion.php');
 $lang = 'en_US';
 $sub_domain = substr($_SERVER['HTTP_HOST'], 0, 2);
@@ -20,7 +31,7 @@ function get_lang_short() {
 $i18n = array(
 'zh_CN' => array(
 'star' => '女优',
-'company' => '发行商',
+'company' => '片商',
 'director' => '导演',
 'genre' => '标签',
 'sn' => '番号',
@@ -57,13 +68,33 @@ $i18n = array(
 'no_search_result' => '无检索结果',
 'forum' => '论坛',
 'favourite' => '最受欢迎',
-'share_request' => '无法下载？向朋友们求种吧：',
+'hot_download' => '热门下载',
+#'share_request' => '无法下载？向朋友们求种吧：',
+'share_request' => '<a href="/discuz/forum.php?mod=forumdisplay&fid=2">无法下载？去论坛向朋友们求种吧</a>',
 'channel_1' => '',
 'channel_2' => '素人',
 'channel_3' => '动画',
 'channel_4' => '',
+'channel_5' => '无码',
+'channel_6' => '动画',
+'channel_7' => '欧美',
+'channel_8' => '素人',
+'channel_9' => '东京热',
+'channel_10' => '一本道',
 'emule_name' => '电驴下载',
 'series' => '系列',
+'runtime' => '播放时长',
+'minute' => '分钟',
+'シチュエーション' => '身份/职业',
+'タイプ' => '身材',
+'コスチューム' => '衣着',
+'ジャンル' => '企划/主题',
+'プレイ' => '玩法',
+'その他' => '杂项',
+'channel_9' => 'Tokyo Hot',
+'censored' => '有码',
+'uncensored' => '无码',
+'amateur' => '素人',
 '' => '',
 '' => '',
 '' => ''
@@ -107,11 +138,23 @@ $i18n = array(
 'no_search_result' => '無檢索結果',
 'forum' => '論壇',
 'favourite' => '最受歡迎',
+'hot_download' => '熱門下載',
 'share_request' => '無法下載？向朋友們求種吧：',
 'channel_2' => '素人',
 'channel_3' => '動畫',
 'emule_name' => '電驢下載',
 'series' => '系列',
+'runtime' => '播放時長',
+'minute' => '分鐘',
+'channel_5' => '無碼',
+'channel_6' => '動畫',
+'channel_7' => '歐美',
+'channel_8' => 'MGS',
+'channel_9' => 'Tokyo Hot',
+'channel_10' => '一本道',
+'censored' => '有碼',
+'unsensored' => '無碼',
+'amateur' => '素人',
 '' => '',
 '' => '',
 '' => ''
@@ -157,9 +200,20 @@ $i18n = array(
 'share_request' => 'Cannot download? Ask friends to help:',
 'channel_2' => 'Amateur',
 'channel_3' => 'Anime',
+'channel_8' => 'MGS',
 'emule_name' => 'Emule ED2K',
 'series' => 'Series',
-'' => '',
+'runtime' => 'Play time',
+'minute' => 'minutes',
+'channel_5' => 'Unsensored',
+'channel_6' => 'Anime',
+'channel_7' => 'Western',
+'channel_9' => 'Tokyo Hot',
+'channel_10' => '一本道',
+'hot_download' => 'Most Popular Download',
+'censored' => 'Censored',
+'uncensored' => 'Uncensored',
+'amateur' => 'Amateur',
 '' => '',
 '' => '',
 '' => '',
@@ -194,8 +248,20 @@ $i18n = array(
 'share_request' => 'Cannot download? Ask friends to help:',
 'channel_2' => '素人',
 'channel_3' => '動画',
+'channel_5' => '無修正',
+'channel_6' => '動画',
+'channel_7' => '洋物ポルノ',
+'channel_8' => 'MGS',
 'emule_name' => 'イードンキー',
 'series' => 'シリーズ',
+'runtime' => '収録時間',
+'minute' => 'minutes',
+'channel_9' => 'Tokyo Hot',
+'channel_10' => '一本道',
+'hot_download' => 'Most Popular Download',
+'censored' => 'Censored',
+'uncensored' => 'Uncensored',
+'amateur' => 'Amateur',
 '' => '',
 '' => '',
 '' => '',
@@ -208,6 +274,8 @@ $i18n = array(
 )
 );
 
+require_once('i18n_genre.php');
+
 function i18n($key) {
 	global $lang, $i18n;
 	if (isset($i18n[$lang][$key])) return $i18n[$lang][$key];
@@ -215,6 +283,10 @@ function i18n($key) {
 		if (!isset($i18n[$lang][$key]) && isset($i18n['en_US'][$key])) {
 			return $i18n['en_US'][$key];
 		}
+	}
+	else {
+		global $zh2Hans, $zh2CN;
+		return strtr(strtr($key, $zh2CN), $zh2Hans);
 	}
 	return $key;
 }

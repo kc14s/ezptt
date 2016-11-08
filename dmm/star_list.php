@@ -7,7 +7,7 @@ $db_conn = conn_dmm_db();
 $page = $_GET['page'];
 $page_size = 48;
 
-$star_infos = execute_dataset("select id, name, pic_name from star_info where rank < 10000 order by rank limit ".(($page - 1) * $page_size).", $page_size");
+$star_infos = execute_dataset("select id, name, pic_name from star_info where 1 or rank < 10000 order by seed_popularity desc limit ".(($page - 1) * $page_size).", $page_size");
 $html = '<div class="row"><div class="col-md-10 col-md-offset-1 col-xs-12">';
 $html .= '<div class="panel panel-info">';
 $html .= '<div class="panel-heading">'.i18n('top_stars').'</div>';
@@ -22,11 +22,13 @@ foreach ($star_infos as $star_info) {
 }
 if (!$is_spider) {
 	$html .= '<div class="row"><div class="col-md-12"><ul class="pager">';
-	$html .= '<li class="previous'.($page == 1 ? ' disabled' : '').'"><a href="/stars/'.($page - 1).'" target="_self">&larr; '.i18n('page_up').'</a></li>';
-	$html .= '<li class="next'.($page == 3 ? ' disabled' : '').'"><a href="/stars/'.($page + 1).'" target="_self">&rarr; '.i18n('page_down').'</a></li>';
+	if ($page > 1) $html .= '<li class="previous'.($page == 1 ? ' disabled' : '').'"><a href="/stars/'.($page - 1).'" target="_self">&larr; '.i18n('page_up').'</a></li>';
+	$html .= '<li class="next'.($page == 3000 ? ' disabled' : '').'"><a href="/stars/'.($page + 1).'" target="_self">&rarr; '.i18n('page_down').'</a></li>';
 	$html .= '</ul></div></div>';
 }
-$html .= '</div></div></div></div>';
+$html .= '</div></div>';
+$html .= duoshuo_html('jporndb', 'stars', 'stars', "https://cn.jporndb.com/stars/1");
+$html .= '</div></div>';
 
 $target = '_blank';
 $html_title = 'Japan Porn Database';

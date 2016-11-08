@@ -26,14 +26,14 @@ for (my $channel = 1; $channel <= @boards; ++$channel) {
 		my @detail_urls;
 		while ($board_html =~ /<a href="(http:\/\/www\.dmm\.co\.jp\/digital\/\w+\/\-\/detail\/=\/cid=\w+\/)/g) {
 			push @detail_urls, $1;
-			#print "$1\n";
+#			print "$1\n";
 		}
 		foreach my $detail_url (@detail_urls) {
 			my $detail_html = get_url($detail_url);
 			my ($title, $release_date, $runtime, $director, $series, $company, $sn, $fav_count, $rating, $desc, $sample_image_num);
 			#$title = $1 if ($detail_html =~ /<meta property="og:title" content="([\d\D]+?)"\s*\/>/);
 			$title = $1 if ($detail_html =~ /<h1 id="title" class="item fn">([\d\D]+?)<\/h1><\/div>/);
-			$release_date = $1 if ($detail_html =~ /商品発売日：<\/td>\s*<td>\s*([\d\/]+)/);
+			$release_date = $1 if ($detail_html =~ /発売日：<\/td>\s*<td>\s*([\d\/]+)/);
 			if (!defined($release_date)) {
 				$release_date = $1 if ($detail_html =~ /配信開始日：<\/td>\s*<td>\s*([\d\/]+)/);
 			}
@@ -132,14 +132,25 @@ for (my $channel = 1; $channel <= @boards; ++$channel) {
 				#foreach my $star (@stars) {
 			}
 			else {
-				$db_conn->do("update video set fav_count = $fav_count, rating = $rating where sn = '$sn'");
+				$db_conn->do("update video set title = ".$db_conn->quote($title).", release_date = '$release_date', runtime = $runtime, director = '$director', series = '$series', company = '$company', description = ".$db_conn->quote($desc).", sample_image_num = $sample_image_num, channel = $channel, fav_count = $fav_count, rating = $rating where sn = '$sn'");
 			}
 			$db_conn->do("delete from star where sn = '$sn'");
 			while (my ($star, $star_id) = each %stars) {
 				$db_conn->do("replace into star(sn, star, star_id) values('$sn', '$star', $star_id)");
 			}
-			get_seeds($sn, $snn, $db_conn);
-			get_emule($sn, $snn, $db_conn);
+			if (1 && execute_scalar("select count(*) from seed where sn = '$sn'") == 0) {
+				get_seeds($sn, $snn, $channel, $db_conn);
+			}
+			if (0 && execute_scalar("select count(*) from emule where sn = '$sn'") == 0) {
+				get_emule($sn, $snn, $channel, $db_conn);
+			}
+			if (execute_scalar("select count(*) from sample_url where sn = 'v_$sn'") == 0) {
+				my $detail_html = get_url("http://www.r18.com/videos/vod/movies/detail/Intense-Cum-Hina-Kinami/id=$sn/");
+				if ($detail_html =~ /fid=(\w+)/) {
+					$db_conn->do("replace into sample_url(sn, url) values('v_$sn', '$1')");
+					print "preview video $sn $1\n";
+				}
+			}
 			next;
 			my %recommend_params;
 			$recommend_params{target_content_id} = $1 if ($detail_html =~ /target_content_id\s*:\s*'(\w+)'/);

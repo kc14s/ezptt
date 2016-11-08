@@ -6,9 +6,9 @@ require('config.pl');
 require('lib.pl');
 
 my @boards = (
-['rank', 'http://www.dmm.co.jp/digital/videoa/-/list/=/limit=120/sort=rate/'],
-['bookmark_rank', 'http://www.dmm.co.jp/digital/videoa/-/list/=/sort=bookmark_desc/']
+['rank', 'http://www.dmm.co.jp/digital/videoa/-/list/=/limit=120/sort=ranking/']
 );
+#['bookmark_rank', 'http://www.dmm.co.jp/digital/videoa/-/list/=/sort=bookmark_desc/']
 my $db_conn = init_db();
 $db_conn->do("use dmm");
 $db_conn->do("set names utf8");
@@ -38,11 +38,14 @@ for (my $channel = 1; $channel <= @boards; ++$channel) {
 		}
 	}
 	if ($diff_count * 3 > @sns) {
-		my $period = execute_scalar("select max(period) from rank") + 1;
+#		my $period = execute_scalar("select max(period) from rank") + 1;
 		$db_conn->do("update video set $field = 1000000");
 		for (my $rank = 0; $rank < @sns; ++$rank) {
 			$db_conn->do("update video set $field = $rank where sn = '$sns[$rank]'");
-			$db_conn->do("insert into rank(period, sn, rank) values($period, '$sns[$rank]', $rank)") if ($field eq 'rank');
+#			$db_conn->do("insert into rank(period, sn, rank) values($period, '$sns[$rank]', $rank)") if ($field eq 'rank');
 		}
+	}
+	else {
+		print "diff too few $diff_count\n";
 	}
 }

@@ -9,6 +9,7 @@ require_once('i18n.php');
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <meta name="applicable-device" content="pc,mobile">
 <link rel="icon" href="data:;base64,iVBORw0KGgo=">
+<meta name="propeller" content="4751fe3498332faeebf4262fde027053" />
 <title><?php
 if (isset($html_title)) {
 	echo $html_title;
@@ -44,6 +45,8 @@ ga('send', 'pageview');
 		<div class="collapse navbar-collapse">
 			<ul class="nav navbar-nav">
 				<li><a href="/best_seller/2016/1"><?echo i18n('best_seller');?></a></li>
+				<li><a href="/series_title_list/1"><?echo i18n('series');?></a></li>
+				<li><a href="/genre_list"><?echo i18n('genre');?></a></li>
 			</ul>
 			<form class="navbar-form navbar-left" role="search" action="/search" method="POST">
 				<div class="form-group">

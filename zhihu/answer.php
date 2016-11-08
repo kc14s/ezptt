@@ -9,6 +9,8 @@ if (!$is_loyal_user) {
 	require_once("../Mobile-Detect/Mobile_Detect.php");
 	$detect = new Mobile_Detect;
 	$baidu_ad = $detect->isMobile() && !$detect->isTablet() ? $baidu_zhihu_mobile_native_pic : $baidu_zhihu_pc_native;
+	//$propellerads = $detect->isMobile() && !$detect->isTablet() ? $propellerads_dzh_interstitial : $propellerads_dzh_popunder;
+	$propellerads = $propellerads_dzh_popunder;
 }
 $aid = $_GET['aid'];
 $db_conn = conn_db();
@@ -56,13 +58,27 @@ if (false && isset($sb_name)) {
 }
 $html .= "</ol><h3>$title</h3>";
 
-if (!$is_loyal_user) {
+if (true && !$is_loyal_user) {
 //	$html .= $google_320_100;
 //	$html .= $chitika_468_60;
 //	$html .= $bloggerads_banner;
-//	$html .= $scupio_728_90;
-//	$html .= $adcash_popunder;
+	$html .= $scupio_728_90;
+	$html .= $adcash_popunder;
+	$html .= $zy825_popup;
+	$html .= $boyulm_cpv_120_240;
+	$html .= $ads360_320_270_float_left;
+	$html .= $ads360_320_270_float_right;
+	$html .= $ads360_doublet;
+	$html .= $ads360_320_270;
+	$html .= $ads360_popup;
+	$html .= $ads360_float;
+	$html .= $cpm365_popup;
+	$html .= $v3_popup_right_bottom_320_270;
+	$html .= $zy825_popup;
+	$html .= $iiad_phone_cpm_640_200;
+	$html .= $propellerads;
 }
+//$html .= $propellerads_dzh_interstitial;
 $floor = 1;
 foreach ($articles as $article) {
 	list($author, $nick, $ups, $title, $content, $pub_time) = $article;
@@ -148,6 +164,7 @@ $html .= '</div></div>';
 
 require_once('header.php');
 echo $html;
+//echo '<'.$_SERVER["HTTP_ACCEPT_LANGUAGE"].' />';
 require_once('footer.php');
 ?>
 

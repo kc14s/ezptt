@@ -6,7 +6,13 @@ require('config.pl');
 require('lib.pl');
 require('dmm_lib.pl');
 
-my @channels = qw(padding videoa videoc anime nikkatsu);
+my @boards = (
+['av', 'http://www.dmm.co.jp/digital/videoa/-/list/=/limit=120/sort=date/'],
+['amateur', 'http://www.dmm.co.jp/digital/videoc/-/list/=/limit=120/sort=date/'],
+['anime', 'http://www.dmm.co.jp/digital/anime/-/list/=/limit=120/sort=date/'],
+['av', 'http://www.dmm.co.jp/digital/nikkatsu/-/list/=/limit=120/sort=date/']
+);
+my @channels = ('', 'videoa', 'videoc', 'anime', 'nikkatsu');
 my $db_conn = init_db();
 $db_conn->do("use dmm");
 $db_conn->do("set names utf8");
@@ -14,15 +20,11 @@ my $sql = 'select sn, channel from video';
 my $request = $db_conn->prepare($sql);
 $request->execute;
 while (my ($sn, $channel) = $request->fetchrow_array) {
-	my $detail_url = "http://www.dmm.co.jp/digital/$channels[$channel]/-/detail/=/cid=$sn/";
+    my $detail_url = "http://www.dmm.co.jp/digital/$channels[$channel]/-/detail/=/cid=$sn/";
 	my $detail_html = get_url($detail_url);
 	my ($title, $release_date, $runtime, $director, $series, $company, $sn, $fav_count, $rating, $desc, $sample_image_num);
 	#$title = $1 if ($detail_html =~ /<meta property="og:title" content="([\d\D]+?)"\s*\/>/);
 	$title = $1 if ($detail_html =~ /<h1 id="title" class="item fn">([\d\D]+?)<\/h1><\/div>/);
-	if (!defined($title)) {
-		print "$detail_url title not found. skip.\n";
-		next;
-	}
 	$release_date = $1 if ($detail_html =~ /商品発売日：<\/td>\s*<td>\s*([\d\/]+)/);
 	if (!defined($release_date)) {
 		$release_date = $1 if ($detail_html =~ /配信開始日：<\/td>\s*<td>\s*([\d\/]+)/);
@@ -34,7 +36,7 @@ while (my ($sn, $channel) = $request->fetchrow_array) {
 		print "$detail_url release date not found\n";
 	}
 	$runtime = $1 if ($detail_html =~ />収録時間：<\/td>\s*<td>(\d+)/);
-	if ($channel == 2 || $channel == 4) {
+	if ($channel == 2) {
 		$director = '';
 		$series = '';
 	}
@@ -45,14 +47,12 @@ while (my ($sn, $channel) = $request->fetchrow_array) {
 		$director = $1 if ($detail_html =~ /監督：<\/td>\s*<td>([\d\D]+?)<\/td>/);
 		if (!defined($director)) {
 			print "$detail_url director not found\n";
-			$director = '';
 		}
 		$director =~ s/<.+>//g;
 		$director =~ s/\-+//;
 		$series = $1 if ($detail_html =~ /シリーズ：<\/td>\s*<td>([\d\D]+?)<\/td>/);
 		if (!defined($series)) {
 			print "$detail_url series not found\n";
-			$series = '';
 		}
 		$series =~ s/<.+>//g;
 		$series =~ s/\-+//;
@@ -63,7 +63,6 @@ while (my ($sn, $channel) = $request->fetchrow_array) {
 	}
 	if (!defined($company)) {
 		print "$detail_url company not found\n";
-		$company = '';
 	}
 	$sn = $1 if ($detail_html =~ /品番：<\/td>\s*<td>([\d\D]+?)<\/td>/);
 	$fav_count = $1 if ($detail_html =~ /お気に入り登録数<span class="tx-count"><span>(\d+)<\/span>/);
@@ -93,9 +92,9 @@ while (my ($sn, $channel) = $request->fetchrow_array) {
 			}
 		}
 	}
-#			while ($detail_html =~ /<a href="\/digital\/videoa\/\-\/list\/=\/article=actress\/id=\d+\/">([\d\D]+?)<\/a>/g) {
-#				push @stars, $1;
-#			}
+#	while ($detail_html =~ /<a href="\/digital\/videoa\/\-\/list\/=\/article=actress\/id=\d+\/">([\d\D]+?)<\/a>/g) {
+#		push @stars, $1;
+#	}
 	if (@stars == 0) {
 		if ($detail_html =~ /名前：<\/td>\s*<td>\s*([^<]+?)</) {
 			my $star = $1;
@@ -117,32 +116,24 @@ while (my ($sn, $channel) = $request->fetchrow_array) {
 	print "stars ".join(', ', @stars)."\n";
 	if (execute_scalar("select count(*) from video where sn = '$sn'") == 0) {
 		$db_conn->do("replace into video(title, release_date, runtime, director, series, company, sn, sn_normalized, fav_count, rating, description, sample_image_num, channel) values('$title', '$release_date', $runtime, '$director', '$series', '$company', '$sn', '$snn', $fav_count, $rating, ".$db_conn->quote($desc).", $sample_image_num, $channel)");
-#				$db_conn->do("delete from genre where sn = '$sn'");
+#		$db_conn->do("delete from genre where sn = '$sn'");
 		foreach my $genre (@genres) {
 			$db_conn->do("replace into genre(sn, genre) values('$sn', '$genre')");
 		}
-#				$db_conn->do("delete from star where sn = '$sn'");
+#		$db_conn->do("delete from star where sn = '$sn'");
 		#foreach my $star (@stars) {
 	}
 	else {
-		$db_conn->do("update video set fav_count = $fav_count, rating = $rating where sn = '$sn'");
+		$db_conn->do("update video set title = ".$db_conn->quote($title).", release_date = '$release_date', runtime = $runtime, director = '$director', series = '$series', company = '$company', description = ".$db_conn->quote($desc).", sample_image_num = $sample_image_num, channel = $channel, fav_count = $fav_count, rating = $rating where sn = '$sn'");
 	}
 	$db_conn->do("delete from star where sn = '$sn'");
 	while (my ($star, $star_id) = each %stars) {
 		$db_conn->do("replace into star(sn, star, star_id) values('$sn', '$star', $star_id)");
 	}
-	next;
-	get_seeds($sn, $snn, $db_conn);
-	my %recommend_params;
-	$recommend_params{target_content_id} = $1 if ($detail_html =~ /target_content_id\s*:\s*'(\w+)'/);
-	$recommend_params{target_content_shoptable} = $1 if ($detail_html =~ /target_content_shoptable\s*:\s*'([\w\\]+)'/);
-	$recommend_params{target_content_shoptable} =~ s/\\u005/_/g;
-	$recommend_params{from_GET} = $1 if ($detail_html =~ /from_GET\s*:\s*'([\w\\]+)'/);
-	$recommend_params{from_GET} =~ s/\\u005/_/g;
-	#print "recommend: $target_content_id $target_content_shoptable\n";
-	if (scalar keys %recommend_params != 3) {
-		print "illegal recommend_params $sn\n";
-		next;
+	if (0 && execute_scalar("select count(*) from seed where sn = '$sn'") == 0) {
+		get_seeds($sn, $snn, $channel, $db_conn);
 	}
-	next;
+	if (0 && execute_scalar("select count(*) from emule where sn = '$sn'") == 0) {
+		get_emule($sn, $snn, $channel, $db_conn);
+	}
 }

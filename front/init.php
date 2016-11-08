@@ -10,6 +10,7 @@ require_once("data.php");
 $is_spider = is_spider();
 $is_google_spider = is_google_spider();
 $is_loyal_user = is_loyal_user();
+$is_from_search_engine = is_from_search_engine();
 if (false && !$is_loyal_user) {
 	error_log('not loyal');
 }

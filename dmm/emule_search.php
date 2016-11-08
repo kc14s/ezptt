@@ -6,13 +6,14 @@ if ($_SERVER['REQUEST_METHOD'] != 'POST') {
 }
 require_once('init.php');
 require_once('i18n.php');
-require_once('telnet.php');
+require_once('dmm_lib.php');
+//require_once('telnet.php');
 $kw = trim(urlencode($_POST['kw']));
 if ($kw == '') {
 	$html = show_error(i18n('empty_kw'));
 }
 else {
-	error_log("emule $kw");
+#	error_log("emule $kw");
 	$html = file_get_contents("http://mldonkey.ucptt.com/submit?custom=Complex+Search&keywords=$kw&minsize=&minsize_unit=1048576&maxsize=&maxsize_unit=1048576&media=&media_propose=&format=&format_propose=&artist=&album=&title=&bitrate=&network=");
 	preg_match('/Query (\d+) sent to/', $html, $matches);
 	$search_id = $matches[1];
@@ -20,7 +21,11 @@ else {
 	$html = file_get_contents("http://mldonkey.ucptt.com/submit?q=vr+$search_id");
 	$result_num = preg_match_all('/<td class="sr"><a href="ed2k:\/\/\|file\|([\d\D]+?)\|(\d+)\|(\w+)\|\/">Donkey<\/a><\/td><td [\d\D]+?<\/td><td class="sr ar">[\w\.]+<\/td>\s*<td class="sr ar">(\d*)<\/td>\s*<td class="sr ar">(\d*)<\/td>/', $html, $matches, PREG_SET_ORDER);
 	foreach ($matches as $match) {
-		if ($match[2] >= 512 * 1024 * 1024) $seeds[] = $match;
+		if ($match[2] >= 512 * 1024 * 1024) {
+			if (!isset($match[4]) || $match[4] == '') $match[4] = 0;
+			if (!isset($match[5]) || $match[5] == '') $match[5] = 0;
+			$seeds[] = $match;
+		}
 	}
 
 	//print_r($seeds);
@@ -34,12 +39,11 @@ else {
 		$html .= '<tr><th>'.i18n('seed_name').'</th><th>'.i18n('seed_size').'</th><th>'.i18n('seed_available_sources').'</th><th>'.i18n('seed_completed_sources').'</th><th>'.i18n('seed_download_emule').'</th>';
 		foreach ($seeds as $seed) {
 			list($padding, $file_name, $file_size, $file_hash, $available_sources, $completed_sources) = $seed;
-			if ($available_sources == '') $available_sources = 0;
-			if ($completed_sources == '') $completed_sources = 0;
 			$html .= "<tr><td>".urldecode($file_name)."</td><td>".human_filesize($file_size)."</td><td>$available_sources</td><td>$completed_sources</td><td><a href=\"ed2k://|file|$file_name|$file_size|$file_hash|/\">".i18n('seed_download_emule')."</a></td></tr>";
 		}
 		$html .= '</table></div>';
 		$html .= '</div></div>';
+		save_emule($_POST['kw'], $seeds);
 	}
 }
 require_once('header.php');
