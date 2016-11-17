@@ -6,9 +6,9 @@ require('config.pl');
 require('lib.pl');
 
 my @boards = (
+['bookmark_rank', 'http://www.dmm.co.jp/digital/videoa/-/list/=/sort=bookmark_desc/'],
 ['rank', 'http://www.dmm.co.jp/digital/videoa/-/list/=/limit=120/sort=ranking/']
 );
-#['bookmark_rank', 'http://www.dmm.co.jp/digital/videoa/-/list/=/sort=bookmark_desc/']
 my $db_conn = init_db();
 $db_conn->do("use dmm");
 $db_conn->do("set names utf8");

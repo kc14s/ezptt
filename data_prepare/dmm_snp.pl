@@ -20,6 +20,6 @@ while (my ($sn, $snn, $seed_popularity, $company) = $request->fetchrow_array) {
 }
 while (my ($snp, $count) = each %snp) {
 	print "$snp\t$count\t$companies{$snp}\n";
-	$db_conn->do("replace into snp(snp, seed_popularity, company) values('$snp', $count, '$companies{$snp}')");
+	$db_conn->do("replace into snp(snp, seed_popularity, company) values('$snp', $count, ".$db_conn->quote($companies{$snp}).")");
 }
 

@@ -234,15 +234,21 @@ function save_emule($kw, $seeds) {
 function validate_seed_name($snn, $name) {
 	if (preg_match('/([a-zA-Z]+)[ \-]?0*(\d+)/', $snn, $matches) == 1) {
 		$snn = strtolower($matches[1]).$matches[2];
+		$snn_prefix = strtolower($matches[1]);
+		$snn_suffix = $matches[2];
 	}
 	$alphabet = '';
-	preg_match_all('/([a-zA-Z\d]+)/', $name, $matches);
+//	preg_match_all('/([a-zA-Z\d]+)/', $name, $matches);
+	if (preg_match("/${snn_prefix}[ \-]?$snn_suffix/", strtolower($name), $matches) == 1) {
+		error_log("emule validate passed, $snn");
+		return true;
+	}
+	return false;
 	foreach ($matches[1] as $match) {
 		$str = strtolower($match);
 		$str = trim($str, '0');
 		$alphabet .= $str;
 	}
-	error_log("emule validate $alphabet, $snn");
 	return str_contain($alphabet, $snn);
 }
 
@@ -264,6 +270,17 @@ function get_company_icon($source, $logo) {
 	case 2:
 		global $ave_static_host;
 		return "${ave_static_host}img/studio_ic/$logo";
+	}
+}
+
+function get_img_tag($img_url) {
+	$str_pos = strpos($img_url, 'dmm.co.jp');
+	if ($str_pos > 0) {
+		$failover_url = 'https://static.jporndb.com'.substr($img_url, $str_pos + 9);
+		return "<img class=\"img-responsive\" src=\"$img_url\" onerror=\"this.onerror=null;this.src='$failover_url'\">";
+	}
+	else {
+		return "<img class=\"img-responsive\" src=\"$img_url\">";
 	}
 }
 ?>

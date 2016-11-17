@@ -79,7 +79,7 @@ $html .= '<div class="panel panel-info">';
 $html .= "<div class=\"panel-heading\"><h3>$title <small>$snn ".implode(' ', $stars)."</small></h3></div>";
 $html .= '<div class="panel-body">';
 $html .= '<div class="row">';
-$html .= '<div class="col-md-3"><img width="100%" data-original="'.get_cover_img_url($sn, $channel, $rating, $snn).'" /></div>';
+$html .= '<div class="col-md-3">'.get_img_tag(get_cover_img_url($sn, $channel, $rating, $snn)).'</div>';
 $html .= '<div class="col-md-9">';
 if (count($star_infos) > 0) {
 	$html .= '<b>'.i18n('star').'</b>: ';
@@ -147,6 +147,7 @@ if ($channel == 8) {
 		$html .= "<source src=\"http://chdl34.mgstage.com/sample/$mgs_company_en/$sn_prefix_lower/$sn_suffix/${sn_upper}_35a.mp4\">";
 		if (preg_match('/\d+(.+)/', $sn_upper, $matches)) {
 			$html .= "<source src=\"http://chdl33.mgstage.com/sample/$mgs_company_en/$sn_prefix_lower/$sn_suffix/".$matches[1].".mp4\">";
+			$html .= "<source src=\"http://chdl34.mgstage.com/sample/$mgs_company_en/$sn_prefix_lower/$sn_suffix/".$matches[1].".mp4\">";
 			$html .= "<source src=\"http://chdl33.mgstage.com/sample/$mgs_company_en/$sn_prefix_upper/$sn_suffix/".$matches[1]."_sample.mp4\">";
 		}
 		$html .= '</video>';
@@ -178,7 +179,7 @@ else {
 		$html .= "<div class=\"row\"><div class=\"col-md-12\">";
 		$img_url = get_sample_img_url($sn, $channel, 1, 0);
 		$href = "/snapshot/$sn/$channel/1";
-		$html .= "<a href=\"$href\"><img width=\"100%\" data-original=\"$img_url\"></a>";
+		$html .= "<a href=\"$href\">".get_img_tag($img_url)."</a>";
 		$html .= '</div></div>';
 	}
 }
@@ -193,7 +194,7 @@ if (count($star_infos) > 0 && $channel <= 4) {
 		$html .= '<div class="panel-body">';
 		$counter = 1;
 		$html .= '<div class="row"><div class="col-md-12">';
-		$html .= "<div class=\"col-xs-6 col-md-3\"><div class=\"thumbnail\"><a href=\"/star/$star_id/1\"><img data-original=\"".get_thumb_url($star_pic_name)."\"><br>$star_name".i18n('star_all_video')."</a></div></div>";
+		$html .= "<div class=\"col-xs-6 col-md-3\"><div class=\"thumbnail\"><a href=\"/star/$star_id/1\">".get_img_tag(get_thumb_url($star_pic_name))."<br>$star_name".i18n('star_all_video')."</a></div></div>";
 		$sns = execute_column("select star.sn from star, video where star.sn = video.sn and star.sn <> '$sn' and star.star = '$star_name' and channel <= 4 order by seed_popularity desc limit 8");
 		$star_video_output_count = 0;
 		foreach ($sns as $star_sn) {
@@ -202,7 +203,7 @@ if (count($star_infos) > 0 && $channel <= 4) {
 			++$star_video_output_count;
 			list($star_snn, $star_title, $star_channel, $star_seed_popularity) = execute_vector("select sn_normalized, title, channel, seed_popularity from video where sn = '$star_sn'");
 			if ($counter % 4 == 0) $html .= '<div class="row"><div class="col-md-12">';
-			$html .= "<div class=\"col-xs-6 col-md-3\"><div class=\"thumbnail\"><a href=\"/video/$star_sn\"><img data-original=\"".get_cover_img_url($star_sn, $star_channel, 2, $star_snn)."\"><br>$star_title".download_icon($star_seed_popularity)."</a></div></div>";
+			$html .= "<div class=\"col-xs-6 col-md-3\"><div class=\"thumbnail\"><a href=\"/video/$star_sn\">".get_img_tag(get_cover_img_url($star_sn, $star_channel, 2, $star_snn))."<br>$star_title".download_icon($star_seed_popularity)."</a></div></div>";
 			if ($counter % 4 == 3) $html .= '</div></div>';
 			++$counter;
 		}
@@ -227,7 +228,7 @@ else if (count($star_infos) > 0 && $channel == 10) {
 			++$star_video_output_count;
 			list($star_snn, $star_title, $star_channel, $star_seed_popularity) = execute_vector("select sn_normalized, title, channel, seed_popularity from video where sn = '$star_sn'");
 			if ($counter % 4 == 0) $html .= '<div class="row"><div class="col-md-12">';
-			$html .= "<div class=\"col-xs-6 col-md-3\"><div class=\"thumbnail\"><a href=\"/video/$star_sn\"><img data-original=\"".get_cover_img_url($star_sn, $star_channel, 2, $star_snn)."\"><br>$star_title".download_icon($star_seed_popularity)."</a></div></div>";
+			$html .= "<div class=\"col-xs-6 col-md-3\"><div class=\"thumbnail\"><a href=\"/video/$star_sn\">".get_img_tag(get_cover_img_url($star_sn, $star_channel, 2, $star_snn))."><br>$star_title".download_icon($star_seed_popularity)."</a></div></div>";
 			if ($counter % 4 == 3) $html .= '</div></div>';
 			++$counter;
 		}
@@ -248,7 +249,7 @@ if (isset($series_set) && count($series_set) > 0) {
 	foreach ($series_set as $series_video) {
 		list($series_sn, $series_snn, $series_title, $series_channel, $series_seed_popularity) = $series_video;
 		if ($counter % 4 == 0) $html .= '<div class="row"><div class="col-md-12">';
-		$html .= "<div class=\"col-xs-6 col-md-3\"><div class=\"thumbnail\"><a href=\"/video/$series_sn\"><img data-original=\"".get_cover_img_url($series_sn, $series_channel, 2, $series_snn)."\"><br>$series_title".download_icon($series_seed_popularity)."</a></div></div>";
+		$html .= "<div class=\"col-xs-6 col-md-3\"><div class=\"thumbnail\"><a href=\"/video/$series_sn\">".get_img_tag(get_cover_img_url($series_sn, $series_channel, 2, $series_snn))."<br>$series_title".download_icon($series_seed_popularity)."</a></div></div>";
 		++$counter;
 		if ($counter % 4 == 0) $html .= '</div></div>';
 	}
@@ -268,7 +269,7 @@ if (isset($sn_set) && count($sn_set) > 0) {
 	foreach ($sn_set as $sn_video) {
 		list($sn_sn, $sn_snn, $sn_title, $sn_channel, $sn_rating, $sn_seed_popularity) = $sn_video;
 		if ($counter % 4 == 0) $html .= '<div class="row"><div class="col-md-12">';
-		$html .= "<div class=\"col-xs-6 col-md-3\"><div class=\"thumbnail\"><a href=\"/video/$sn_sn\"><img data-original=\"".get_cover_img_url($sn_sn, $sn_channel, $sn_rating, $sn_snn)."\"><br>$sn_title".download_icon($sn_seed_popularity)."</a></div></div>";
+		$html .= "<div class=\"col-xs-6 col-md-3\"><div class=\"thumbnail\"><a href=\"/video/$sn_sn\">".get_img_tag(get_cover_img_url($sn_sn, $sn_channel, $sn_rating, $sn_snn))."<br>$sn_title".download_icon($sn_seed_popularity)."</a></div></div>";
 		++$counter;
 		if ($counter % 4 == 0) $html .= '</div></div>';
 	}
@@ -315,7 +316,7 @@ if ($channel != 2 && $channel != 9) {
 	$href = $img_url;
 	$href = "/snapshot/$sn/$channel/0";
 	if ($is_spider) $href = '#';
-	$html .= '<div class="col-xs-12 col-md-12"><p><a href="'.$href.'"><img width="100%" src="'.$img_url.'" /></a></p></div>';
+	$html .= '<div class="col-xs-12 col-md-12"><p><a href="'.$href.'">'.get_img_tag($img_url).'</a></p></div>';
 }
 if ($channel <= 4 || $channel == 8 || $channel == 10) {
 	$sample_start_index = isset($prev_video) ? 1 : 2;
@@ -328,14 +329,14 @@ if ($channel <= 4 || $channel == 8 || $channel == 10) {
 		}
 		$href = "/snapshot/$sn/$channel/$i";
 		if ($is_spider) $href = '#';
-		$html .= '<div class="col-xs-12 col-md-12"><p><a href="'.$href.'"><img width="100%" src="'.$img_url.'" /></a></p></div>';
+		$html .= '<div class="col-xs-12 col-md-12"><p><a href="'.$href.'">'.get_img_tag($img_url).'</a></p></div>';
 	}
 }
 else if ($channel <= 7) {
 	$img_url = get_sample_img_url($sn, $channel, 1, $rating);
 	$href = "/snapshot/$sn/$channel/1";
 	if ($is_spider) $href = '#';
-	$html .= '<div class="col-xs-12 col-md-12"><p><a href="'.$href.'"><img width="100%" src="'.$img_url.'" /></a></p></div>';
+	$html .= '<div class="col-xs-12 col-md-12"><p><a href="'.$href.'">'.get_img_tag($img_url).'</a></p></div>';
 }
 else if ($channel == 9) {
 	$file_name_str = execute_scalar("select url from sample_url where sn = '$sn'");
@@ -351,7 +352,7 @@ else if ($channel == 9) {
 			$img_url = "${tkh_static_host}media/$sn/scap/$file_name/150x150_default.jpg";
 		}
 		if ($is_spider) $href = '#';
-		$html .= '<div class="col-xs-12 col-md-12"><p><a href="'.$href.'"><img width="100%" src="'.$img_url.'" /></a></p></div>';
+		$html .= '<div class="col-xs-12 col-md-12"><p><a href="'.$href.'">'.get_img_tag($img_url).'</a></p></div>';
 	}
 }
 $html .= '</div></div>';

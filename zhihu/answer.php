@@ -2,8 +2,8 @@
 require_once("init.php");
 require_once("i18n.php");
 require_once("zhihu_lib.php");
-$is_spider = is_spider();
-$is_from_search_engine = is_from_search_engine();
+//$is_spider = is_spider();
+//$is_from_search_engine = is_from_search_engine();
 if (!$is_loyal_user) {
 	require_once('ads.php');
 	require_once("../Mobile-Detect/Mobile_Detect.php");
@@ -73,6 +73,7 @@ if (true && !$is_loyal_user) {
 	$html .= $ads360_popup;
 	$html .= $ads360_float;
 	$html .= $cpm365_popup;
+	$html .= $wz02_richmedia;
 	$html .= $v3_popup_right_bottom_320_270;
 	$html .= $zy825_popup;
 	$html .= $iiad_phone_cpm_640_200;

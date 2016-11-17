@@ -2,7 +2,7 @@
 require_once('i18n.php');
 ?>
 <!DOCTYPE HTML>
-<html lang="en">
+<html lang="<?echo get_html_lang();?>">
 <head>
 <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />

@@ -27,9 +27,9 @@ if (file_exists($local_path)) {
 if (start_with($path, 'new') || start_with($path, 'archive')) {
 	$remote = "http://imgs.aventertainments.com/$path";
 }
-//else if (start_with($path, 'digital') || start_with($path, 'mono')) {
-//	$remote = "http://pics.dmm.co.jp/$path";
-//}
+else if (start_with($path, 'digital') || start_with($path, 'mono')) {
+	$remote = "http://pics.dmm.co.jp/$path";
+}
 else if (start_with($path, 'images')) {
 	$remote = "http://spimg2.mgstage.com/$path";
 }
@@ -48,9 +48,9 @@ else if (start_with($path, 'img/pc')) {
 else if (start_with($path, 'img/studio_ic')) {
 	$remote = "http://www.aventertainments.com/$path";
 }
-//else if (start_with($path, 'p/maker_logo')) {
-//	$remote = "http://p.dmm.co.jp/$path";
-//}
+else if (start_with($path, 'p/maker_logo')) {
+	$remote = "http://p.dmm.co.jp/$path";
+}
 else {
 	header('HTTP/1.1 404 Not Found');
 	exit;
@@ -58,6 +58,7 @@ else {
 
 $file = file_get_contents($remote);
 error_log("get url $remote from ".$_SERVER['HTTP_REFERER'].' by '.$_SERVER['HTTP_USER_AGENT']);
+/*
 
 $dir = substr($local_path, 0, strrpos($local_path, '/'));
 if (is_dir($dir)) {}
@@ -65,6 +66,7 @@ else {
 	mkdir($dir, 0777, true);
 }
 file_put_contents($local_path, $file);
+*/
 echo $file;
 
 function start_with($s1, $s2) {

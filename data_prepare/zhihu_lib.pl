@@ -23,7 +23,7 @@ my $json_parser = new JSON;
 sub get_boards {
         my $group = $_[0];
         my ($board_id, $board_name) = @$group;
-        my $url = 'http://www.zhihu.com/node/TopicsPlazzaListV2';
+        my $url = 'https://www.zhihu.com/node/TopicsPlazzaListV2';
         my @boards;
         for (my $offset = 0; ; $offset += 20) {
                 my %form = (
@@ -56,7 +56,7 @@ sub get_boards {
 sub get_zhihu_questions {
         my $board = $_[0];
         my ($board_id, $board_name, $sbid, $sb_name) = @$board;
-        my $url = "http://www.zhihu.com/topic/$sbid/newest";
+        my $url = "https://www.zhihu.com/topic/$sbid/newest";
         my $time = time();
 	my $now = time();
         my %questions;
@@ -80,7 +80,7 @@ sub get_zhihu_questions {
 				$time = $1 if ($item =~ /data-timestamp="(\d+?)000"/ && $time > $1);
 #               my ($sb_id, $sb_name) = (0, '');
 #               ($sb_id, $sb_name) = ($1, $2) if ($item =~ /href="\/topic\/(\d+)">([\d\D]+?)<\/a>/);
-				my ($qid, $title) = ($1, $2) if ($item =~ / href="\/question\/(\d+)".+?>([\d\D]+?)<\/a>/);
+				my ($qid, $title) = ($1, $2) if ($item =~ / href="\/question\/(\d+)".+?>([\d\D]+?)\s*<\/a>/);
 				next if (!defined($qid));
 				next if (index($title, 'itemprop="answerCount" content="0"') > 0);
 				next if ($qid == 41948235);
@@ -103,9 +103,10 @@ sub get_zhihu_question {
         my $question = $_[0];
         my ($board_id, $board_name, $sb_id, $sb_name, $time, $qid, $title) = @$question;
 #	$qid = 30055018;
-        my $url = "http://www.zhihu.com/question/$qid";
+        my $url = "https://www.zhihu.com/question/$qid";
         my $html = get_url($url);
 #       print $html;
+#	   exit;
 #       return;
         #my $q_title = $1 if ($html =~ /<h2 class="zm-item-title zm-editable-content">\s*([\d\D]+?)\s*<\/h2>/);
 	my $q_title = $1 if ($html =~ /<span class="zm-editable-content">([\d\D]+?)<\/span>/);
@@ -199,7 +200,7 @@ sub get_zhihu_question {
 		next if ($comment_num == 0);
 		next if (execute_scalar("select count(*) from comment where aid = $aid") >= $comment_num);
 #		my $comment_url = "http://www.zhihu.com/node/AnswerCommentListV2?params=%7B%22answer_id%22%3A%22$aid%22%7D";
-		my $comment_url = "http://www.zhihu.com/node/AnswerCommentBoxV2?params=%7B%22answer_id%22%3A%22$aid%22%2C%22load_all%22%3Atrue%7D";
+		my $comment_url = "https://www.zhihu.com/node/AnswerCommentBoxV2?params=%7B%22answer_id%22%3A%22$aid%22%2C%22load_all%22%3Atrue%7D";
 		my $comment_html = get_url($comment_url);
 #               print $comment_html;
 #               next;

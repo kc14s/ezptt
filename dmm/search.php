@@ -18,7 +18,6 @@ foreach ($matches as $match) {
 			else {
 				$sn_normalized .= $match[1];
 			}
-			echo "$sn_normalized ";
 		}
 		else {
 			$sn_normalized .= sprintf("%03s", $match[1]);

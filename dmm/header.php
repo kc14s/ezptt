@@ -15,7 +15,7 @@ if (isset($html_title)) {
 	echo $html_title;
 }
 ?> dmm</title>
-<link rel="stylesheet" href="//cdn.bootcss.com/twitter-bootstrap/3.0.3/css/bootstrap.min.css">
+<link rel="stylesheet" href="//cdn.bootcss.com/twitter-bootstrap/3.3.4/css/bootstrap.min.css">
 <script src="//cdn.bootcss.com/jquery/1.10.2/jquery.min.js"></script>
 <script src="//cdn.bootcss.com/twitter-bootstrap/3.0.3/js/bootstrap.min.js"></script>
 <script src="//cdn.bootcss.com/jquery.lazyload/1.9.1/jquery.lazyload.min.js"></script>
@@ -39,39 +39,37 @@ ga('send', 'pageview');
 <div class="row"><div class="col-md-10 col-md-offset-1 col-xs-12">
 <nav class="navbar navbar-default" role="navigation">
 	<div class="container-fluid">
-		<div class="navbar-header">
+		<div class="navbar-header hidden-xs">
 			<a class="navbar-brand" href="/">Japanese Porn Database</a>
 		</div>
-		<div class="collapse navbar-collapse">
-			<ul class="nav navbar-nav">
-				<li><a href="/best_seller/2016/1"><?echo i18n('best_seller');?></a></li>
-				<li><a href="/series_title_list/1"><?echo i18n('series');?></a></li>
-				<li><a href="/genre_list"><?echo i18n('genre');?></a></li>
-			</ul>
-			<form class="navbar-form navbar-left" role="search" action="/search" method="POST">
-				<div class="form-group">
-					<input type="text" name="sn" class="form-control" placeholder="<?echo i18n('sn');?>" size="10">
-				</div>
-				<button type="submit" class="btn btn-default">Search</button>
-			</form>
-			<form class="navbar-form navbar-left" role="search" action="/emule" method="POST">
-				<div class="form-group">
-					<input type="text" name="kw" class="form-control" placeholder="" size="10">
-				</div>
-				<button type="submit" class="btn btn-default"><?echo i18n('seed_download_emule')?></button>
-			</form>
-			<ul class="nav navbar-nav"><li><a href="/discuz/forum.php"><?echo i18n('forum');?></a></li></ul>
-			<div class="btn-group navbar-right">
-				<button type="button" class="btn btn-default dropdown-toggle navbar-btn" data-toggle="dropdown">
-					<? echo i18n('select_language')?><span class="caret"></span>
-				</button>
-				<ul class="dropdown-menu" role="menu">
-					<li><a href="//www.jporndb.com<? echo $_SERVER['REQUEST_URI']; ?>" target="_self">English</a></li>
-					<li><a href="//jp.jporndb.com<? echo $_SERVER['REQUEST_URI']; ?>" target="_self">日本語</a></li>
-					<li><a href="//tw.jporndb.com<? echo $_SERVER['REQUEST_URI']; ?>" target="_self">正體中文</a></li>
-					<li><a href="//cn.jporndb.com<? echo $_SERVER['REQUEST_URI']; ?>" target="_self">简体中文</a></li>
-				</ul>
+		<ul class="nav navbar-nav hidden-xs">
+			<li><a href="/best_seller/2016/1"><?echo i18n('best_seller');?></a></li>
+			<li><a href="/series_title_list/1"><?echo i18n('series');?></a></li>
+			<li><a href="/genre_list"><?echo i18n('genre');?></a></li>
+		</ul>
+		<form class="navbar-form navbar-left" role="search" action="/search" method="POST">
+			<div class="form-group input-group">
+				<input type="text" name="sn" class="form-control" placeholder="<?echo i18n('sn');?>" size="10">
+				<span class="input-group-btn"><button type="submit" class="btn btn-default">Search</button></span>
 			</div>
+		</form>
+		<form class="navbar-form navbar-left hidden-xs" role="search" action="/emule" method="POST">
+			<div class="form-group input-group">
+				<input type="text" name="kw" class="form-control" placeholder="" size="10">
+			<span class="input-group-btn"><button type="submit" class="btn btn-default"><?echo i18n('seed_download_emule')?></button></span>
+			</div>
+		</form>
+		<ul class="nav navbar-nav"><li><a href="/discuz/forum.php"><?echo i18n('forum');?></a></li></ul>
+		<div class="btn-group navbar-right hidden-xs">
+			<button type="button" class="btn btn-default dropdown-toggle navbar-btn" data-toggle="dropdown">
+				<? echo i18n('select_language')?><span class="caret"></span>
+			</button>
+			<ul class="dropdown-menu" role="menu">
+				<li><a href="//www.jporndb.com<? echo $_SERVER['REQUEST_URI']; ?>" target="_self">English</a></li>
+				<li><a href="//jp.jporndb.com<? echo $_SERVER['REQUEST_URI']; ?>" target="_self">日本語</a></li>
+				<li><a href="//tw.jporndb.com<? echo $_SERVER['REQUEST_URI']; ?>" target="_self">正體中文</a></li>
+				<li><a href="//cn.jporndb.com<? echo $_SERVER['REQUEST_URI']; ?>" target="_self">简体中文</a></li>
+			</ul>
 		</div>
 	</div>
 </nav>

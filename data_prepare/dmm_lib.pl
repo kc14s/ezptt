@@ -248,11 +248,11 @@ sub request_btkitty {
 		next if (!defined($magnet));
 		my $name = $1 if ($magnet =~ /&dn=([\d\D]+)/);
 		my $snn_count = 0;
-		while ($seed_name =~ /[a-zA-Z]+[\-\_ ]*\d{3}/g) {
+		while ($name =~ /[a-zA-Z]+[\-\_ ]*\d{3}/g) {
 			++$snn_count;
 		}
 		if ($snn_count >= 5) {
-			if (index($seed_name, '合集') < 0) {
+			if (index($name, '合集') < 0) {
 				print "snn count $snn_count\n";
 				return 0;
 			}
@@ -268,7 +268,7 @@ sub request_btkitty {
 		}
 		my $created = $1 if ($item =~ /<b>([\d\-]{10})<\/b>/);
 		my $recent_request = '2000-01-01';
-		my $size_text = $1 if ($item =~ /<b>([\d\.]+ [A-Z]+)<\/b>/);
+		my $size_text = $1 if ($item =~ /<b>([\d\.]+ [A-Za-z]+)<\/b>/);
 		my $file_num = $1 if ($item =~ /Files:<b>(\d+)<\/b>/);
 		my $hot = $1 if ($item =~ /Popularity&nbsp;:&nbsp;<b>(\d+)<\/b>/);
 		my $seed_url = '';
@@ -285,13 +285,14 @@ sub request_btkitty {
 				$size *= 1024;
 			}
 			$size = int($size + 0.5);
-			if ($size < $channel_size_limitations[$channel]) {
-				print "skip seed too small $size_text $size $magnet\n";
-				next;
-			}
 		}
+		if ($size < $channel_size_limitations[$channel]) {
+			print "skip seed too small $size_text $size $magnet\n";
+			next;
+		}
+		my $hash = $1 if ($magnet =~ /urn:btih:(\w+)/);
 		print "seed0\t$name\t$size_text\t$size\t$file_num\t$created\t$hot\t$magnet\n";
-		$db_conn->do("replace into seed(sn, magnet, name, size, file_num, created, recent_request, hot, seed_url) values('$sn', '$magnet', ".$db_conn->quote($name).", $size, $file_num, '$created', '$recent_request', $hot, '$seed_url')");
+		$db_conn->do("replace into seed(sn, magnet, hash, name, size, file_num, created, recent_request, hot, seed_url) values('$sn', '$magnet', '$hash', ".$db_conn->quote($name).", $size, $file_num, '$created', '$recent_request', $hot, '$seed_url')");
 	}
 }
 

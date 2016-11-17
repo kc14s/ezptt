@@ -149,7 +149,7 @@ foreach ($videos as $video) {
 	else {
 		$snp_end = false;
 	}
-	$html .= "<div class=\"col-xs-6 col-md-3\"><div class=\"thumbnail\"><a href=\"/video/$sn\"><img data-original=\"".get_cover_img_url($sn, $channel, $rating, $snn)."\"><br>$title $snn".download_icon($seed_popularity)."</a></div></div>";
+	$html .= "<div class=\"col-xs-6 col-md-3\"><div class=\"thumbnail\"><a href=\"/video/$sn\">".get_img_tag(get_cover_img_url($sn, $channel, $rating, $snn))."<br>$title $snn".download_icon($seed_popularity)."</a></div></div>";
 	//	$html .= '<div class="media"><a class="pull-left" href="'.$url.'"><img class="media-object" data-original="'.get_cover_img_url($sn, $channel).'" /></a>';
 	//	$html .= '<div class="media-body"><h4 class="media-heading"><a href="'.$url.'">'.$title.'</a></h4></div></div>';
 	if ($column % 4 == 3) $html .= '</div></div>';

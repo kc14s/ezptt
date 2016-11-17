@@ -71,7 +71,7 @@ $column = 0;
 foreach ($star_infos as $star_info) {
 	list($star_id, $star_name, $star_pic_name) = $star_info;
 	if ($column % 6 == 0) $html .= '<div class="row"><div class="col-md-12">';
-	$html .= "<div class=\"col-xs-6 col-md-2\"><div class=\"thumbnail\"><a href=\"/star/$star_id/1\"><img data-original=\"".get_thumb_url($star_pic_name)."\"><div class=\"caption\"><h4 align=\"center\">$star_name</h3></div></a></div></div>";
+	$html .= "<div class=\"col-xs-6 col-md-2\"><div class=\"thumbnail\"><a href=\"/star/$star_id/1\">".get_img_tag(get_thumb_url($star_pic_name))."<div class=\"caption\"><h4 align=\"center\">$star_name</h3></div></a></div></div>";
 	if ($column % 6 == 5) $html .= '</div></div>';
 	++$column;
 }
@@ -110,7 +110,7 @@ for ($series_rank = 1; $series_rank <= 4; ++$series_rank) {
 	$html .= '<div class="panel-body">';
 	foreach ($series_set as $series_video) {
 		list($series_sn, $series_snn, $series_title, $series_channel) = $series_video;
-		$html .= "<div class=\"col-xs-6 col-md-3\"><div class=\"thumbnail\"><a href=\"/video/$series_sn\"><img data-original=\"".get_cover_img_url($series_sn, $series_channel)."\"><br>$series_title $series_snn</a></div></div>";
+		$html .= "<div class=\"col-xs-6 col-md-3\"><div class=\"thumbnail\"><a href=\"/video/$series_sn\">".get_img_tag(get_cover_img_url($series_sn, $series_channel))."\"><br>$series_title $series_snn</a></div></div>";
 	}
 	$html .= '</div></div></div></div>';
 }
@@ -191,7 +191,7 @@ function output_group($videos, $group_name, $url_prefix) {
 		list($title, $sn, $snn, $channel, $rating) = $video;
 		$url = "/video/$sn";
 		if ($column % 4 == 0) $html .= '<div class="row"><div class="col-md-12">';
-		$html .= "<div class=\"col-xs-6 col-md-3\"><div class=\"thumbnail\"><a href=\"/video/$sn\"><img data-original=\"".get_cover_img_url($sn, $channel, $rating)."\"><br>$title $snn</a></div></div>";
+		$html .= "<div class=\"col-xs-6 col-md-3\"><div class=\"thumbnail\"><a href=\"/video/$sn\">".get_img_tag(get_cover_img_url($sn, $channel, $rating))."<br>$title $snn</a></div></div>";
 		if ($column % 4 == 3) $html .= '</div></div>';
 		++$column;
 	}
