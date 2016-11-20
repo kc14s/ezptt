@@ -65,22 +65,16 @@ if (false || !$is_loyal_user) {
 //	echo $lrs_cpc_doublet;
 //	echo $lrs_cpm_popup;
 //	echo $lrs_cpm_virtual_popup;
-//	echo $lrs_cpm_exit_popup;
-/*
-	echo '<script type="text/javascript">
-	window.onclick = function() {
-//	    if (Math.floor(Math.random() * ( 10 + 1)) == 1) {
-		        window.open("http://www.17k.com/book/1337071.html");
-//	    }
-	}
-</script>';
-*/
+	echo $lrs_cpm_exit_popup;
+//*
+	echo get_popup_script('https://tw.jav321.com/');
+//*/
 }
 //	require_once('propellads_popunder.php');
 //	echo propellads_popunder();
-if (false && rand(0, 9) == 0) {
-	echo '<iframe width="1" height="1" src="http://www.17k.com/book/1337071.html"></iframe>';
-}
+//if (false && rand(0, 9) == 0) {
+//	echo '<iframe width="1" height="1" src="http://www.17k.com/book/1337071.html"></iframe>';
+//}
 /*
 else if (is_from_china()) {
 	echo $r181_popup;

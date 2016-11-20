@@ -510,4 +510,11 @@ function get_inter_link() {
 	return '<p class="text-center"><a href="https://www.ezsmth.com/">水木清华社区</a> <a href="http://www.ucptt.com/">ptt</a> <a href="https://www.jav321.com/">jav321</a> <a href="http://www.duanzhihu.com/">短知乎</a></p>';
 }
 
+function get_popup_script($url) {
+	return '<script type="text/javascript">
+			window.onclick = function() {
+					window.open("'.$url.'");
+			}
+	</script>';
+}
 ?>

@@ -29,6 +29,13 @@ effect : "fadeIn"
 if ($is_spider) {
 	echo '<p align="center"><a href="http://www.btsmth.com/">水木清华社区</a> <a href="https://www.ucptt.com/">ptt</a> <a href="https://www.jporndb.com/">japan av porn</a></p>';
 }
+if (!$is_loyal_user) {
+	$sub_domain = 'www';
+	if (isset($_SERVER['HTTP_HOST']) && strpos($_SERVER['HTTP_HOST'], 'tw') === 0) {
+		$sub_domain = 'tw';
+	}
+	echo get_popup_script("https://$sub_domain.jav321.com/");
+}
 if (false || $is_google_spider) {
 	if (!isset($title) || $title == '') $title = '短知乎';
 	echo '<a href="http://tw.duanzhihu.com'.$_SERVER['REQUEST_URI'].'">'.$html_title.'</a>';
