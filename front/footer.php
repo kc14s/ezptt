@@ -31,10 +31,10 @@ $("img").load(function(){
 </script>
 <?
 if (false || !$is_loyal_user) {
-//	echo $adcash_popunder;
 //	echo $clicksor_full_page;
 	echo $propellerads_ucptt_popunder;
-	echo $bidvertiser_popunder;
+	echo $adcash_popunder;
+//	echo $bidvertiser_popunder;
 	echo $ads360_320_270_float_left;
 	echo $ads360_320_270_float_right;
 	echo $ads360_doublet;
@@ -57,7 +57,7 @@ if (false || !$is_loyal_user) {
 	echo $v3_popup_right_bottom_320_270;
 	echo $zy825_popup;
 	echo $boyulm_cpv_120_240;
-	echo $iiad_phone_cpm_640_200;
+//	echo $iiad_phone_cpm_640_200;
 	echo $juicyads_popunder;
 	//echo $propellerads_ucptt_popunder;
 //	echo $uxincm_popup;

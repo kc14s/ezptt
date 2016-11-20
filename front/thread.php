@@ -187,7 +187,7 @@ if ($en_name == 'japanavgirls') {
 	}
 	$html .= '<div class="col-md-2 hidden-xs hidden-sm">';
 	$dmm_domain = 'www';
-	if ($lang == 'zh_CN') $dmm_domain = 'cn';
+	if ($lang == 'zh_CN') $dmm_domain = 'www';
 	else if ($lang = 'zh_TW') $dmm_domain = 'tw';
 	foreach ($videos as $video) {
 		list($title, $sn, $channel) = $video;

@@ -34,5 +34,8 @@ if (false && !$is_loyal_user) {
 //	echo $uxincm_popup;
 	echo $r181_popup;
 }
+if ($is_spider) {
+	echo get_inter_link();
+}
 ?>
 </body></html>

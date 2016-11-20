@@ -506,4 +506,8 @@ function start_with($s1, $s2) {
 	return strpos($s1, $s2) === 0;
 }
 
+function get_inter_link() {
+	return '<p class="text-center"><a href="https://www.ezsmth.com/">水木清华社区</a> <a href="http://www.ucptt.com/">ptt</a> <a href="https://www.jav321.com/">jav321</a> <a href="http://www.duanzhihu.com/">短知乎</a></p>';
+}
+
 ?>
