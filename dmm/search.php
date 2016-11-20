@@ -44,7 +44,7 @@ $html = '<div class="row"><div class="col-md-10 col-md-offset-1 col-xs-10">';
 $html .= '<div class="alert alert-danger" role="alert">'.i18n('video_not_found').'</div>';
 $html .= '</div></div>';
 
-$html_title = 'Japan Porn Database';
+$html_title = 'JAV321';
 require_once('header.php');
 echo $html;
 require_once('footer.php');

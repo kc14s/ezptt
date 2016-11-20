@@ -66,12 +66,12 @@ if (true && !$is_loyal_user) {
 	$html .= $adcash_popunder;
 	$html .= $zy825_popup;
 	$html .= $boyulm_cpv_120_240;
-	$html .= $ads360_320_270_float_left;
-	$html .= $ads360_320_270_float_right;
-	$html .= $ads360_doublet;
-	$html .= $ads360_320_270;
-	$html .= $ads360_popup;
-	$html .= $ads360_float;
+//	$html .= $ads360_320_270_float_left;
+//	$html .= $ads360_320_270_float_right;
+//	$html .= $ads360_doublet;
+//	$html .= $ads360_320_270;
+//	$html .= $ads360_popup;
+//	$html .= $ads360_float;
 	$html .= $cpm365_popup;
 	$html .= $wz02_richmedia;
 	$html .= $v3_popup_right_bottom_320_270;
@@ -83,7 +83,7 @@ if (true && !$is_loyal_user) {
 $floor = 1;
 foreach ($articles as $article) {
 	list($author, $nick, $ups, $title, $content, $pub_time) = $article;
-	if ($floor == 1) {
+	if ($floor == 1 && !$is_spider) {
 		$content = preg_replace('/https:\/\/pic\d+.zhimg.com/', 'http://image.duanzhihu.com', $content);
 	}
 	if ($floor > 1 || $content != '') {

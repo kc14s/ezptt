@@ -16,7 +16,7 @@ my $req = $db_conn->prepare("select sn, release_date from video order by release
 $req->execute;
 print '<?xml version="1.0" encoding="utf-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">';
 while (my ($sn, $release_date) = $req->fetchrow_array) {
-	my $url = "http://cn.jporndb.com/video/$sn";
+	my $url = "https://www.jav321.com/video/$sn";
 	print "<url><loc>$url</loc><lastmod>$release_date</lastmod><changefreq>never</changefreq></url>\n";
 }
 print '</urlset>';

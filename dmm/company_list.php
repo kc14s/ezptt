@@ -34,7 +34,7 @@ for ($source = 0; $source < 3; ++$source) {
 }
 
 $target = '_blank';
-$html_title = 'Japan Porn Database';
+$html_title = 'JAV321';
 require_once('header.php');
 echo $html;
 require_once('footer.php');

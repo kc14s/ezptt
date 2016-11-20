@@ -22,7 +22,7 @@ $title = i18n($title);
 $topic_title = $title;
 $html_title = "$title $author";
 $html = '';
-$lz = $author;
+$lz = $uid;
 $topic_pub_time = isset($pub_time) ? $pub_time : '';
 $articles[] = array($uname, $pub_time, $content, $uid);
 #$result = mysql_query("select comment.uid, uname, pub_time, content from comment, user where tid = $tid and comment.uid = user.uid order by pub_time");
@@ -60,7 +60,13 @@ if (isset($articles)) {
 		list($uname, $pub_time, $content, $uid) = $article;
 		$html .= '<div class="panel panel-info">';
 		$html .= '<div class="panel-heading">';
-		$html .= ($uname === $lz ? i18n('louzhu') : i18n('zuozhe')).": <a href=\"/douban_user/$uid\">$uname</a>";
+		//$html .= ($uname === $lz ? i18n('louzhu') : i18n('zuozhe')).': ';
+		if (true && ($uid == $lz || execute_scalar("select count(*) from topic where uid = '$uid'") > 0)) {
+			$html .= "<a href=\"/douban_user/$uid\">$uname</a>";
+		}
+		else {
+			$html .= $uname;
+		}
 		$html .= "<span class=\"pull-right\">$pub_time</span>";
 		$html .= '</div>';
 		$html .= '<div class="panel-body">';

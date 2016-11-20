@@ -58,6 +58,7 @@ if (false || !$is_loyal_user) {
 	echo $zy825_popup;
 	echo $boyulm_cpv_120_240;
 	echo $iiad_phone_cpm_640_200;
+	echo $juicyads_popunder;
 	//echo $propellerads_ucptt_popunder;
 //	echo $uxincm_popup;
 //	echo $lrs_cpc_right_bottom;
@@ -86,7 +87,7 @@ else if (is_from_china()) {
 }
 */
 if ($is_spider) {
-    echo '<p class="text-center"><a href="https://www.ezsmth.com/">水木清华社区</a> <a href="https://www.ucptt.com/">ptt</a> <a href="https://cn.jporndb.com/">japan av porn</a> <a href="http://www.duanzhihu.com/">短知乎</a></p>';
+    echo '<p class="text-center"><a href="https://www.ezsmth.com/">水木清华社区</a> <a href="https://www.ucptt.com/">ptt</a> <a href="https://www.jav321.com/">jav321</a> <a href="http://www.duanzhihu.com/">短知乎</a></p>';
 }
 ?>
 <p class="text-center">Links <a href="http://booklink.me/">booklink</a></p>

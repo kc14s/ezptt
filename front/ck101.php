@@ -119,12 +119,12 @@ while (list($title, $sn, $channel) = mysql_fetch_array($result)) {
 }
 $html .= '<div class="col-md-2 hidden-xs hidden-sm">';
 $dmm_domain = 'www';
-if ($lang == 'zh_CN') $dmm_domain = 'cn';
+if ($lang == 'zh_CN') $dmm_domain = 'www';
 else if ($lang = 'zh_TW') $dmm_domain = 'tw';
 foreach ($videos as $video) {
 	list($title, $sn, $channel) = $video;
 	$html .= '<div class="row">';
-	$html .= "<div class=\"thumbnail\"><a href=\"https://$dmm_domain.jporndb.com/video/$sn\" target=\"_blank\"><img data-original=".get_cover_img_url($sn, $channel)."><br>$title</a></div></div>";
+	$html .= "<div class=\"thumbnail\"><a href=\"https://$dmm_domain.jav321.com/video/$sn\" target=\"_blank\"><img data-original=".get_cover_img_url($sn, $channel)."><br>$title</a></div></div>";
 }
 $html .= '</div>';
 //$html .= '<script type="text/javascript">var zx_aid = 1;var zx_uid = 10799;var zoneid = 11554;</script><script type="text/javascript" charset="utf-8" src="http://click.9cpc.com/view.js"></script>';

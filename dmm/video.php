@@ -308,7 +308,7 @@ if ($is_spider) {
 }
 $html .= get_rand_dmm_thumb_html();
 //$html .= '<div id="uyan_frame"></div><script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=2084908"></script>';
-$html .= duoshuo_html('jporndb', $sn, $title, "https://cn.jporndb.com/video/$sn");
+$html .= duoshuo_html('jporndb', $sn, $title, "https://www.jav321.com/video/$sn");
 $html .= '</div>';	#left column end
 $html .= '<div class="col-md-3">';	//thumb
 if ($channel != 2 && $channel != 9) {

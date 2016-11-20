@@ -44,7 +44,7 @@ if (isset($_GET['star_id'])) {
 		$label = $star_name.i18n('star_all_video');
 	}
 	else {
-		$result = mysql_query("select title, video.sn, sn_normalized, channel, rating, video.seed_popularity from video, star, star_info where star_info.id = ".$_GET['star_id']." and star_info.name = star.star and star.sn = video.sn order by video.release_date limit ".(($page - 1) * $page_size).", $page_size");
+		$result = mysql_query("select title, video.sn, sn_normalized, channel, rating, video.seed_popularity from video, star, star_info where star_info.id = ".$_GET['star_id']." and star_info.name = star.star and star.sn = video.sn order by video.seed_popularity desc limit ".(($page - 1) * $page_size).", $page_size");
 		$label = execute_scalar('select name from star_info where id = '.$_GET['star_id']).i18n('star_all_video');
 	}
 	$group_name_key = "star_".$_GET['star_id'];
@@ -225,12 +225,12 @@ if (!$is_spider) {
 	$html .= '</ul></div></div>';
 }
 $html .= '</div></div>';
-$html .= duoshuo_html('jporndb', $group_name_key, $html_title, "https://cn.jporndb.com/$current_url");
+$html .= duoshuo_html('jporndb', $group_name_key, $html_title, "https://www.jav321.com/$current_url");
 $html .= '</div></div>';
 
 $target = '_blank';
 if (!isset($html_title)) {
-	$html_title = 'Japan Porn Database';
+	$html_title = 'JAV321';
 }
 require_once('header.php');
 echo $html;

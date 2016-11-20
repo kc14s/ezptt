@@ -2,16 +2,19 @@
 #error_log("language ".$_SERVER["HTTP_ACCEPT_LANGUAGE"]);
 //*
 require_once('init.php');
-if (false || $is_spider || $is_from_search_engine || $_COOKIE['is_from_search_engine'] == 1 || isset($_COOKIE['xM2S_2132_auth']) || (isset($_SERVER["HTTP_ACCEPT_LANGUAGE"]) && str_contain($_SERVER["HTTP_ACCEPT_LANGUAGE"], 'zh'))) {}
+function __autoload($class_name) {
+	include $class_name . '.php';
+}
+
+if (true || $is_spider || $is_from_search_engine || $_COOKIE['is_from_search_engine'] == 1 || isset($_COOKIE['xM2S_2132_auth']) || (isset($_SERVER["HTTP_ACCEPT_LANGUAGE"]) && str_contain($_SERVER["HTTP_ACCEPT_LANGUAGE"], 'zh'))) {}
 else {
 	header("HTTP/1.1 301 Moved Permanently"); 
-	header("Location: /discuz/forum.php?mod=forumdisplay&fid=2"); 
+	header("Location: /discuz/forum.php?mod=viewthread&tid=21&extra=page%3D1"); 
 	error_log("reject ".$_SERVER["HTTP_ACCEPT_LANGUAGE"].' '.$_SERVER['HTTP_USER_AGENT']);
 	exit;
 }
 //*/
-require_once('ZhConversion.php');
-$lang = 'en_US';
+$lang = 'zh_CN';
 $sub_domain = substr($_SERVER['HTTP_HOST'], 0, 2);
 if ($sub_domain == 'cn') {
 	$lang = 'zh_CN';
@@ -21,6 +24,9 @@ else if ($sub_domain == 'tw') {
 }
 else if ($sub_domain == 'jp') {
 	$lang = 'ja_JP';
+}
+else if ($sub_domain == 'en') {
+	$lang = 'en_US';
 }
 $lang_short = substr($lang, 0, 2);
 function get_lang_short() {
@@ -95,6 +101,12 @@ $i18n = array(
 'censored' => '有码',
 'uncensored' => '无码',
 'amateur' => '素人',
+'louzhu' => '楼主',
+'jixuyuedu' => '继续阅读',
+'' => '',
+'' => '',
+'' => '',
+'' => '',
 '' => '',
 '' => '',
 '' => ''
@@ -155,6 +167,8 @@ $i18n = array(
 'censored' => '有碼',
 'unsensored' => '無碼',
 'amateur' => '素人',
+'louzhu' => '楼主',
+'jixuyuedu' => '繼續閱讀',
 '' => '',
 '' => '',
 '' => ''
@@ -214,6 +228,7 @@ $i18n = array(
 'censored' => 'Censored',
 'uncensored' => 'Uncensored',
 'amateur' => 'Amateur',
+'louzhu' => 'Author',
 '' => '',
 '' => '',
 '' => '',
@@ -283,10 +298,10 @@ function i18n($key) {
 		if (!isset($i18n[$lang][$key]) && isset($i18n['en_US'][$key])) {
 			return $i18n['en_US'][$key];
 		}
+		return $i18n[$lang][$key];
 	}
-	else {
-		global $zh2Hans, $zh2CN;
-		return strtr(strtr($key, $zh2CN), $zh2Hans);
+	else if ($lang == 'zh_CN') {
+		return strtr(strtr($key, zht2s::$zh2CN), zht2s::$zh2Hans);
 	}
 	return $key;
 }

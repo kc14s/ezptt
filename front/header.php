@@ -35,6 +35,7 @@ else {
 <meta name="baidu-site-verification" content="uo47eIda6W" />
 <meta baidu-gxt-verify-token="b91724952823a39fa8b5dffc2858ecbb"> 
 <meta property="qc:admins" content="2746676521624354063757" />
+<meta name="juicyads-site-verification" content="2c392a6a7d87f4e6fb7eebb104490caf">
 <style>
 body,button, input, select, textarea,h1 ,h2, h3, h4, h5, h6 { font-family: 'Microsoft YaHei','宋体' , Tahoma, Helvetica, Arial, sans-serif;}
 </style>

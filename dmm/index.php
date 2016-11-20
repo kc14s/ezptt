@@ -176,7 +176,7 @@ while (list($title, $sn, $snn, $channel, $rating) = mysql_fetch_array($result)) 
 $html .= output_group($videos, i18n('channel_7'), '/channel/7');
 
 $target = '_blank';
-$html_title = 'Japan Porn Database';
+$html_title = 'JAV321';
 require_once('header.php');
 echo $html;
 require_once('footer.php');

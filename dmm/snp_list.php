@@ -26,11 +26,11 @@ if (!$is_spider) {
 	$html .= '</ul></div></div>';
 }
 $html .= '</div></div>';
-$html .= duoshuo_html('jporndb', 'stars', 'stars', "https://cn.jporndb.com/snp_list/1");
+$html .= duoshuo_html('jporndb', 'stars', 'stars', "https://www.jav321.com/snp_list/1");
 $html .= '</div></div>';
 
 $target = '_blank';
-$html_title = 'Japan Porn Database';
+$html_title = 'JAV321';
 require_once('header.php');
 echo $html;
 require_once('footer.php');

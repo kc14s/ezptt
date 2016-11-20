@@ -1,4 +1,7 @@
 <?
+function __autoload($class_name) {
+	include $class_name . '.php';
+}
 /*
 $protocol = $_SERVER['SERVER_PROTOCOL'];
 if (is_from_china()) {
@@ -17,7 +20,6 @@ else {
 if ($is_google_spider && $_SERVER['HTTP_HOST'] == 'cn.ucptt.com') {
 	header('Location: http://www.ucptt.com'.$_SERVER['REQUEST_URI'], TRUE, 301);
 }
-require_once('ZhConversion.php');
 $lang = 'zh_TW';
 if ($_SERVER['HTTP_HOST'] == 'cn.ucptt.com') {
 	$lang = 'zh_CN';
@@ -101,14 +103,12 @@ function i18n($key) {
 			return $key;
 		}
 		else {
-			global $zh2Hant, $zh2TW;
-			return strtr(strtr($key, $zh2TW), $zh2Hant);
+			return strtr(strtr($key, zhs2t::$zh2TW), zhs2t::$zh2Hant);
 		}
 	}
 	else {
 		if ($is_default_tw) {
-			global $zh2Hans, $zh2CN;
-			return strtr(strtr($key, $zh2CN), $zh2Hans);
+			return strtr(strtr($key, zht2s::$zh2CN), zht2s::$zh2Hans);
 		}
 		else {
 			return $key;

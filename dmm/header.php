@@ -20,6 +20,7 @@ if (isset($html_title)) {
 <script src="//cdn.bootcss.com/twitter-bootstrap/3.0.3/js/bootstrap.min.js"></script>
 <script src="//cdn.bootcss.com/jquery.lazyload/1.9.1/jquery.lazyload.min.js"></script>
 <meta name="baidu-site-verification" content="c3FkX097v5" />
+<meta name="juicyads-site-verification" content="8856d436f8307f3deccc54b443cd78da">
 <?
 if (isset($target)) {
 	echo "<base target=\"$target\" />";
@@ -40,7 +41,7 @@ ga('send', 'pageview');
 <nav class="navbar navbar-default" role="navigation">
 	<div class="container-fluid">
 		<div class="navbar-header hidden-xs">
-			<a class="navbar-brand" href="/">Japanese Porn Database</a>
+			<a class="navbar-brand" href="/">JAV321</a>
 		</div>
 		<ul class="nav navbar-nav hidden-xs">
 			<li><a href="/best_seller/2016/1"><?echo i18n('best_seller');?></a></li>
@@ -65,10 +66,10 @@ ga('send', 'pageview');
 				<? echo i18n('select_language')?><span class="caret"></span>
 			</button>
 			<ul class="dropdown-menu" role="menu">
-				<li><a href="//www.jporndb.com<? echo $_SERVER['REQUEST_URI']; ?>" target="_self">English</a></li>
-				<li><a href="//jp.jporndb.com<? echo $_SERVER['REQUEST_URI']; ?>" target="_self">日本語</a></li>
-				<li><a href="//tw.jporndb.com<? echo $_SERVER['REQUEST_URI']; ?>" target="_self">正體中文</a></li>
-				<li><a href="//cn.jporndb.com<? echo $_SERVER['REQUEST_URI']; ?>" target="_self">简体中文</a></li>
+				<li><a href="//en.jav321.com<? echo $_SERVER['REQUEST_URI']; ?>" target="_self">English</a></li>
+				<li><a href="//jp.jav321.com<? echo $_SERVER['REQUEST_URI']; ?>" target="_self">日本語</a></li>
+				<li><a href="//tw.jav321.com<? echo $_SERVER['REQUEST_URI']; ?>" target="_self">正體中文</a></li>
+				<li><a href="//cn.jav321.com<? echo $_SERVER['REQUEST_URI']; ?>" target="_self">简体中文</a></li>
 			</ul>
 		</div>
 	</div>

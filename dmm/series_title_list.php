@@ -26,7 +26,7 @@ if ($page <= execute_scalar("select count(*) from series") / $page_size) {
 }
 $html .= '</ul></div></div>';
 $target = '_blank';
-$html_title = 'Japan Porn Database';
+$html_title = 'JAV321';
 require_once('header.php');
 echo $html;
 require_once('footer.php');

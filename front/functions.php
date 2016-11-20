@@ -306,6 +306,29 @@ function get_rand_dmm_topic_html() {
 	return $html;
 }
 
+function get_rand_dmm_column_html() {
+	require_once('../dmm/dmm_lib.php');
+//	$dmm_db = conn_dmm_db();
+	$result = mysql_query("select title, sn, channel from dmm.video where rank >= ".rand(0, 100)." order by rank limit 10");
+	while (list($title, $sn, $channel) = mysql_fetch_array($result)) {
+		$video = array($title, $sn, $channel);
+		$videos[] = $video;
+	}
+	$html = '<div class="col-md-2 hidden-xs hidden-sm">';
+	$dmm_domain = 'www';
+	global $lang;
+	if ($lang == 'zh_CN') $dmm_domain = 'www';
+	else if ($lang = 'zh_TW') $dmm_domain = 'tw';
+	foreach ($videos as $video) {
+		list($title, $sn, $channel) = $video;
+		$html .= '<div class="row">';
+		$img_url = get_cover_img_url($sn, $channel);
+		$html .= "<div class=\"thumbnail\"><a href=\"https://$dmm_domain.jav321.com/video/$sn\" target=\"_blank\">".get_img_tag($img_url)."<br>$title</a></div></div>";
+	}
+	$html .= '</div>';
+	return $html;
+}
+
 function get_rand_zhihu_topic_html() {
 	list($id_min, $id_max) = execute_vector('select min(id), max(id) from zhihu.answer');
 	$result = mysql_query('select aid, title, author, nick from zhihu.question, zhihu.answer where question.qid = answer.qid and id > '.rand($id_min, $id_max).' order by id limit 20');
@@ -413,7 +436,7 @@ function get_ck101_board_random_topic($bid) {
 			continue;
 		}
 //		$html .= "<a href=\"https://$sub_domain.ucptt.com/ck101/$bid/$tid\" class=\"list-group-item\" target=\"_blank\">$title<span class=\"pull-right\">$author</span></a>";
-		$html .= "<a href=\"https://cn.jporndb.com/ck101/$bid/$tid\" class=\"list-group-item\" target=\"_blank\">$title<span class=\"pull-right\">$author</span></a>";
+		$html .= "<a href=\"https://www.jav321.com/ck101/$bid/$tid\" class=\"list-group-item\" target=\"_blank\">$title<span class=\"pull-right\">$author</span></a>";
 	}
 	$html .= '</div></div>';
 	return $html;

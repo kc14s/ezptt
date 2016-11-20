@@ -30,7 +30,7 @@ foreach ($categories as $category) {
 }
 
 $target = '_blank';
-$html_title = 'Japan Porn Database';
+$html_title = 'JAV321';
 require_once('header.php');
 echo $html;
 require_once('footer.php');
