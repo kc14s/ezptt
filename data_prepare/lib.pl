@@ -31,7 +31,7 @@ sub init_db {
 	my $database = $ENV{"database"};
 	my $user = $ENV{"user"};
 	my $password = $ENV{"password"};
-	$db_conn = DBI->connect("DBI:mysql:database=$database;host=$db_server", $user, $password, {RaiseError => 1, AutoCommit =>1, mysql_auto_reconnect=>1});
+	$db_conn = DBI->connect("DBI:mysql:database=$database;host=$db_server", $user, $password, {RaiseError => 1, AutoCommit =>1, mysql_auto_reconnect=>1}) or die("init db failed");
 	$db_conn->do("set names UTF8");
 	$db_conn->do("SET time_zone = '+8:00'");
 	$db_conn->do('SET LOW_PRIORITY_UPDATES=1');
