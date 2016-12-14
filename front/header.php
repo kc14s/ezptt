@@ -9,10 +9,11 @@ require_once('i18n.php');
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<link rel="icon" href="data:;base64,iVBORw0KGgo=">
+<link rel="icon" type="image/png" href="data:;base64,iVBORw0KGgo=">
+<link rel="shortcut icon" href="data:image/x-icon;," type="image/x-icon">
 <meta name="propeller" content="98d8ecc9b30b166f89d0410cd31b7cc0" />
-<title>
-<?php
+<meta name="trafficjunky-site-verification" content="5t70yr82t" />
+<title><?php
 if (isset($html_title)) {
 	echo $html_title;
 }
@@ -22,8 +23,7 @@ if (strpos($_SERVER['REQUEST_URI'], 'ck101') > 0 || strpos($_SERVER['REQUEST_URI
 else {
 	echo i18n(' PTT批踢踢實業坊');
 }
-?>
-</title>
+?></title>
 <link rel="stylesheet" href="//cdn.bootcss.com/twitter-bootstrap/3.0.3/css/bootstrap.min.css">
 <link rel="stylesheet" href="//code.jquery.com/ui/1.11.3/themes/smoothness/jquery-ui.css">
 <script src="//code.jquery.com/jquery-2.1.4.min.js"></script>
@@ -36,6 +36,7 @@ else {
 <meta baidu-gxt-verify-token="b91724952823a39fa8b5dffc2858ecbb"> 
 <meta property="qc:admins" content="2746676521624354063757" />
 <meta name="juicyads-site-verification" content="2c392a6a7d87f4e6fb7eebb104490caf">
+<meta name="ero_verify" content="415b1230f426bd7372dd51bf047c53ed" />
 <style>
 body,button, input, select, textarea,h1 ,h2, h3, h4, h5, h6 { font-family: 'Microsoft YaHei','宋体' , Tahoma, Helvetica, Arial, sans-serif;}
 </style>
@@ -54,7 +55,11 @@ var _hmt = _hmt || [];
  s.parentNode.insertBefore(hm, s);
  })();
 </script>
-
+<?
+if (!$is_loyal_user) {
+	echo $popads_ucptt;
+}
+?>
 </head>
 <body>
 <script type="text/javascript" src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-54c4990a04963235" async="async"></script>

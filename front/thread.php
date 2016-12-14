@@ -95,6 +95,9 @@ foreach ($articles as $article) {
 	$html .= " &nbsp; <span class=\"pull-right\">$time</span>";
 	$html .= '</div>';
 	$html .= '<div class="panel-body">';
+	if ($floor == 1) {
+		$html .= $adsense_ucptt;
+	}
 	$content = i18n(preg_replace("/\n+/", "\n", trim($content)));
 	if (true && $is_loyal_user && !$is_spider && !(strpos($content, 'http://') === false)) {
 		$content = preg_replace("/(http:\/\/[\w\/\.\_\-]+\.jpg)/", "<br><a href=\"$1\" target=\"_blank\"><img data-original=\"$1\" class=\"img-responsive\" /></a>", $content);
@@ -114,6 +117,7 @@ foreach ($articles as $article) {
 		}
 	}
 	if ($floor == 1) {
+		$html .= $adsense_ucptt;
 		$html .= '<div class="addthis_sharing_toolbox"></div>';
 		if (!$is_loyal_user) {
 			$html .= $juicyads_banner_ucptt;

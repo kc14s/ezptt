@@ -12,6 +12,38 @@ while (list($title, $sn, $snn, $channel, $rating) = mysql_fetch_array($result)) 
 }
 $html .= output_group($videos, i18n('hot_download'), '/list/hot_download');
 
+$result = mysql_query('select tid, title, img_url, snn from play_topic order by pub_time desc limit 8');
+while (list($tid, $title, $img_url, $snn) = mysql_fetch_array($result)) {
+	$topics[] = array($tid, i18n($title), $img_url, $snn);
+}
+$html .= '<div class="row"><div class="col-md-10 col-md-offset-1 col-xs-12">';
+$html .= '<div class="panel panel-info">';
+$html .= '<div class="panel-heading">';
+$html .= '<a href="topic_list/1">'.i18n('av_news').'</a>';
+$html .= '</div>';
+$html .= '<div class="panel-body">';
+$column = 0;
+foreach ($topics as $topic) {
+	list($tid, $title, $img_url, $snn) = $topic;
+	$url = "/topic/$tid";
+	if ($column % 4 == 0) $html .= '<div class="row"><div class="col-md-12">';
+	$html .= "<div class=\"col-xs-6 col-md-3\"><div class=\"thumbnail\"><a href=\"$url\">".get_img_tag($img_url)."<br>$title $snn</a></div></div>";
+	if ($column % 4 == 3) $html .= '</div></div>';
+	++$column;
+}
+$html .= '<div class="row"><div class="col-md-12"><p class="pull-right"><a href="topic_list/1">'.i18n('more').'</a></p></div></div>';
+$html .= '</div></div></div></div>';
+
+$videos = array();
+$result = mysql_query("select title, video.sn, sn_normalized, channel, rating from video, sixav where video.sn_normalized = sixav.snn order by sixav.id desc limit 8");
+while (list($title, $sn, $snn, $channel, $rating) = mysql_fetch_array($result)) {
+	$snn = snn_add_hyphen($snn);
+	$video = array($title, $sn, $snn, $channel, $rating);
+	$videos[] = $video;
+}
+$html .= output_group($videos, i18n('play_list'), '/play_list');
+
+/*
 $videos = array();
 $result = mysql_query("select title, sn, sn_normalized, channel, rating from video order by rank limit 8");
 while (list($title, $sn, $snn, $channel, $rating) = mysql_fetch_array($result)) {
@@ -20,9 +52,10 @@ while (list($title, $sn, $snn, $channel, $rating) = mysql_fetch_array($result)) 
 	$videos[] = $video;
 }
 $html .= output_group($videos, i18n('hottest'), '/list/rank');
+*/
 
 $videos = array();
-$result = mysql_query("select title, sn, sn_normalized, channel, rating from video where release_date between date_sub(now(), interval 7 day) and now() order by fav_count desc limit 8");
+$result = mysql_query("select title, sn, sn_normalized, channel, rating from video where release_date between date_sub(now(), interval 7 day) and now() and channel = 1 order by fav_count desc limit 8");
 while (list($title, $sn, $snn, $channel, $rating) = mysql_fetch_array($result)) {
 	$snn = snn_add_hyphen($snn);
 	$video = array($title, $sn, $snn, $channel, $rating);
@@ -44,25 +77,44 @@ foreach ($snps as $snp) {
 }
 $html .= '</div></div></div></div>';
 
+if (false) {
+	$videos = get_snps_new_release(array('siro', 'luxu', 'gana', 'dcv', 'ore'));
+}
+else {
 $videos = array();
-$result = mysql_query("select title, sn, sn_normalized, channel, rating from video where channel = 8 order by fav_count desc limit ".rand(0, 200).", 8");
+$result = mysql_query("select title, sn, sn_normalized, channel, rating from video where release_date between date_sub(now(), interval 7 day) and now() and channel = 8 order by fav_count desc limit 12");
 while (list($title, $sn, $snn, $channel, $rating) = mysql_fetch_array($result)) {
 	$snn = snn_add_hyphen($snn);
 	$video = array($title, $sn, $snn, $channel, $rating);
 	$videos[] = $video;
 }
-$html .= output_group($videos, i18n('channel_8'), '/channel/8');
+}
+$html .= output_group($videos, i18n('amateur').' '.i18n('latest'), $undefined);
 
 $videos = array();
-$result = mysql_query("select title, sn, sn_normalized, channel, rating from video where channel = 5 order by seed_popularity desc limit 8");
+$result = mysql_query("select title, sn, sn_normalized, channel, rating from video where type = 2 order by seed_popularity desc limit ".rand(0, 200).", 8");
 while (list($title, $sn, $snn, $channel, $rating) = mysql_fetch_array($result)) {
 	$snn = snn_add_hyphen($snn);
 	$video = array($title, $sn, $snn, $channel, $rating);
 	$videos[] = $video;
 }
-$html .= output_group($videos, i18n('channel_5'), '/channel/5');
+$html .= output_group($videos, i18n('type_2'), '/type/2');
 
-$star_infos = execute_dataset("select id, name, pic_name from star_info order by seed_popularity desc limit 24");
+//$videos = get_snps_new_release(array('smd199', 'dsam', 'll', 'tkg', 'dz', 'bt', 'red', 'hey', 'pt', '1pondo', 'mcdv', 'drc', 'cwpbd', 'sky'));
+$videos = get_companies_new_release(array('スーパーモデルメディア', 'サムライポルノ', 'ルチャリブレ', '小天狗', 'Climax Zipang', 'キャットウォーク', 'スタジオテリヤキ', 'レッドホットコレクション', 'HEYZO', 'スタジオテリヤキ', '一本道', 'メルシーボークー', 'CATCHEYE'));
+$html .= output_group($videos, i18n('type_3').' '.i18n('latest'), $undefined);
+
+$videos = array();
+$result = mysql_query("select title, sn, sn_normalized, channel, rating from video where type = 3 order by seed_popularity desc limit ".rand(0, 200).", 8");
+while (list($title, $sn, $snn, $channel, $rating) = mysql_fetch_array($result)) {
+	$snn = snn_add_hyphen($snn);
+	$video = array($title, $sn, $snn, $channel, $rating);
+	$videos[] = $video;
+}
+$html .= output_group($videos, i18n('type_3'), '/type/3');
+
+//$star_infos = execute_dataset("select id, name, pic_name from star_info order by rank limit 24");
+$star_infos = execute_dataset("select id, name, pic_name from star, star_info, pb_rank where star.sn = pb_rank.sn and star.star_id = star_info.id and pic_name <> '' order by pb_rank.rank limit 24");
 $html .= '<div class="row"><div class="col-md-10 col-md-offset-1 col-xs-12">';
 $html .= '<div class="panel panel-info">';
 $html .= '<div class="panel-heading">'.i18n('top_stars').' &nbsp; <a href="/stars/1">'.i18n('more').'</a></div>';
@@ -184,7 +236,13 @@ require_once('footer.php');
 function output_group($videos, $group_name, $url_prefix) {
 	$html = '<div class="row"><div class="col-md-10 col-md-offset-1 col-xs-12">';
 	$html .= '<div class="panel panel-info">';
-	$html .= '<div class="panel-heading"><a href="'.$url_prefix.'/1">'.$group_name.'</a> &nbsp; <a href="'.$url_prefix.'/1">'.i18n('more').'</a></div>';
+	$html .= '<div class="panel-heading">';
+	if (isset($url_prefix)) 
+		$html .= '<a href="'.$url_prefix.'/1">'.$group_name.'</a> &nbsp; <a href="'.$url_prefix.'/1">'.i18n('more').'</a>';
+	else {
+		$html .= $group_name;
+	}
+	$html .= '</div>';
 	$html .= '<div class="panel-body">';
 	$column = 0;
 	foreach ($videos as $video) {
@@ -195,7 +253,9 @@ function output_group($videos, $group_name, $url_prefix) {
 		if ($column % 4 == 3) $html .= '</div></div>';
 		++$column;
 	}
-	$html .= '<div class="row"><div class="col-md-12"><p class="pull-right"><a href="'.$url_prefix.'/1">'.i18n('more').'</a></p></div></div>';
+	if (isset($url_prefix)) {
+		$html .= '<div class="row"><div class="col-md-12"><p class="pull-right"><a href="'.$url_prefix.'/1">'.i18n('more').'</a></p></div></div>';
+	}
 	$html .= '</div></div></div></div>';
 	return $html;
 }

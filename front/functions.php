@@ -211,6 +211,7 @@ function is_loyal_user() {
 	'/comment/' => 1,
 	'/author.php' => 1,
 	'/user.php' => 1,
+	'/index.php' => 1,
 	'/disp.php' => 1
 	);
 	if ($is_from_search_engine) {}
@@ -487,7 +488,8 @@ function show_error($message) {
 }
 
 function duoshuo_html($site_id, $thread_id, $title, $url) {
-	$html = "<div class=\"ds-thread\" data-thread-key=\"$thread_id\" data-title=\"$title\" data-url=\"$url\"></div>
+	$site_id = 'jav321';
+	$html = "<div class=\"ds-thread\" data-thread-key=\"$thread_id\" data-title=\"$title\" data-url=\"https://www.jav321.com/$url\"></div>
 	<script type=\"text/javascript\">
 	var duoshuoQuery = {short_name:\"$site_id\"};
 		(function() {
@@ -507,14 +509,23 @@ function start_with($s1, $s2) {
 }
 
 function get_inter_link() {
-	return '<p class="text-center"><a href="https://www.ezsmth.com/">水木清华社区</a> <a href="http://www.ucptt.com/">ptt</a> <a href="https://www.jav321.com/">jav321</a> <a href="http://www.duanzhihu.com/">短知乎</a></p>';
+	return '<p class="text-center"><a href="https://www.ezsmth.com/">水木清华社区</a> <a href="http://www.ucptt.com/">ptt</a> <a href="https://www.jav321.com/">jav321</a> <a href="https://www.duanzh.com/">短知乎</a> <a href="https://www.ezwxc.com/">文学城</a></p>';
 }
 
 function get_popup_script($url) {
 	return '<script type="text/javascript">
-			window.onclick = function() {
+//			window.onclick = function() {
 					window.open("'.$url.'");
-			}
+//			}
 	</script>';
+}
+
+function close_div($content) {
+	$div_open_count = substr_count($content, '<div');
+	$div_close_count = substr_count($content, '</div>');
+	for ($i = $div_close_count; $i < $div_open_count; ++$i) {
+		$content .= '</div>';
+	}
+	return $content;
 }
 ?>

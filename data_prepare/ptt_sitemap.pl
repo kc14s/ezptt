@@ -7,7 +7,7 @@ require('lib.pl');
 my $db_conn = init_db();
 my $dir = '/root/ptt/front';
 open OUT, ">$dir/sitemap.xml";
-open OUT_BAIDU, ">/dev/null";
+open OUT_BAIDU, ">$dir/sitemap_baidu.xml";
 print OUT '<?xml version="1.0" encoding="utf-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">';
 print OUT_BAIDU '<?xml version="1.0" encoding="utf-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">';
 my $req = $db_conn->prepare('select en_name, tid1, tid2, date(pub_time) from board, topic where board.id = topic.bid order by pub_time desc limit 23000');

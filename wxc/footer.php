@@ -24,7 +24,6 @@ effect : "fadeIn"
  s.parentNode.insertBefore(bp, s);
  })();
 </script>
-<p align="center">Contact: admin{a[_()_]t}duanzhihu.com</p>
 <?
 if ($is_spider) {
 	echo '<p align="center"><a href="https://www.ezsmth.com/">水木清华社区</a> <a href="https://www.ucptt.com/">ptt</a> <a href="https://www.jav321.com/">japan av porn</a></p>';
@@ -34,7 +33,7 @@ if (!$is_loyal_user) {
 	if (isset($_SERVER['HTTP_HOST']) && strpos($_SERVER['HTTP_HOST'], 'tw') === 0) {
 		$sub_domain = 'tw';
 	}
-	echo get_popup_script("https://$sub_domain.jav321.com/");
+	//echo get_popup_script("https://$sub_domain.jav321.com/");
 }
 if (false || $is_google_spider) {
 	if (!isset($title) || $title == '') $title = '短知乎';

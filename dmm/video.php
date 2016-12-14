@@ -2,7 +2,6 @@
 require_once("init.php");
 require_once("dmm_lib.php");
 require_once("i18n.php");
-require_once("ads.php");
 
 $sn = $_GET['sn'];
 $db_conn = conn_dmm_db();
@@ -53,6 +52,7 @@ foreach ($sn_set as $index => $video) {
 	}
 }
 
+$compact_snn = $snn;
 $snn = snn_add_hyphen($snn);
 
 if ($channel <= 4) {
@@ -139,7 +139,7 @@ if ($channel == 8) {
 		$sn_prefix_upper = strtoupper($sn_arr[0]);
 		$sn_suffix= $sn_arr[1];
 		$sn_upper = strtoupper($sn);
-		$html .= '<video controls="controls" width="100%">';
+		$html .= '<video controls="controls" width="100%" preload="none">';
 		$html .= "<source src=\"http://chdl34.mgstage.com/sample/$mgs_company_en/$sn_prefix_lower/$sn_suffix/${sn_upper}_sample.mp4\">";
 		$html .= "<source src=\"http://chdl34.mgstage.com/sample/$mgs_company_en/$sn_prefix_lower/$sn_suffix/${sn_upper}.mp4\">";
 		$html .= "<source src=\"http://chdl33.mgstage.com/sample/$mgs_company_en/$sn_prefix_lower/$sn_suffix/${sn_upper}_sample.mp4\">";
@@ -156,20 +156,22 @@ if ($channel == 8) {
 else if ($channel <= 4) {
 	$prev_video = execute_scalar("select url from sample_url where sn = 'v_$sn'");
 	if (isset($prev_video)) {
-		$html .= '<video controls="controls" width="100%">';
-		$html .= "<source src=\"http://cc3001.r18.com/litevideo/freepv/".substr($sn, 0, 1)."/".substr($sn, 0, 3)."/$prev_video/${prev_video}_dmb_w.mp4\" type=\"video/mp4\">";
-		$html .= "<source src=\"http://cc3001.r18.com/litevideo/freepv/".substr($sn, 0, 1)."/".substr($sn, 0, 3)."/$prev_video/${prev_video}_sm_s.mp4\" type=\"video/mp4\">";
+		$dir = substr($prev_video, 0, 1).'/'.substr($prev_video, 0, 3);
+		$html .= '<video controls="controls" width="100%" preload="none">';
+		$html .= "<source src=\"http://cc3001.r18.com/litevideo/freepv/$dir/$prev_video/${prev_video}_dmb_w.mp4\" type=\"video/mp4\">";
+		$html .= "<source src=\"http://cc3001.r18.com/litevideo/freepv/$dir/$prev_video/${prev_video}_sm_s.mp4\" type=\"video/mp4\">";
+		$html .= "<source src=\"http://cc3001.r18.com/litevideo/freepv/$dir/$prev_video/${prev_video}_sm_w.mp4\" type=\"video/mp4\">";
 		$html .= "<source src=\"http://cc3001.r18.com/litevideo/freepv/".substr($sn, 0, 1)."/".substr($sn, 0, 3)."/$prev_video/${prev_video}_sm_w.mp4\" type=\"video/mp4\">";
 		$html .= "</video>";
 	}
 }
 else if ($channel == 9) {
-	$html .= '<video controls="controls" width="100%">';
+	$html .= '<video controls="controls" width="100%" preload="none">';
 	$html .= "<source src=\"http://my.cdn.tokyo-hot.com/media/samples/$sn.mp4\" type=\"video/mp4\">";
 	$html .= '</video>';
 }
 else if ($channel == 10) {
-	$html .= '<video controls="controls" width="100%">';
+	$html .= '<video controls="controls" width="100%" preload="none">';
 	global $pondo1_static_host;
 	$html .= "<source src=\"$pondo1_static_host/sample/movies/$sn/480p.mp4\" type=\"video/mp4\">";
 	$html .= '</video>';
@@ -183,6 +185,13 @@ else {
 		$html .= '</div></div>';
 	}
 }
+$google_url = execute_scalar("select google_url from sixav where snn = '$compact_snn'");
+if (isset($google_url)) {
+	$html .= '<video controls="controls" width="100%" preload="none">';
+	$html .= "<source src=\"$google_url\" type=\"video/mp4\">";
+	$html .= '</video>';
+}
+//$html .= $exoclick_jav321_in_video;
 $html .= "<div class=\"row\"><div class=\"col-md-12\">$description</div></div>";
 $html .= '</div>';	//end of panel body
 $html .= '</div>';	//end of panel
@@ -297,7 +306,6 @@ if (count($emule_set) > 0) {
 	$html .= '</table></div>';
 }
 $html .= '<div class="panel panel-info">'.i18n('share_request').'<div class="addthis_sharing_toolbox"></div></div>';
-//$html .= '<div class="panel panel-info">'.i18n('share_request').'<div class="bdsharebuttonbox"><a href="#" class="bds_more" data-cmd="more"></a><a href="#" class="bds_qzone" data-cmd="qzone" title="分享到QQ空间"></a><a href="#" class="bds_tsina" data-cmd="tsina" title="分享到新浪微博"></a><a href="#" class="bds_tqq" data-cmd="tqq" title="分享到腾讯微博"></a><a href="#" class="bds_renren" data-cmd="renren" title="分享到人人网"></a><a href="#" class="bds_weixin" data-cmd="weixin" title="分享到微信"></a><a href="#" class="bds_mshare" data-cmd="mshare" title="分享到一键分享"></a></div><script>window._bd_share_config={"common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"0","bdSize":"16"},"share":{},"image":{"viewList":["qzone","tsina","tqq","renren","weixin","mshare"],"viewText":"分享到：","viewSize":"32"}};with(document)0[(getElementsByTagName(\'head\')[0]||body).appendChild(createElement(\'script\')).src=\'//bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion=\'+~(-new Date()/36e5)];</script></div>';
 
 if ($lang_short == 'zh') {
 //	$html .= $ueads_av_pic;
@@ -308,7 +316,7 @@ if ($is_spider) {
 }
 $html .= get_rand_dmm_thumb_html();
 //$html .= '<div id="uyan_frame"></div><script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=2084908"></script>';
-$html .= duoshuo_html('jporndb', $sn, $title, "https://www.jav321.com/video/$sn");
+$html .= duoshuo_html('jporndb', $sn, $title, "video/$sn");
 $html .= '</div>';	#left column end
 $html .= '<div class="col-md-3">';	//thumb
 if ($channel != 2 && $channel != 9) {
@@ -355,6 +363,17 @@ else if ($channel == 9) {
 		$html .= '<div class="col-xs-12 col-md-12"><p><a href="'.$href.'">'.get_img_tag($img_url).'</a></p></div>';
 	}
 }
+$html .= '<div class="col-xs-12 col-md-12"><p>';
+$html .= $trafficjunky_jav_300_250;
+$html .= $trafficjunky_jav_315_300;
+$html .= $juicyads_jav321_320_250;
+$html .= $juicyads_jav321_in_video_320_250;
+//$html .= $juicyads_jav321_320_250;
+//$html .= $trafficjunky_jav_300_250;
+//$html .= $exoclick_jav_315_300;	//low revenue
+//$html .= $eroadvertising_jav_300_250;	// low rev
+//$html .= get_gr_ad();
+$html .= '</p></div>';
 $html .= '</div></div>';
 $html .= '<script type="text/javascript" src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-54c4990a04963235" async="async"></script>';
 

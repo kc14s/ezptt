@@ -6,6 +6,34 @@ require('config.pl');
 require('lib.pl');
 require('dmm_lib.pl');
 
+my %channels = (
+1 => 'dmm av',
+2 => 'dmm amateur',
+3 => 'dmm cartoon',
+4 => 'dmm av',
+5 => 'ave unsensored',
+6 => 'ave cartoon',
+7 => 'ave west',
+8 => 'mgs amateur',
+9 => 'tkh unsensored',
+10 => '1pondo unsensored',
+11 => '',
+12 => '',
+13 => ''
+);
+
+my %types = (
+1 => 'av',
+2 => 'amateur',
+3 => 'unsensored',
+4 => 'cartoon',
+5 => 'west',
+6 => '',
+7 => '',
+8 => '',
+9 => ''
+);
+
 my @boards = (
 ['av', 'http://www.dmm.co.jp/digital/videoa/-/list/=/limit=120/sort=date/'],
 ['amateur', 'http://www.dmm.co.jp/digital/videoc/-/list/=/limit=120/sort=date/'],

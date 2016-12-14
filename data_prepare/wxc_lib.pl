@@ -24,42 +24,70 @@ sub get_wxc_boards {
 sub get_wxc_topic {
 	my $board = shift;
 	my ($board_en_name, $board_cn_name, $board_group_name) = @$board;
-	for (my $page = 1; ; ++$page) {
+	my $url = "http://bbs.wenxuecity.com/$board_en_name/?page=1";
+	my $list_html = get_url($url);
+	my $last_page = 500;
+	while ($list_html =~ /\?page=(\d+)"/g) {
+		$last_page = $1;
+	}
+#	for (my $page = $last_page; $page >= 1; --$page) {
+	for (my $page = 1; $page <= $last_page; ++$page) {
 		my $continue = 0;
 		my $url = "http://bbs.wenxuecity.com/$board_en_name/?page=$page";
 		my $list_html = get_url($url);
+		my $last_page = 500;
+		while ($list_html =~ /\?page=(\d+)"/g) {
+			$last_page = $1;
+		}
+		if ($page > $last_page) {
+			print "exit $board_en_name last page $last_page\n";
+			last;
+		}
 		my @arr = split(/<div class="(odd|even)">/, $list_html);
 		foreach my $item (@arr) {
 			next if (length($item) < 20);
 			my @articles;
 		#	while ($item =~ /<a href="\.\/(\d+)\.html" class="post" title="[\d\D]+?">\s*([\d\D]+?)\s*<\/a>.+?act=profile&cid=[^"]+">([\d\D]+?)<\/a>/g) {
-			while ($item =~ /<a href="\.\/(\d+)\.html" class="post" title="[\d\D]+?">\s*([\d\D]+?)\s*<\/a>[\d\D]+?act=profile&cid=[^"]+">([\d\D]+?)<\/a>/g) {
-				my ($aid, $title, $author) = ($1, $2, $3);
-				push @articles, [$aid, $title, $author];
+			while ($item =~ /<a href="\.\/(\d+)\.html" class="post" title="[\d\D]+?">\s*([\d\D]+?)\s*<\/a>[\d\D]+?act=profile&cid=[^"]+">([\d\D]+?)<\/a>[\d\D]+?(\d{2})\/(\d{2})\/(\d{4})&nbsp;\s*([\d:]+)/g) {
+				my ($aid, $title, $author, $month, $day, $year, $time) = ($1, $2, $3, $4, $5, $6, $7);
+				push @articles, [$aid, $title, $author, "$year-$month-$day $time"];
 			}
 			next if (@articles <= 0);
 			my $tid = $articles[0]->[0];
-			if (execute_scalar("select count(*) from topic where tid = $tid") == 0) {
-				get_wxc_topic_content($board_en_name, $tid, $articles[0]->[1], $articles[0]->[2], scalar @articles - 1);
+			if (execute_scalar("select count(*) from topic where board_en_name = '$board_en_name' and tid = $tid") == 0) {
+				get_wxc_topic_content($board_en_name, $tid, $articles[0]->[1], $articles[0]->[2], scalar @articles - 1, $articles[0]->[3]);
 				$continue = 1;
 			}
-			print "topic $en_name $tid $$articles[0]->[1] $articles[0]->[2]\n";
+			else {
+				if (execute_scalar("select count(*) from topic where board_en_name = '$board_en_name' and tid = $tid and pub_time = '20010101'") > 0) {
+					$db->do("update topic set pub_time = '$articles[0]->[3]' where board_en_name = '$board_en_name' and tid = $tid");
+					$continue = 1;
+				}
+			}
+			print "topic $board_en_name $tid $articles[0]->[1] $articles[0]->[2] $articles[0]->[3]\n";
 			for (my $i = 1; $i < @articles; ++$i) {
-				my ($rid, $title, $author) = @$articles[$i];
-				$db->do("replace into reply(board_en_name, tid, rid, title, author) values('$board_en_name', $tid, $rid, ".$db->quote($title).", '$author')");
-				print "reply $rid $title $author\n";
+				my $reply = $articles[$i];
+				my ($rid, $title, $author, $pub_time) = @$reply;
+				print "reply $rid $title $author $pub_time\n";
+				if (execute_scalar("select count(*) from reply where board_en_name = '$board_en_name' and tid = $tid and rid = $rid") > 0) {
+					$db->do("update reply set pub_time = '$pub_time' where board_en_name = '$board_en_name' and tid = $tid and rid = $rid");
+				}
+				else {
+					$db->do("insert into reply(board_en_name, tid, rid, title, author, pub_time) values('$board_en_name', $tid, $rid, ".$db->quote($title).", ".$db->quote($author).", '$pub_time')");
+				}
 			}
 		}
-		last if (!$continue);
-
+#		last if (!$continue);
 	}
+	print "exit board $board_en_name\n";
 }
 
 sub get_wxc_topic_content {
-	my ($board_en_name, $tid, $title, $author, $hot) = @_;
+	my ($board_en_name, $tid, $title, $author, $hot, $pub_time) = @_;
 	my $html = get_url("http://bbs.wenxuecity.com/$board_en_name/$tid.html");
-	my $content = $1 if ($html =~ /<div id="msgbodyContent">\s*([\d\D]+?)\s*<\/div>/);
-	$db->do("replace into topic(board_en_name, tid, title, author, hot, content) values('$board_en_name', $tid, ".$db->quote($title).", '$author', $hot, ".$db->quote($content).")");
+	my $content = '';
+	$content = $1 if ($html =~ /<div id="msgbodyContent">\s*([\d\D]+?)\s*<\/div>/);
+	$db->do("replace into topic(board_en_name, tid, title, author, hot, content, pub_time) values('$board_en_name', $tid, ".$db->quote($title).", ".$db->quote($author).", $hot, ".$db->quote($content).", '$pub_time')");
 }
 
 

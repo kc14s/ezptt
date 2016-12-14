@@ -8,8 +8,12 @@ require_once('i18n.php');
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <meta name="applicable-device" content="pc,mobile">
-<link rel="icon" href="data:;base64,iVBORw0KGgo=">
-<meta name="propeller" content="4751fe3498332faeebf4262fde027053" />
+<link rel="icon" type="image/png" href="data:;base64,iVBORw0KGgo=">
+<link rel="icon" href="data:;base64,=">
+<link rel="shortcut icon" href="data:image/x-icon;," type="image/x-icon">
+<meta name="trafficjunky-site-verification" content="5t6vrynq8" />
+<meta name="propeller" content="8c982135933fddb9bda37f7341f8d456" />
+<meta name="ero_verify" content="2872ecd468361b6ebb461a9801270b07" />
 <title><?php
 if (isset($html_title)) {
 	echo $html_title;
@@ -20,7 +24,7 @@ if (isset($html_title)) {
 <script src="//cdn.bootcss.com/twitter-bootstrap/3.0.3/js/bootstrap.min.js"></script>
 <script src="//cdn.bootcss.com/jquery.lazyload/1.9.1/jquery.lazyload.min.js"></script>
 <meta name="baidu-site-verification" content="c3FkX097v5" />
-<meta name="juicyads-site-verification" content="8856d436f8307f3deccc54b443cd78da">
+<meta name="juicyads-site-verification" content="261f9ab1f219661ed9038571027b3f7c">
 <?
 if (isset($target)) {
 	echo "<base target=\"$target\" />";
@@ -44,6 +48,7 @@ ga('send', 'pageview');
 			<a class="navbar-brand" href="/">JAV321</a>
 		</div>
 		<ul class="nav navbar-nav hidden-xs">
+			<li><a href="/play_list/1"><?echo i18n('play_list');?></a></li>
 			<li><a href="/best_seller/2016/1"><?echo i18n('best_seller');?></a></li>
 			<li><a href="/series_title_list/1"><?echo i18n('series');?></a></li>
 			<li><a href="/genre_list"><?echo i18n('genre');?></a></li>

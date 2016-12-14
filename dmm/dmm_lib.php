@@ -283,4 +283,47 @@ function get_img_tag($img_url) {
 		return "<img class=\"img-responsive\" src=\"$img_url\">";
 	}
 }
+
+function sort_by_release_date($video1, $video2) {
+	return -strcmp($video1['release_date'], $video2['release_date']);
+}
+
+function get_companies_new_release($companies) {
+	$videos = array();
+	foreach ($companies as $company) {
+		$filtered_videos = array();
+		$company_videos = execute_dataset("select title, sn, sn_normalized, channel, rating, release_date from video where company = '$company' order by release_date desc limit 8");
+		foreach ($company_videos as $company_video) {
+			if (strpos($company_video['sn_normalized'], 'smbd') === 0
+			|| strpos($company_video['sn_normalized'], 'cwpbd') === 0
+			|| strpos($company_video['sn_normalized'], 'drgbd') === 0
+			|| strpos($company_video['sn_normalized'], 'dsambd') === 0
+			|| strpos($company_video['sn_normalized'], 'cw3d2dbd') === 0
+			) {}
+			else {
+				$filtered_videos[] = $company_video;
+			}
+		}
+		$videos = array_merge($videos, $filtered_videos);
+	}
+	$company_videos = execute_dataset("select title, sn, sn_normalized, channel, rating, release_date from video where sn_normalized < 'n9' order by sn_normalized desc limit 2");
+	$videos = array_merge($videos, $company_videos);
+	usort($videos, 'sort_by_release_date');
+
+	return array_slice($videos, 0, 12);
+	return $videos;
+}
+
+function process_play_topic($content) {
+	global $is_spider;
+	if ($is_spider) return $content;
+	$content = preg_replace('/<a .+?\>/', '', $content);
+	$content = preg_replace('/<\/a>/', '', $content);
+	$content = preg_replace('/<img /', '<img class="img-responsive" ', $content);
+	$content = preg_replace('/\d\.bp\.blogspot\.com/', 'static.jporndb.com', $content);
+	$content = preg_replace('/onload="thumbImg\(this\)"/', '', $content);
+	$content = preg_replace('/src="\//', 'src="https://static.jporndb.com/', $content);
+	return $content;
+}
+
 ?>

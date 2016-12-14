@@ -14,7 +14,7 @@ print '<?xml version="1.0" encoding="utf-8"?><urlset xmlns="http://www.sitemaps.
 my $req = $db_conn->prepare('select aid, date(pub_time) from answer order by aid desc limit 50000');
 $req->execute();
 while (my ($aid, $pub_time) = $req->fetchrow_array) {
-	my $url = "http://www.duanzhihu.com/answer/$aid";
+	my $url = "https://www.duanzh.com/answer/$aid";
 	print "<url><loc>$url</loc><lastmod>$pub_time</lastmod><changefreq>never</changefreq></url>\n";
 }
 print '</urlset>';

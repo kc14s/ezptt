@@ -1,5 +1,6 @@
 <?php header("Content-type: text/html; charset=UTF-8");
 require_once('i18n.php');
+//require_once('init_zhihu.php');
 ?>
 <!DOCTYPE HTML>
 <html lang="<?echo get_html_lang();?>">
@@ -10,7 +11,11 @@ require_once('i18n.php');
 <meta name="applicable-device" content="pc,mobile" />
 <meta name="baidu-site-verification" content="EviUseUxzL" />
 <meta name="propeller" content="44a0e10d0b8967e6ecc809d269aa6c7f" />
-<link rel="icon" href="data:;base64,iVBORw0KGgo=">
+<meta name="trafficjunky-site-verification" content="5t77475t0" />
+<meta name="juicyads-site-verification" content="a5bd88ca6d0ec397805dbc0cc472896d">
+<meta name="ero_verify" content="a0217e0cdd91adac836158a2226d4cf6" />
+<link rel="icon" type="image/png" href="data:;base64,iVBORw0KGgo=">
+<link rel="shortcut icon" href="data:image/x-icon;," type="image/x-icon">
 <title>
 <?php
 if (isset($html_title)) {
@@ -26,6 +31,9 @@ echo ' '.i18n('duanzhihu');
 <?
 if (isset($target)) {
 	echo "<base target=\"$target\" />";
+}
+if (!$is_loyal_user) {
+	echo $popads_duanzhihu;
 }
 $width = 6;
 if (strpos($_SERVER['SCRIPT_NAME'], 'answer.php') > 0 || strpos($_SERVER['SCRIPT_NAME'], 'board.php') > 0) $width = 8;

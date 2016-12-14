@@ -69,6 +69,13 @@ else if (isset($_GET['channel'])) {
 	$group_name_key = $label;
 	$current_url = "channel/$channel/$page";
 }
+else if (isset($_GET['type'])) {
+	$type = $_GET['type'];
+	$result = mysql_query("select title, sn, sn_normalized, channel, rating, seed_popularity from video where type = $type order by seed_popularity desc limit ".(($page - 1) * $page_size).", $page_size");
+	$label = i18n("type_$type");
+	$group_name_key = $label;
+	$current_url = "type/$type/1";
+}
 else if (isset($_GET['series'])) {
 	$series_id = $_GET['series'];
 	if (isset($_GET['1pondo']) && $_GET['1pondo'] == 1) {
@@ -111,9 +118,14 @@ else if ($sort_by == 'release_date') {
 	$current_url = "list/$order_by/$page";
 }
 else if ($sort_by == 'hot_download') {
-	$result = mysql_query('select title, video.sn, sn_normalized, channel, rating, seed_popularity from video, pb_rank where video.sn = pb_rank.sn order by pb_rank.rank');
+	$result = mysql_query('select title, video.sn, sn_normalized, channel, rating, seed_popularity from video, pb_rank where video.sn = pb_rank.sn order by pb_rank.rank limit '.(($page - 1) * $page_size).", $page_size");
 	$label = i18n('hot_download');
 	$current_url = "list/hot_download/$page";
+}
+else if (isset($_GET['play_list'])) {
+	$result = mysql_query("select title, video.sn, sn_normalized, channel, rating, seed_popularity from video, sixav where video.sn_normalized = sixav.snn order by pv desc limit ".(($page - 1) * $page_size).", $page_size");
+	$label = i18n('play_list');
+	$current_url = "play_list/$page";
 }
 else {
 	$result = mysql_query("select title, sn, sn_normalized, channel, rating, seed_popularity from video where channel = 1 order by $order_by limit ".(($page - 1) * $page_size).", $page_size");
@@ -215,7 +227,30 @@ if (!$is_spider) {
 			$html .= "<li class=\"next\"><a href=\"/company/$company_url_encoded/".($page + 1).'" target="_self">&rarr; '.i18n('page_down').'</a></li>';
 		}
 	}
-	else if ($sort_by == 'hot_download') {}
+	else if (isset($_GET['play_list'])) {
+		if ($page > 1) {
+			$html .= "<li class=\"previous\"><a href=\"/play_list/".($page - 1).'" target="_self">&larr; '.i18n('page_up').'</a></li>';
+		}
+		if ($column == $page_size) {
+			$html .= "<li class=\"next\"><a href=\"/play_list/".($page + 1).'" target="_self">&rarr; '.i18n('page_down').'</a></li>';
+		}
+	}
+	else if (isset($type)) {
+		if ($page > 1) {
+			$html .= "<li class=\"previous\"><a href=\"/type/$type/".($page - 1).'" target="_self">&larr; '.i18n('page_up').'</a></li>';
+		}
+		if ($column == $page_size) {
+			$html .= "<li class=\"next\"><a href=\"/type/$type/".($page + 1).'" target="_self">&rarr; '.i18n('page_down').'</a></li>';
+		}
+	}
+	else if ($sort_by == 'hot_download') {
+		if ($page > 1) {
+			$html .= "<li class=\"previous\"><a href=\"/list/hot_download/".($page - 1).'" target="_self">&larr; '.i18n('page_up').'</a></li>';
+		}
+		if ($column == $page_size) {
+			$html .= "<li class=\"next\"><a href=\"/list/hot_download/".($page + 1).'" target="_self">&rarr; '.i18n('page_down').'</a></li>';
+		}
+	}
 	else {
 		if ($page > 1) {
 			$html .= '<li class="previous"><a href="/list/'.$sort_by.'/'.($page - 1).'" target="_self">&larr; '.i18n('page_up').'</a></li>';
@@ -225,7 +260,7 @@ if (!$is_spider) {
 	$html .= '</ul></div></div>';
 }
 $html .= '</div></div>';
-$html .= duoshuo_html('jporndb', $group_name_key, $html_title, "https://www.jav321.com/$current_url");
+$html .= duoshuo_html('jporndb', $group_name_key, $html_title, $current_url);
 $html .= '</div></div>';
 
 $target = '_blank';

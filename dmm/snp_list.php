@@ -26,7 +26,7 @@ if (!$is_spider) {
 	$html .= '</ul></div></div>';
 }
 $html .= '</div></div>';
-$html .= duoshuo_html('jporndb', 'stars', 'stars', "https://www.jav321.com/snp_list/1");
+$html .= duoshuo_html('jporndb', 'stars', 'stars', "snp_list/1");
 $html .= '</div></div>';
 
 $target = '_blank';

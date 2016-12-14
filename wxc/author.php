@@ -1,35 +1,32 @@
 <?
 require_once("init.php");
-$db_conn = conn_ezptt_db();
 require_once("i18n.php");
+$db_conn = conn_db();
+mysql_select_db('wxc', $db_conn);
+mysql_query('set names utf8');
 $is_spider = is_spider();
 $is_from_search_engine = is_from_search_engine();
-if ($ptt_allow == 0 && !$is_spider && !$is_from_search_engine) {
-	header('HTTP/1.1 404 Not Found');
-	exit();
-}
-$author = $_GET['author'];
+$author = addslashes(i18n(urldecode($_GET['author'])));
 $page = 1;
+$page_size = 30;
 if (isset($_GET['page'])) {
 	$page = $_GET['page'];
 }
-$nick = execute_scalar("select nick from user where user_id = '$author'");
-$nick = i18n($nick);
-$result = mysql_query("select en_name, title, tid1, tid2, pub_time from board, topic where author = '$author' and bid = board.id order by pub_time desc limit ".(($page - 1) * $page_size).", $page_size");
+$result = mysql_query("select board_en_name, tid, title, pub_time from topic where author = '$author' order by pub_time desc limit ".(($page - 1) * $page_size).", $page_size");
 $result_num = mysql_num_rows($result);
-while (list($en_name, $title, $tid1, $tid2, $pub_time) = mysql_fetch_array($result)) {
-	$topics[] = array($en_name, $title, $tid1, $tid2, $pub_time);
+while (list($board_en_name, $tid, $title, $pub_time) = mysql_fetch_array($result)) {
+	$topics[] = array($board_en_name, $tid, $title, $pub_time);
 }
 
-$html_title = "$author ($nick) ".i18n('defawen');
+$html_title = "$author ".i18n('defawen');
 $html = "<div class=\"col-md-8 col-md-offset-2 col-xs-12\"><h3>$html_title</h3>";
-//$html .= $google_320_100;
 if ($result_num > 0) {
 	$html .= '<div class="list-group">';
 	foreach ($topics as $topic) {
-		list($en_name, $title, $tid1, $tid2, $pub_time) = $topic;
+		list($board_en_name, $tid, $title, $pub_time) = $topic;
 		$title = i18n($title);
-		$html .="<a class=\"list-group-item\" href=\"/article/$en_name/$tid1/$tid2\">[$en_name] $title<span class=\"pull-right\">$pub_time</span></a>";
+		$cn_name = i18n(execute_scalar("select cn_name from board where en_name = '$board_en_name'"));
+		$html .="<a class=\"list-group-item\" href=\"/topic/$board_en_name/$tid\">[$cn_name] $title<span class=\"pull-right\">$author $pub_time</span></a>";
 	}
 	$html .= '</div>';
 	if (!$is_spider) {
@@ -49,10 +46,9 @@ else {
 	header('HTTP/1.1 404 Not Found');
 	$html .= '<div class="alert alert-danger">'.i18n('meizhaodaozuozhe').'</div>';
 }
-$html .= '<p><a href="/">PTT</a> <a href="/disp">disp</a></p></div>';
+//$html .= '<p><a href="/">PTT</a> <a href="/disp">disp</a></p></div>';
 $html .= '</div>';
 if (!$is_spider) {
-	$html .= $scupio_video_expand;
 }
 if (!$is_loyal_user) {
 //	$html .= $adcash_popunder;

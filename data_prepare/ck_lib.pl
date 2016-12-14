@@ -69,6 +69,7 @@ sub get_ck_topics {
 	my $bid = $_[0];
 	for (my $page = 1; $page < 1000000; ++$page) {
 		my $url = "http://www.ck101.com/forum-$bid-$page.html?ref=nav";
+		print "board $bid $page\n";
 		my $html = get_url($url);
 		my @topics;
 		while ($html =~ /<tbody id="normalthread_(\d+)"([\d\D]+?)<\/tbody>/g) {
@@ -105,6 +106,7 @@ sub get_ck_topics {
 		}
 #		last;
 	}
+	print "exit board $bid\n";
 }
 
 my $replace_tmp_br = 'ccckkk111000111';
@@ -114,7 +116,7 @@ sub download_ck_topics {
 	foreach my $topic (@_) {
 		my ($bid, $tid, $title, $author, $pub_time) = @$topic;
 		my $saved_article_num = execute_scalar("select count(*) from article where tid = $tid");
-		next if ($saved_article_num == 10);
+		next if ($saved_article_num >= 1);
 #		$tid = 3255106;
 		my $url = "http://ck101.com/thread-$tid-1-1.html";
 		my $html = get_url($url);
@@ -134,6 +136,7 @@ sub download_ck_topics {
 			if (!defined($author)) {
 				$author = '';
 			}
+			$topic->[3] = $author if (!defined($topic->[3]));
 			$pub_time = $1 if ($span =~ /class="postDateLine">發表於 ([\d\-\s:]+)<\/span>/);
 			if (!defined($pub_time)) {
 				if (@articles > 0) {
@@ -185,7 +188,6 @@ sub save_articles {
 		$content = $db_conn->quote($content);
 		$db_conn->do("insert into article(tid, aid, author, pub_time, content) values($tid, $aid, '$author', '$pub_time', $content)");
 	}
-	return 1;
 	return 1;
 }
 

@@ -40,6 +40,7 @@ sub get_seeds {
 	my $query = $snn;
 	my $num = $1 if ($snn =~ /(\d+)/);
 	my $letters = $1 if ($snn =~ /([a-z]+)/);
+	#my ($letters, $num) = ($1, $2) if ($snn =~ /([a-z]+).*(\d+)/);
 	if ($channel == 10) {
 		($letters, $num) = ($1, $2) if ($snn =~ /(\d+)_(\d+)/);
 	}
@@ -57,11 +58,13 @@ sub get_seeds {
 			print "illegal snn $snn\n";
 			return;
 		}
-		if (length($letters) > 1 && $num >= 10) {
+		if ($channel == 5) {
+			request_btsou($sn, $snn, $snn, $channel, $db_conn);
+		}
+		elsif (length($letters) > 1 && length($num) >= 3) {
 			request_btany($sn, $snn, "$letters $num", $channel, $db_conn);
 			request_btany($sn, $snn, "$letters$num", $channel, $db_conn);
-			request_btkitty($sn, $snn, "$letters $num", $channel, $db_conn);
-			request_btkitty($sn, $snn, "$letters$num", $channel, $db_conn);
+			request_btsou($sn, $snn, "$letters $num", $channel, $db_conn);
 			request_pirate_bay($sn, $snn, "$letters $num", $channel, $db_conn);
 			if (0 && index($num, '0') == 0) {
 				$num = $1 if ($num =~ /0+(\d+)/);
@@ -71,20 +74,20 @@ sub get_seeds {
 	}
 	elsif ($channel == 9) {
 		request_btany($sn, $snn, $snn, $channel, $db_conn);
-		request_btkitty($sn, $snn, $snn, $channel, $db_conn);
+		request_btsou($sn, $snn, $snn, $channel, $db_conn);
 		request_pirate_bay($sn, $snn, $snn, $channel, $db_conn);
 	}
 	elsif ($channel == 10) {
 		request_btany($sn, $snn, $sn, $channel, $db_conn);
-		request_btkitty($sn, $snn, $sn, $channel, $db_conn);
+		request_btsou($sn, $snn, $sn, $channel, $db_conn);
 		request_pirate_bay($sn, $snn, $sn, $channel, $db_conn);
 	}
 	if ($channel == 8) {
 		request_btany($sn, $snn, $sn, $channel, $db_conn);
-		request_btkitty($sn, $snn, $sn, $channel, $db_conn);
+		request_btsou($sn, $snn, $sn, $channel, $db_conn);
 		request_pirate_bay($sn, $snn, $sn, $channel, $db_conn);
 	}
-	if ($channel != 1 && execute_scalar("select count(*) from seed where sn = '$sn'") == 0) {
+	if ($channel != 1 && $channel != 5 && execute_scalar("select count(*) from seed where sn = '$sn'") == 0) {
 		my $title = execute_scalar("select title from video where sn = '$sn'", $db_conn);
 		my @words = split(' ', $title);
 		my %words;
@@ -93,7 +96,7 @@ sub get_seeds {
 		}
 		if (length($title) > $title_length_min || ($channel == 7 && scalar keys %words >= 3)) {	
 #			request_btany($sn, $snn, $title, $channel, $db_conn);
-			request_btkitty($sn, $snn, $title, $channel, $db_conn);
+			request_btsou($sn, $snn, $title, $channel, $db_conn);
 		}
 		if ($channel == 2) {
 #			$title_utf8 = decode('utf8', $title);
@@ -103,7 +106,7 @@ sub get_seeds {
 				$sn_prefix = $1;
 #				if (length($title_utf8) >= 3) {
 #				request_btany($sn, $snn, "$sn_prefix $title", $channel, $db_conn);
-				request_btkitty($sn, $snn, "$sn_prefix $title", $channel, $db_conn);
+				request_btsou($sn, $snn, "$sn_prefix $title", $channel, $db_conn);
 #				request_pirate_bay($sn, $snn, "$sn_prefix $title", $channel, $db_conn);
 			}
 		}
@@ -163,7 +166,7 @@ sub request_mldonkey {
 		}
 		$file_name = uri_unescape($file_name);
 		if (validate_seed_name($sn, $snn, $query_original, $file_name, $channel) == 0) {
-			print "seed name mismatch $snn $query_original vs $file_name\n";
+			print "seed name mismatch $snn $channel \"$query_original\" $name\n";
 			next;
 		}
 		print "$sn $file_name $file_size $file_hash $available_sources $completed_sources\n";
@@ -182,7 +185,7 @@ sub request_pirate_bay {
 	foreach my $seed (@seeds) {
 		my ($name, $magnet, $hash, $size, $seeder, $leecher) = @$seed;
 		if (validate_seed_name($sn, $snn, $query_original, $name, $channel) == 0) {
-			print "seed name mismatch $snn $query_original $name\n";
+			print "seed name mismatch $snn \"$query_original\" $name\n";
 			next;
 		}
 		my $hot = $seeder * 3 + $leecher;
@@ -207,7 +210,7 @@ sub request_btany {
 		$name =~ s/<.+?>//g;
 		$name =~ s/\[email&#160;protected\]\/\*  \*\/@?//g;
 		if (validate_seed_name($sn, $snn, $query_original, $name, $channel) == 0) {
-			print "seed name mismatch $snn $query_original $name\n";
+			print "seed name mismatch $snn \"$query_original\" $name\n";
 			next;
 		}
 		my $hot = 0;
@@ -225,24 +228,84 @@ sub request_btany {
 	}
 }
 
-sub request_btkitty {
+sub request_btsou {
 	my ($sn, $snn, $query, $channel, $db_conn) = @_;
 	return if ($snn eq 'world2016' || $snn eq 'kub002');
 	my $query_original = $query;
 	$query = uri_escape($query); 
-	my $redirect_header = post_url('http://btkitty.bid/', {'keyword' => $query, 'hidden' => 'true'}, 1);
+	my $list_html = get_url("http://www.btsou.net/list/$query/1");
+	my @items = split('<div class="T1">', $list_html);
+	for (my $i = 1; $i < @items; ++$i) {
+		my $item = $items[$i];
+		my $magnet = $1 if ($item =~ /(magnet:\?xt=urn:btih:\w+)/);
+		next if (!defined($magnet));
+		my $name = $1 if ($item =~ /<a .+?>([\d\D]+?)<\/a><\/div>/);
+		$name =~ s/<.+?>//g;
+		if (index($name, '@') >= 0) {
+			$name = substr($name, index($name, '@') + 1);
+		}
+		my $snn_count = 0;
+		while ($name =~ /[a-zA-Z]+[\-\_ ]*\d{3}/g) {
+			++$snn_count;
+		}
+		if ($snn_count >= 5) {
+			if (index($name, '合集') < 0) {
+				print "snn count $snn_count\n";
+				return 0;
+			}
+		}
+		$name = uri_unescape($name);
+		if (validate_seed_name($sn, $snn, $query_original, $name, $channel) == 0) {
+			print "seed name mismatch $snn $channel \"$query_original\" $name\n";
+			next;
+		}
+		my $size_text = $1 if ($item =~ /<span> ([\d\.]+ [A-Z]+)<\/span>/);
+		my $hot = $1 if ($item =~ /访问热度:<span> (\d+) <\/span>/);
+		my $seed_url = '';
+		my $size = 0;
+		if ($size_text =~ /([\d\.]+) ([A-Za-z]+)/) {
+			$size = $1;
+			if (uc($2) eq 'GB') {
+				$size *= 1024 * 1024 * 1024;
+			}
+			elsif (uc($2) eq 'MB') {
+				$size *= 1024 * 1024;
+			}
+			elsif (uc($2) eq 'KB') {
+				$size *= 1024;
+			}
+			$size = int($size + 0.5);
+		}
+		if ($size < $channel_size_limitations[$channel]) {
+			print "skip seed too small $size_text $size $magnet\n";
+			next;
+		}
+		my $hash = $1 if ($magnet =~ /urn:btih:(\w+)/);
+		print "seed3\t$name\t$size_text\t$size\t$hot\t$magnet\n";
+		$db_conn->do("replace into seed(sn, magnet, hash, name, size, hot, source) values('$sn', '$magnet', '$hash', ".$db_conn->quote($name).", $size, $hot, 3)");
+	}
+}
+
+sub request_btkitty {
+#	return;
+	my ($sn, $snn, $query, $channel, $db_conn) = @_;
+	return if ($snn eq 'world2016' || $snn eq 'kub002');
+	my $query_original = $query;
+	$query = uri_escape($query); 
+	my $redirect_header = post_url('http://diggbt.pw/', {'keyword' => $query, 'hidden' => 'true'}, 1);
 #	print "response header\n$redirect_header\n";
 	my $list_html = '';
-	if ($redirect_header =~ /btkitty\.(\w+)\/search\/([\w\-]+)\//) {
+	if ($redirect_header =~ /diggbt\.(\w+)\/search\/([\w\-]+)\//) {
 		#$list_html = `curl -A 'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)' -s http://btkitty.$1/search/$2/1/4/0.html`;
-		$list_html = get_url("http://btkitty.$1/search/$2/1/4/0.html");
+		$list_html = get_url("http://diggbt.$1/search/$2/1/4/0.html");
 	}
 	else {
-		print "request btkitty $query failed\n";
+		print "request diggbt $query failed $redirect_header\n";
 		return;
 	}
 #	print $list_html;
-	my @items = split('<dt><strong>', $list_html);
+#	my @items = split('<dt><strong>', $list_html);
+	my @items = split('<dt class=\'item-title\'>', $list_html);
 	foreach my $item (@items) {
 		my $magnet = $1 if ($item =~ /'(magnet:\?xt=urn:btih:\w+&dn=[\d\D]+?)'/);
 		next if (!defined($magnet));
@@ -268,7 +331,7 @@ sub request_btkitty {
 		}
 		my $created = $1 if ($item =~ /<b>([\d\-]{10})<\/b>/);
 		my $recent_request = '2000-01-01';
-		my $size_text = $1 if ($item =~ /<b>([\d\.]+ [A-Za-z]+)<\/b>/);
+		my $size_text = $1 if ($item =~ /<b>([\d\.]+\s*[A-Za-z]+)<\/b>/);
 		my $file_num = $1 if ($item =~ /Files:<b>(\d+)<\/b>/);
 		my $hot = $1 if ($item =~ /Popularity&nbsp;:&nbsp;<b>(\d+)<\/b>/);
 		my $seed_url = '';
@@ -291,8 +354,9 @@ sub request_btkitty {
 			next;
 		}
 		my $hash = $1 if ($magnet =~ /urn:btih:(\w+)/);
+		next if (execute_scalar("select count(*) from seed where sn = '$sn' and hash = '$hash'") > 0);
 		print "seed0\t$name\t$size_text\t$size\t$file_num\t$created\t$hot\t$magnet\n";
-		$db_conn->do("replace into seed(sn, magnet, hash, name, size, file_num, created, recent_request, hot, seed_url) values('$sn', '$magnet', '$hash', ".$db_conn->quote($name).", $size, $file_num, '$created', '$recent_request', $hot, '$seed_url')");
+		$db_conn->do("replace into seed(sn, magnet, hash, name, size, file_num, created, recent_request, hot, seed_url, source) values('$sn', '$magnet', '$hash', ".$db_conn->quote($name).", $size, $file_num, '$created', '$recent_request', $hot, '$seed_url', 0)");
 	}
 }
 
@@ -375,7 +439,7 @@ sub validate_seed_name {
 		}
 	}
 	my ($prefix, $suffix);
-	if ($snn =~ /([A-Za-z]+)(\d+)/) {
+	if ($snn =~ /([A-Za-z]+).*?(\d+)/) {
 		$prefix = lc($1);
 		$suffix = $2;
 	}
@@ -401,7 +465,7 @@ sub validate_seed_name {
 	my $index = 0;
 	my %seg_index;
 	my $alphabet = '';
-	while ($seed_name =~ /([A-Za-z\d]+)/g) {
+	while ($seed_name =~ /([A-Za-z]+|\d+)/g) {
 		my $match = lc($1);
 		$alphabet .= $match;
 		if (0 && index($match, $snn) >= 0) {

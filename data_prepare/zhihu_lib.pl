@@ -142,7 +142,9 @@ sub get_zhihu_question {
 		my $q_log_html = decode('utf-8', get_https("https://www.zhihu.com/question/$qid/log"));
 		$q_uid = $1 if ($q_log_html =~ /href="\/people\/([\w\-]+?)">[\S]+?<\/a>\s*<span class="zg-gray-normal">添加了问题<\/span>/);
 	}
-	$db_conn->do("replace into question(qid, bid, sbid, uid, title, content) values($qid, $board_id, $sb_id, '$q_uid', ".add_slashes($q_title).", ".add_slashes($q_content).")");
+	if (execute_scalar("select count(*) from question where qid = $qid") == 0) {
+		$db_conn->do("replace into question(qid, bid, sbid, uid, title, content) values($qid, $board_id, $sb_id, '$q_uid', ".add_slashes($q_title).", ".add_slashes($q_content).")");
+	}
 #	$db_conn->do("replace into question(qid, bid, sbid, title, content) values($qid, $board_id, $sb_id, '$q_title', '$q_content')");
 	#print "replace into question(qid, bid, sbid, title, content) values($qid, $board_id, $sb_id, '$q_title', '$q_content')\n";
 	print "question $qid $board_id $sb_id $q_uid $q_title\n";
@@ -243,7 +245,7 @@ sub get_zhihu_question {
 #                       print $comment;
 #                       exit;
 			if (execute_scalar("select count(*) from comment where cid = $comment_id") == 0) {
-                        	$db_conn->do("insert into comment(cid, aid, author, ups, pub_date, content) values($comment_id, $aid, ".add_slashes($commenter).", $comment_ups, '$comment_date', ".add_slashes($comment_content).")");
+				$db_conn->do("insert into comment(cid, aid, author, ups, pub_date, content) values($comment_id, $aid, ".add_slashes($commenter).", $comment_ups, '$comment_date', ".add_slashes($comment_content).")");
 			}
 			else {
 				$db_conn->do("update comment set ups = $comment_ups where cid = $comment_id");

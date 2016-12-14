@@ -177,14 +177,18 @@ sub download_douban_topic {
 		$ups = $commentUps{"c$cid"} if (defined $commentUps{"c$cid"});
 		$users{$uid} = [$uname, $nick, $uid, $uicon];
 		print "comment\t$tid $cid $uid $pub_time $ups $content\n";
-		$db_conn->do("replace into comment(tid, cid, uid, pub_time, ups, content) values($tid, $cid, '$uid', '$pub_time', $ups, ".$db_conn->quote($content).")");
+		if (execute_scalar("select count(*) from comment where tid = $tid and cid = $cid") == 0) {
+			$db_conn->do("replace into comment(tid, cid, uid, pub_time, ups, content) values($tid, $cid, '$uid', '$pub_time', $ups, ".$db_conn->quote($content).")");
+		}
 #		$ptt_db_conn->do("replace into comment(tid, cid, uid, pub_time, ups, content) values($tid, $cid, '$uid', '$pub_time', $ups, ".$db_conn->quote($content).")");
 #		print "replace into comment(tid, cid, uid, pub_time, ups, content) values($tid, $cid, $uid, '$pub_time', $ups, ".$db_conn->quote($content).")\n";
 	}
 	for $pa (values %users) {
 		my ($uname, $nick, $uid, $uicon) = @$pa;
 		print "user\t$uid $uname $nick\n";
-		$db_conn->do("replace into user(uid, uname, nick, uicon) values('$uid', ".$db_conn->quote($uname).", ".$db_conn->quote($nick).", '$uicon')");
+		if (execute_scalar("select count(*) from user where uid = '$uid'") == 0) {
+			$db_conn->do("replace into user(uid, uname, nick, uicon) values('$uid', ".$db_conn->quote($uname).", ".$db_conn->quote($nick).", '$uicon')");
+		}
 #		$ptt_db_conn->do("replace into user(uid, uname, nick, uicon) values('$uid', ".$db_conn->quote($uname).", ".$db_conn->quote($nick).", '$uicon')");
 #		print "replace into user(uid, uname, nick, uicon) values($uid, ".$db_conn->quote($uname).", ".$db_conn->quote($nick).", '$uicon')\n";
 	}

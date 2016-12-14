@@ -62,7 +62,7 @@ if (isset($articles)) {
 		$html .= '<div class="panel-heading">';
 		//$html .= ($uname === $lz ? i18n('louzhu') : i18n('zuozhe')).': ';
 		if (true && ($uid == $lz || execute_scalar("select count(*) from topic where uid = '$uid'") > 0)) {
-			$html .= "<a href=\"/douban_user/$uid\">$uname</a>";
+			$html .= "<a href=\"/douban_user/$uid/1\">$uname</a>";
 		}
 		else {
 			$html .= $uname;

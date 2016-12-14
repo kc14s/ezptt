@@ -31,10 +31,11 @@ sub init_db {
 	my $database = $ENV{"database"};
 	my $user = $ENV{"user"};
 	my $password = $ENV{"password"};
-	$db_conn = DBI->connect("DBI:mysql:database=$database;host=$db_server", $user, $password, {RaiseError => 1, AutoCommit =>1, mysql_auto_reconnect=>1}) or die("init db failed");
+	$db_conn = DBI->connect("DBI:mysql:database=$database;host=$db_server", $user, $password, {RaiseError => 0, AutoCommit =>1, mysql_auto_reconnect=>1}) or die("init db failed");
 	$db_conn->do("set names UTF8");
 	$db_conn->do("SET time_zone = '+8:00'");
 	$db_conn->do('SET LOW_PRIORITY_UPDATES=1');
+	$db_conn->{mysql_auto_reconnect} = 1;
 	$ENV{'db_conn'} = $db_conn;
 	return $db_conn;
 }
@@ -81,6 +82,7 @@ sub get_https {
 sub get_url {
 	my $url = $_[0];
 	return get_https($url) if (index($url, 'https') == 0);
+	return `curl -s '$url' -A "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)" --compressed --connect-timeout 3 -m 10` if (index($url, 'diggbt') > 0);
 	my $retry_count = 0;
 	while (1) {
 		if (index($url, 'ptt.cc') >= 0 || index($url, 'ck101.com') >= 0 || index($url, 'tianya.cn') >= 0) {
@@ -111,6 +113,9 @@ sub get_url {
 			$ua->proxy(['http', 'https'], "http://".$proxies[$proxy_idx].'/');
 #			print "use proxy $proxies[$proxy_idx]\n";
 			$request->header('Cookie' => 'over18=1');
+		}
+		elsif (index($url, 'playno1') >= 1) {
+			$request->header('Cookie' => 'playno1=playno1Cookie; HZ1J_2846_secqaaSzYFEqg0=619fSFO2YgwfWcqsLQ1SWCP3j7GCwBtEPR3PEqM2uldVsuKvH5QqBrdOkAoKipsD3ec2nt2BulXNtTxsCXu5%2FwwN4TPwmJ60HT2mvm63Y0OhaQ%2FhA6nbL1IA; HZ1J_2846_secqaaSnM98B70=e5f6oAtKN63d7eCziEO%2FHyf8mQ5i1v6cPLXQngp5r3205v7hHcobVt4Erm8IVu90g2EDWEEhtRt0Y7Y3XdmZXw%2Fqzx%2BeihQdwxCM%2Feo85HlWQ7YOHIGv2cYJ; HZ1J_2846_secqaaSrrT4w80=ef6fHI5HpdeeGLupBMRGAhVLYpkqHQdHXh7CfSVbcMQ0F%2B1%2BaXWTg6QaaOZI1%2F0HjU1eVaq2sFCupOxG1Fhip%2FGl%2BqcSU3weLd%2B6fzpp8Nn%2FS5TjNiNkGZ0O; HZ1J_2846_secqaaSG9GD970=8f6eDnyA5CGieuppVZPgwXvWNjw6TGm%2BV1syrKsqjzGkci4mKYl2mTRlJM6w5HINONQcAxUgSmY2ZzB7PjSRsysvUkIbL1R7oOdRCvv5hFgprH0FAfU03JVc; HZ1J_2846_secqaaSkfQXFz0=9f9c%2F2SNshKNKmMXK1MGf9lQaAi%2FX77YJAYtNcoJratpOQjn26RF%2F221vnez03RHC8x5YEWkBEsygQegwY%2Bmy%2FTj9mTA1Qo0lfPSRwQS57dUQMVCSAZ4L5wH; HZ1J_2846_secqaaS44h95W0=68c2bXDAWRl0w8mjhVcl9zN%2F5SOGnzjqL1xOM7U6v8WBfYD8%2FVr0ig1LWH5A8ptGlV5uG%2B3tXHDIGIVryY5EJbx%2FT6%2BTZzPt8kopzIvC2Pp7pZYVbmhGTyFT; HZ1J_2846_secqaaS2DtkdZ0=1c77BTJQgKYyDmJnc6Ii95ZtddHoGQiydOeN3abMV1%2BS82PxLa0DQ5O27ALKj6tjir%2FDr596UIQQA%2FRdD68STazKqnT2hNHj%2BwawXkDyK0RkB9bt82v7rFw1; HZ1J_2846_secqaaSbv16P40=f5ebX4esyrxug39OWwK2cRcyzeEGk40adC8%2FKwe%2FDvh%2BONc2nYwYZ%2BQhipAfDw4IvtBJv5pOq4FJ7t5J9DjzPVvnuRDrsqJwUOX9jmN3Ip6bBF8Z4wgeEp2u; HZ1J_2846_saltkey=yG2imG1I; HZ1J_2846_lastvisit=1480828430; HZ1J_2846_secqaaSyKm7wm0=8545%2BIJQZL9PduViROmcHspysNJVvZYwFBjA9pNyz4txGQvLJ2s1YtekQCbSyWIpp0V1Y7IkiCPcOBD5Ib8bKJItKdz7irC9kVfC%2BwPMty3PKWqgire1Vb%2Fo; HZ1J_2846_secqaaSPhHKzH0=c1470VJ0caQcc73Nt0s3vi%2BDcoIfcQf823veW04Hq7c61%2BLL25Czwbz9jKvIoa%2FY%2Bhcgmgu%2FuDhiyvQwJLsLQZ5Y4XQGJzDbKuVhlzLyzWocHyRx9UxoUiYZ; playno1_referer=%2Farticle-21836-1.html; HZ1J_2846_sid=swWZhx; _ga=GA1.2.1682830128.1477023919; __atuvc=8%7C45%2C8%7C46%2C0%7C47%2C2%7C48%2C4%7C49; __atuvs=5844c41239e279ca003; HZ1J_2846_lastact=1480903659%09misc.php%09secqaa; HZ1J_2846_secqaaSswWZhx0=8fa8ho5j50Tamp6AF6bBtioqhXF3od5mYApoiwbgLsZetLoEzyJ2fHPEG4KlBfZQWp5btW2x00tgFI1nLDxekl5TCFkMCF3Z4cyhSsQJhmsHY4GEhtkYCjKc');
 		}
 		elsif (index($url, 'ck101.com') >= 0) {
 			$request->header('Cookie' => '__cfduid=d3e6e839e15b2747f62b0d0767c43a1901479364555; Lre7_9bf0_saltkey=bI1EIyoO; Lre7_9bf0_lastvisit=1479360955; datetime=1116; __gads=ID=7d9cc57552d4449b:T=1479364558:S=ALNI_Mbl5z3G2vYkzTQ6WuRK1Y3DdIFb2w; Lre7_9bf0_av_a=1; Lre7_9bf0_viewid=tid_3703163; OX_plg=swf|shk|pm; _td=75955ed4-f679-4d79-8e3e-07efee9b6d7e; GED_PLAYLIST_ACTIVITY=W3sidSI6Im5FY1UiLCJ0c2wiOjE0NzkzNjUzMjIsIm52IjoxLCJ1cHQiOjE0NzkzNjUzMTgsImx0IjoxNDc5MzY1MzIyfV0.; times=111; Lre7_9bf0_agree18_2015=1; OX_ssn=9751816861; OX_sd=1; _gat=1; _gat_n_ga=1; _gat_ckad=1; _gat_all_ga=1; _gat_allvip_ga=1; fbm_455878464472095=base_domain=.ck101.com; PHPSESSID=vsi35hpsdg919gkig6rq5l2oc3; Lre7_9bf0_auth=dbf40vO%2Ff0NcVLjicsC6S7WMh4953U2mtTrSJ68QBwl70rtUAcg%2BPdhv1XTfdkQgUFMlFXbZXMcZw5W1sSIcglY%2B5tKM; _gat_UA-622529-34=1; Lre7_9bf0_nofavfid=1; Lre7_9bf0_seccodeS0=f93asa4PjS8diIvfOimd3rO6w3XSZBkBPpP%2BLMzqjyCZhcVFyC5q4sJaxhfQ%2FtqqQ2jfQzqyRng; Lre7_9bf0_forum_lastvisit=D_1288_1479364613D_3612_1479365300D_806_1479365606D_82_1479365650D_358_1479365664D_70_1479368030D_3565_1479368132; Lre7_9bf0_visitedfid=3565D70D358D82D3612; Lre7_9bf0_ulastactivity=1479368132%7C0; Lre7_9bf0_checkpm=1; Lre7_9bf0_lastact=1479368133%09home.php%09misc; Lre7_9bf0_sendmail=1; __asc=f0c0e3a015871317144afbdcd72; __auc=22ee629c15871000b5775ae5bb5; crtg_rta=; Lre7_9bf0_noticeTitle=1; _ga=GA1.2.2073038172.1479364578; _ceg.s=ogrzry; _ceg.u=ogrzry; fbsr_455878464472095=n_o3xLzEaxIa90Kqil0G7x8QvVoGH2f5h3qJtXpOPyo.eyJhbGdvcml0aG0iOiJITUFDLVNIQTI1NiIsImNvZGUiOiJBUUFXOVc4UTN0aVZDNlVOMmsyYlNFQmxqSUc1ZEVjSTgtM3lsVTNOYnlkazF6b09WcHA3ODVpS1R4bTA3Z1hRQW9tZnFVVWp5NkNZbFNiUmM2d1EwWHJzSHc0T0YyaC1UeGhSVWNYVGhIcG9ZajFqaWNvT3lTX0xmYUFoZlBXOEVSRndrM05xcWlfLTVXcTQxcXVtSWFvUjc0SGk2NjNOTFVnaGVDcjNoc0tZLWMwTE1ubS1YSTJQRUdqNGlfdUgxTTRzV19uRTBobVgyV3c0dnJnaFFEOXJFczQwcDI5c2g1NDh3U3ZESmdxTDdiZ2s0SlZ6TWhyLVVQSjJ4MGRISjdsMjRmVW83QzgwS2lMRnQxbTJacVZ2S3dHd05WVF9ndGFDclFEczVIak8xQ1VTdEZFdVlsRFFWVk0xbTJVMzItSy1BWFY1ZTgwWXYyb1JIT0dONzByRyIsImlzc3VlZF9hdCI6MTQ3OTM2ODEzNywidXNlcl9pZCI6IjE4MDExOTY5NDM0ODI3MjQifQ; _gat_list=1');
@@ -194,6 +199,10 @@ sub post_url {
 			$proxy_idx = int(rand(scalar @proxies));
 			my $proxy = $proxies[$proxy_idx];
 			return `curl -s -S "$url" -d "$parameters" -x $proxy -H "Host: www.zhihu.com" -H "User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:38.0) Gecko/20100101 Firefox/38.0" -H "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8" -H "Accept-Language: zh-CN,zh;q=0.8,en-US;q=0.5,en;q=0.3" --compressed -H "Referer: https://www.zhihu.com/people/wang-ye-80" -H "Cookie: q_c1=f1497e92e7fd4f75b25f144bb2026e50|1463626449000|1458300724000; d_c0=""AGBA2nNzogmPTqWus3-2tPHI1nChmajAoHY=|1458300723""; __utma=155987696.1510435070.1464852944.1464852944.1464852944.1; __utmz=155987696.1464852944.1.1.utmcsr=zhihu.com|utmccn=(referral)|utmcmd=referral|utmcct=/people/wang-ye-80/about; _za=8a7641ba-086c-48ad-b84e-807114e90274; _zap=13ef5654-944a-4ff4-b226-624324edf4f6; _xsrf=cbd73748e7beec5149abbf2d928cfad5; l_n_c=1; l_cap_id=""OThkYjQzNTBiNGFiNGUxYmExYzcxOTYzOTdmNjNmNTI=|1464852098|9d9e40da9002a02acf28a58c4fe9039ce9aec5ba""; cap_id=""MWZlNmRlZmM2ZjczNGU0ZTlmZDdjNDBhMDYzMWRjMzA=|1464852098|e8a7037e69ec5b2f6f232b51ab8feaa572d78516""; n_c=1; __utmb=155987696.5.8.1464853004882; __utmc=155987696; a_t=""2.0AACA6F0sAAAXAAAAb2x3VwAAgOhdLAAAAGBA2nNzogkXAAAAYQJVTZprd1cAJ42MpjkKyZH8DaAbNDgxnemIJsOhs8_TM7cebnyAyz4FpVfeTFcitw==""; z_c0=Mi4wQUFDQTZGMHNBQUFBWUVEYWMzT2lDUmNBQUFCaEFsVk5tbXQzVndBbmpZeW1PUXJKa2Z3Tm9CczBPREdkNllnbXd3|1464852122|f0d0d77ad36834164527ace46ff272b073e86cca; __utmt=1" -H "Connection: keep-alive" -H "Cache-Control: max-age=0" --connect-timeout 6 -m 10`;
+		}
+		elsif (index($url, 'diggbt') > 0) {
+			my $parameters = form_to_url($form);
+			return `curl -s -o /dev/null -D - -S "$url" -d "$parameters" -H "Host: diggbt.pw" -H "User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:38.0) Gecko/20100101 Firefox/38.0" --connect-timeout 6 -m 10`;
 		}
 		my $ua = LWP::UserAgent->new;
 		$ua->agent("Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.9.0.4)Gecko/2008111217 Fedora/3.0.4-1.fc10 Firefox/3.0.5");
@@ -510,7 +519,9 @@ sub download_topic {
 		$user = $1;
 		$nick = $2;
 		$nick = $db_conn->quote($nick);
-		$db_conn->do("replace into `user`(user_id, nick) values('$user', $nick)");
+		if (execute_scalar("select count(*) from `user` where user_id = '$user'") == 0) {
+			$db_conn->do("replace into `user`(user_id, nick) values('$user', $nick)");
+		}
 	}
 	if (!defined($user) || !defined($nick)) {
 		$user = 'unknown';
@@ -607,9 +618,10 @@ sub download_attachments {
 		if (!defined($ext_name) || length($ext_name) < 3 || length($ext_name) > 4) {
 			$ext_name = 'jpg';
 		}
-		my $md5 = execute_scalar("select md5 from attachment where bid = $bid and tid1 = $tid1 and tid2 = '$tid2'");
+		#my $md5 = execute_scalar("select md5 from attachment where bid = $bid and tid1 = $tid1 and tid2 = '$tid2'");
+		my $md5 = execute_scalar("select md5 from attachment where url = '$url'");
 		if (defined($md5) && length($md5) > 5) {
-			$db_conn->do("insert delayed into attachment(bid, tid1, tid2, md5, url, ext_name) values($bid, $tid1, '$tid2', '$md5', '$url', '$ext_name'");
+			$db_conn->do("insert delayed into attachment(bid, tid1, tid2, md5, url, ext_name) values($bid, $tid1, '$tid2', '$md5', '$url', '$ext_name')");
 			return;
 		}
 		if (index($attachment->[1], '?') >= 0) {
@@ -722,13 +734,16 @@ my %en_name_to_bid = (
 sub gen_ptt_index {
 	my $time = `date -d '-12 hours' '+%F %T'`;
 	chomp $time;
-	my $sql = "select bid, tid1, tid2 from topic where pub_time > '$time'";
+	my $now = `date '+%F %T'`;
+	chomp $now;
+	my $sql = "select bid, tid1, tid2 from topic where pub_time between '$time' and '$now'";
+	$sql = "select bid, tid1, tid2 from topic order by pub_time desc limit 100";
 	my $request = $db_conn->prepare($sql);
 	$request->execute;
 	while (my ($bid, $tid1, $tid2) = $request->fetchrow_array) {
 		$db_conn->do("update topic set rank = (select count(*) from reply where bid = $bid and tid1 = $tid1 and tid2 = '$tid2') where  bid = $bid and tid1 = $tid1 and tid2 = '$tid2'");
 	}
-	$sql = "select en_name, category, bid, tid1, tid2, title, attachment, author from board, topic where pub_time > '$time' and bid = board.id order by rank desc limit 250";
+	$sql = "select en_name, category, bid, tid1, tid2, title, attachment, author from board, topic where pub_time between '$time' and '$now' and bid = board.id order by rank desc limit 250";
 	$request = $db_conn->prepare($sql);
 	$request->execute;
 	my %categories;

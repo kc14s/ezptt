@@ -30,6 +30,7 @@ $html .= '<div class="panel panel-info">';
 $html .= "<div class=\"panel-heading\"><h3><a href=\"/video/$sn\">$title <small>$snn ".implode(' ', $stars)."</small></a></h3></div>";
 $html .= '<div class="panel-body">';
 $html .= '<div class="row">';
+$html .= $trafficjunky_jav_950_250;
 if ((($channel <= 4 || $channel == 8 || $channel == 9 || $channel == 10) && $index < $sample_image_num)
 || ($channel <= 7 && $index < 1)) {
 	$html .= '<div class="col-md-12"><a href="/snapshot/'."$sn/$channel/".($index + 1).'"><img class="img-responsive" data-original="'.$img_url.'" /></a></div>';
@@ -37,6 +38,7 @@ if ((($channel <= 4 || $channel == 8 || $channel == 9 || $channel == 10) && $ind
 else {
 	$html .= '<div class="col-md-12"><img class="img-responsive" data-original="'.$img_url.'" /></div>';
 }
+$html .= $juicyads_jav321_728_90;
 $html .= '</div></div></div></div></div>';
 
 require_once('header.php');

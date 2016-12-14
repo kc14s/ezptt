@@ -8,7 +8,7 @@ if ($ptt_allow == 0 && !$is_spider && !$is_from_search_engine) {
 	header('HTTP/1.1 404 Not Found');
 	exit();
 }
-$uid= $_GET['uid'];
+$uid= urldecode($_GET['uid']);
 $page = 1;
 if (isset($_GET['page'])) {
 	$page = $_GET['page'];
