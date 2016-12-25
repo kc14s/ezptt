@@ -108,7 +108,7 @@ foreach ($articles as $article) {
 		if ($content <> '') {
 			$html .= '<div class="panel-body">';
 			if ($floor == 1 || $floor == 2) {
-				$html .= $adsense_dzh;
+				//$html .= $adsense_dzh;
 			}
 			if ($floor == 2) {
 				$content = process_answer_content($content, $aid);
@@ -120,7 +120,7 @@ foreach ($articles as $article) {
 	}
 	if (!$is_loyal_user) {
 		if (true || $floor == 1 || $floor == 2) {
-			$html .= $baidu_ad;
+//			$html .= $baidu_ad;
 //			$html .= $scupio_728_90;
 		}
 		else if ($floor == 3) {

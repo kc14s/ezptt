@@ -55,7 +55,7 @@ $html .= output_group($videos, i18n('hottest'), '/list/rank');
 */
 
 $videos = array();
-$result = mysql_query("select title, sn, sn_normalized, channel, rating from video where release_date between date_sub(now(), interval 7 day) and now() and channel = 1 order by fav_count desc limit 8");
+$result = mysql_query("select title, sn, sn_normalized, channel, rating from video where release_date between date_sub(now(), interval 7 day) and now() and type = 1 order by fav_count desc limit 8");
 while (list($title, $sn, $snn, $channel, $rating) = mysql_fetch_array($result)) {
 	$snn = snn_add_hyphen($snn);
 	$video = array($title, $sn, $snn, $channel, $rating);
@@ -82,36 +82,27 @@ if (false) {
 }
 else {
 $videos = array();
-$result = mysql_query("select title, sn, sn_normalized, channel, rating from video where release_date between date_sub(now(), interval 7 day) and now() and channel = 8 order by fav_count desc limit 12");
+$result = mysql_query("select title, sn, sn_normalized, channel, rating from video where release_date between date_sub(now(), interval 7 day) and now() and type = 2 order by fav_count desc limit 12");
 while (list($title, $sn, $snn, $channel, $rating) = mysql_fetch_array($result)) {
 	$snn = snn_add_hyphen($snn);
 	$video = array($title, $sn, $snn, $channel, $rating);
 	$videos[] = $video;
 }
-}
-$html .= output_group($videos, i18n('amateur').' '.i18n('latest'), $undefined);
-
-$videos = array();
-$result = mysql_query("select title, sn, sn_normalized, channel, rating from video where type = 2 order by seed_popularity desc limit ".rand(0, 200).", 8");
-while (list($title, $sn, $snn, $channel, $rating) = mysql_fetch_array($result)) {
-	$snn = snn_add_hyphen($snn);
-	$video = array($title, $sn, $snn, $channel, $rating);
-	$videos[] = $video;
 }
 $html .= output_group($videos, i18n('type_2'), '/type/2');
 
 //$videos = get_snps_new_release(array('smd199', 'dsam', 'll', 'tkg', 'dz', 'bt', 'red', 'hey', 'pt', '1pondo', 'mcdv', 'drc', 'cwpbd', 'sky'));
-$videos = get_companies_new_release(array('スーパーモデルメディア', 'サムライポルノ', 'ルチャリブレ', '小天狗', 'Climax Zipang', 'キャットウォーク', 'スタジオテリヤキ', 'レッドホットコレクション', 'HEYZO', 'スタジオテリヤキ', '一本道', 'メルシーボークー', 'CATCHEYE'));
-$html .= output_group($videos, i18n('type_3').' '.i18n('latest'), $undefined);
+$videos = get_companies_new_release(array('スーパーモデルメディア', 'サムライポルノ', 'ルチャリブレ', '小天狗', 'Climax Zipang', 'キャットウォーク', 'スタジオテリヤキ', 'レッドホットコレクション', 'HEYZO', '一本道', 'メルシーボークー', 'CATCHEYE'));
+$html .= output_group($videos, i18n('type_3'), '/type/3');
 
 $videos = array();
-$result = mysql_query("select title, sn, sn_normalized, channel, rating from video where type = 3 order by seed_popularity desc limit ".rand(0, 200).", 8");
+$result = mysql_query("select title, sn, sn_normalized, channel, rating from video where sn like '5x%' order by sn desc limit 8");
 while (list($title, $sn, $snn, $channel, $rating) = mysql_fetch_array($result)) {
 	$snn = snn_add_hyphen($snn);
 	$video = array($title, $sn, $snn, $channel, $rating);
 	$videos[] = $video;
 }
-$html .= output_group($videos, i18n('type_3'), '/type/3');
+$html .= output_group($videos, i18n('type_6'), '/snp/5x');
 
 //$star_infos = execute_dataset("select id, name, pic_name from star_info order by rank limit 24");
 $star_infos = execute_dataset("select id, name, pic_name from star, star_info, pb_rank where star.sn = pb_rank.sn and star.star_id = star_info.id and pic_name <> '' order by pb_rank.rank limit 24");
@@ -181,14 +172,15 @@ foreach ($companies as $company) {
 $html .= '</div></div></div></div></div>';
 
 $videos = array();
-$result = mysql_query("select title, sn, sn_normalized, channel, rating from video where channel = 1 order by seed_popularity desc limit 12");
+$result = mysql_query("select title, sn, sn_normalized, channel, rating from video where type = 1 order by seed_popularity desc limit 12");
 while (list($title, $sn, $snn, $channel, $rating) = mysql_fetch_array($result)) {
 	$snn = snn_add_hyphen($snn);
 	$video = array($title, $sn, $snn, $channel, $rating);
 	$videos[] = $video;
 }
-$html .= output_group($videos, i18n('popularity'), '/channel/1');
+$html .= output_group($videos, i18n('popularity'), '/type/1');
 
+/*
 $videos = array();
 $result = mysql_query("select title, sn, sn_normalized, channel, rating from video where channel = 1 order by fav_count desc limit 8");
 while (list($title, $sn, $snn, $channel, $rating) = mysql_fetch_array($result)) {
@@ -198,7 +190,6 @@ while (list($title, $sn, $snn, $channel, $rating) = mysql_fetch_array($result)) 
 }
 $html .= output_group($videos, i18n('favourite'), '/list/favourite');
 
-/*
 $videos = array();
 $result = mysql_query("select title, sn, sn_normalized, channel, rating from video where channel = 2 order by fav_count desc limit 8");
 while (list($title, $sn, $snn, $channel, $rating) = mysql_fetch_array($result)) {
@@ -210,22 +201,22 @@ $html .= output_group($videos, i18n('channel_2'), '/channel/2');
 */
 
 $videos = array();
-$result = mysql_query("select title, sn, sn_normalized, channel, rating from video where channel = 3 order by seed_popularity desc limit 8");
+$result = mysql_query("select title, sn, sn_normalized, channel, rating from video where type = 4 order by seed_popularity desc limit 8");
 while (list($title, $sn, $snn, $channel, $rating) = mysql_fetch_array($result)) {
 	$snn = snn_add_hyphen($snn);
 	$video = array($title, $sn, $snn, $channel, $rating);
 	$videos[] = $video;
 }
-$html .= output_group($videos, i18n('channel_3'), '/channel/3');
+$html .= output_group($videos, i18n('type_4'), '/type/4');
 
 $videos = array();
-$result = mysql_query("select title, sn, sn_normalized, channel, rating from video where channel = 7 order by seed_popularity desc limit 8");
+$result = mysql_query("select title, sn, sn_normalized, channel, rating from video where type = 5 order by seed_popularity desc limit 8");
 while (list($title, $sn, $snn, $channel, $rating) = mysql_fetch_array($result)) {
 	$snn = snn_add_hyphen($snn);
 	$video = array($title, $sn, $snn, $channel, $rating);
 	$videos[] = $video;
 }
-$html .= output_group($videos, i18n('channel_7'), '/channel/7');
+$html .= output_group($videos, i18n('type_5'), '/type/5');
 
 $target = '_blank';
 $html_title = 'JAV321';

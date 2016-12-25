@@ -17,7 +17,7 @@ if (isset($html_title)) {
 //else {
 //	echo i18n('水木社区');
 //}
-$wxc = i18n('文学城');
+$wxc = i18n('wxc');
 echo ' '.$wxc;
 ?>
 </title>
@@ -37,7 +37,7 @@ echo get_hreflang();
 var _hmt = _hmt || [];
 (function() {
  var hm = document.createElement("script");
- hm.src = "https://hm.baidu.com/hm.js?53b3915a37653857f6ff7e94832758f2";
+ hm.src = "https://hm.baidu.com/hm.js?f71a5def939e2e42cbe004d658f386b4";
  var s = document.getElementsByTagName("script")[0]; 
  s.parentNode.insertBefore(hm, s);
  })();
@@ -51,7 +51,7 @@ body { overflow-x: hidden;}
  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
-ga('create', 'UA-17088225-9', 'auto');
+ga('create', 'UA-17088225-10', 'auto');
 ga('send', 'pageview');
 </script>
 </head>

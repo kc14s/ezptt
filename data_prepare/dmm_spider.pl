@@ -17,7 +17,7 @@ my %channels = (
 8 => 'mgs amateur',
 9 => 'tkh unsensored',
 10 => '1pondo unsensored',
-11 => '',
+11 => '5xsq',
 12 => '',
 13 => ''
 );
@@ -28,7 +28,7 @@ my %types = (
 3 => 'unsensored',
 4 => 'cartoon',
 5 => 'west',
-6 => '',
+6 => 'homebrew',
 7 => '',
 8 => '',
 9 => ''
@@ -40,7 +40,7 @@ my @boards = (
 ['anime', 'http://www.dmm.co.jp/digital/anime/-/list/=/limit=120/sort=date/'],
 ['av', 'http://www.dmm.co.jp/digital/nikkatsu/-/list/=/limit=120/sort=date/']
 );
-my $db_conn = init_db();
+my $db_conn = init_db('dmm');
 $db_conn->do("use dmm");
 $db_conn->do("set names utf8");
 for (my $channel = 1; $channel <= @boards; ++$channel) {
@@ -151,7 +151,8 @@ for (my $channel = 1; $channel <= @boards; ++$channel) {
 			print "genres ".join(',', @genres)."\n";
 			print "stars ".join(', ', @stars)."\n";
 			if (execute_scalar("select count(*) from video where sn = '$sn'") == 0) {
-				$db_conn->do("replace into video(title, release_date, runtime, director, series, company, sn, sn_normalized, fav_count, rating, description, sample_image_num, channel) values('$title', '$release_date', $runtime, '$director', '$series', '$company', '$sn', '$snn', $fav_count, $rating, ".$db_conn->quote($desc).", $sample_image_num, $channel)");
+				my $type = channel_to_type($channel);
+				$db_conn->do("replace into video(title, release_date, runtime, director, series, company, sn, sn_normalized, fav_count, rating, description, sample_image_num, channel, type) values('$title', '$release_date', $runtime, '$director', '$series', '$company', '$sn', '$snn', $fav_count, $rating, ".$db_conn->quote($desc).", $sample_image_num, $channel, $type)");
 #				$db_conn->do("delete from genre where sn = '$sn'");
 				foreach my $genre (@genres) {
 					$db_conn->do("replace into genre(sn, genre) values('$sn', '$genre')");

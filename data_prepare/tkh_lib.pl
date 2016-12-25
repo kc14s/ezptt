@@ -30,7 +30,7 @@ sub download_tkh_video {
 		$db_conn->do("replace into sample_url(sn, url) values('$sn', '".join("\t", @sample_file_names)."')");
 	}
 	if (1 || execute_scalar("select count(*) from video where sn = '$sn'") == 0) {
-		$db_conn->do("replace into video(sn, sn_normalized, title, runtime, company, description, channel, release_date, release_year, sample_image_num) values('$sn', '$snn', ".$db_conn->quote($title).", $runtime, 'Tokyo Hot', ".$db_conn->quote($description).", $channel, '$release_date', $release_year, ".scalar(@sample_file_names).")");
+		$db_conn->do("replace into video(sn, sn_normalized, title, runtime, company, description, channel, release_date, release_year, sample_image_num, type) values('$sn', '$snn', ".$db_conn->quote($title).", $runtime, 'Tokyo Hot', ".$db_conn->quote($description).", $channel, '$release_date', $release_year, ".scalar(@sample_file_names).", 3)");
 	}
 	get_seeds($sn, $snn, $channel, $db_conn);
 }

@@ -15,7 +15,7 @@ $i18n = array(
 		'defawen' => '的文章',
 		'jixuyuedu' => '继续阅读',
 		'tongzuozhe' => '同作者',
-		'' => '',
+		'wxc' => '文学城',
 		'' => '',
 		'' => '',
 		'' => ''
@@ -27,6 +27,7 @@ $i18n = array(
 		'defawen' => '的發文',
 		'jixuyuedu' => '繼續閱讀',
 		'tongzuozhe' => '同作者',
+		'wxc' => '文學城',
 		'' => '',
 		'' => '',
 		'' => '',
@@ -45,10 +46,10 @@ function get_hreflang() {
 	global $lang;
 	$protocol = $_SERVER['HTTPS'] ? 'https' : 'http';
 	if ($lang == 'zh_TW') {
-		return '<link rel="alternate" hreflang="cn" href="'.$protocol.'://www.ezsmth.com'.$_SERVER['REQUEST_URI'].'" />';
+		return '<link rel="alternate" hreflang="zh-cn" href="'.$protocol.'://www.ezwxc.com'.$_SERVER['REQUEST_URI'].'" />';
 	}
 	else if ($lang == 'zh_CN') {
-		return '<link rel="alternate" hreflang="tw" href="'.$protocol.'://tw.ezsmth.com'.$_SERVER['REQUEST_URI'].'" />';
+		return '<link rel="alternate" hreflang="zh-tw" href="'.$protocol.'://tw.ezwxc.com'.$_SERVER['REQUEST_URI'].'" />';
 	}
 	return '';
 }

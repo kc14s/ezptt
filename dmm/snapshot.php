@@ -38,7 +38,8 @@ if ((($channel <= 4 || $channel == 8 || $channel == 9 || $channel == 10) && $ind
 else {
 	$html .= '<div class="col-md-12"><img class="img-responsive" data-original="'.$img_url.'" /></div>';
 }
-$html .= $juicyads_jav321_728_90;
+$html .= $trafficjunky_jav_950_250;
+//$html .= $juicyads_jav321_728_90;
 $html .= '</div></div></div></div></div>';
 
 require_once('header.php');

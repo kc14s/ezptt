@@ -95,7 +95,7 @@ foreach ($articles as $article) {
 	$html .= " &nbsp; <span class=\"pull-right\">$time</span>";
 	$html .= '</div>';
 	$html .= '<div class="panel-body">';
-	if ($floor == 1) {
+	if ($floor == 1 && $en_name != 'Beauty') {
 		$html .= $adsense_ucptt;
 	}
 	$content = i18n(preg_replace("/\n+/", "\n", trim($content)));
@@ -117,7 +117,9 @@ foreach ($articles as $article) {
 		}
 	}
 	if ($floor == 1) {
-		$html .= $adsense_ucptt;
+		if ($en_name != 'Beauty') {
+			$html .= $adsense_ucptt;
+		}
 		$html .= '<div class="addthis_sharing_toolbox"></div>';
 		if (!$is_loyal_user) {
 			$html .= $juicyads_banner_ucptt;

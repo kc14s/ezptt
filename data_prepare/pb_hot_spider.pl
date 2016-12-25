@@ -17,7 +17,7 @@ $url = 'http://pirateunblocker.com/top/501';
 my $rank = 1;
 my %sns;
 my @ranks;
-for my $page (0...30) {
+for my $page (0...35) {
 	$url = "http://pirateunblocker.com/browse/501/$page/7";
 	my $html = get_url($url);
 	my @seeds = parse_pb_list_html($html);

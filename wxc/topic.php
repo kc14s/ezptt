@@ -37,7 +37,7 @@ list($id_min, $id_max) = execute_vector("select min(id), max(id) from topic");
 $id_rand = rand($id_min, $id_max);
 $rand_topics = execute_dataset("select board_en_name, tid, author, title, pub_time from topic where id < $id_rand order by id desc limit 10");
 
-$html = "<div class=\"row\"><div class=\"col-md-8 col-md-offset-2 col-xs-12\"><ol class=\"breadcrumb\"><li><a href=\"/board/$en_name/1\">[$en_name] $cn_name</a></li>";
+$html = "<div class=\"row\"><div class=\"col-md-8 col-md-offset-2 col-xs-12\"><ol class=\"breadcrumb\"><li><a href=\"/\">".i18n('wxc')."</a></li><li><a href=\"/board/$en_name/1\">[$en_name] $cn_name</a></li>";
 $html .= "</ol><div class=\"page-header\"><h1>$title <small>$lz<span class=\"pull-right\">$topic_pub_time</span></small></h1></div>";
 
 if (false && !$is_loyal_user) {

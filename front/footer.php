@@ -47,7 +47,7 @@ if (false || !$is_loyal_user) {
 #	echo $gg91_popup;
 //	echo $gg91_richmedia;
 //	echo $gg91_popup;
-//	echo $revenuehits_popunder;
+	echo $revenuehits_popunder;
 #	echo $v9_popup;
 #	echo $v9_richmedia;
 //	echo $r181_popup;

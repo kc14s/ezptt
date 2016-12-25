@@ -36,6 +36,10 @@ function get_cover_img_url($sn, $channel, $rating = 2, $snn = '') {
 		global $pondo1_static_host;
 		return "${pondo1_static_host}assets/sample/$sn/thum_b.jpg";
 		return "http://www.1pondo.tv/assets/sample/$sn/thum_b.jpg";
+	case 11:
+		$video_id = substr($sn, 2);
+		//return "http://www.5xww3.com/media/videos/tmb1/$video_id/default.jpg";
+		return "http://www.5xww3.com/media/videos/tmb/$video_id/1.jpg";
 	}
 }
 
@@ -107,6 +111,9 @@ function get_sample_img_thumb_url($sn, $channel, $id, $rating) {
 		global $pondo1_static_host;
 		return "$pondo1_static_host/assets/sample/$sn/thum_106/$id.jpg";
 		return "http://www.1pondo.tv/assets/sample/$sn/thum_106/$id.jpg";
+	case 11:
+		$video_id = substr($sn, 2);
+		return "http://www.5xww3.com/media/videos/tmb/$video_id/$id.jpg";
 	}
 	return '';
 }
@@ -279,9 +286,12 @@ function get_img_tag($img_url) {
 		$failover_url = 'https://static.jporndb.com'.substr($img_url, $str_pos + 9);
 		return "<img class=\"img-responsive\" src=\"$img_url\" onerror=\"this.onerror=null;this.src='$failover_url'\">";
 	}
-	else {
-		return "<img class=\"img-responsive\" src=\"$img_url\">";
+	$str_pos = strpos($img_url, '5xww3');
+	if ($str_pos > 0) {
+		$failover_url = str_replace('tmb', 'tmb1', $img_url);
+		return "<img class=\"img-responsive\" src=\"$img_url\" onerror=\"this.onerror=null;this.src='$failover_url'\">";
 	}
+	return "<img class=\"img-responsive\" src=\"$img_url\">";
 }
 
 function sort_by_release_date($video1, $video2) {

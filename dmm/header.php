@@ -30,7 +30,7 @@ if (isset($target)) {
 	echo "<base target=\"$target\" />";
 }
 ?>
-<script>var _hmt = _hmt || [];(function() {  var hm = document.createElement("script");  hm.src = "//hm.baidu.com/hm.js?0b4a6c1a6eedf10ee1f1702eced53914";  var s = document.getElementsByTagName("script")[0];   s.parentNode.insertBefore(hm, s);})();</script>
+<script>var _hmt = _hmt || [];(function() {  var hm = document.createElement("script");  hm.src = "//hm.baidu.com/hm.js?648eee7b0bf5e9f6833aa463f5b9cb91";  var s = document.getElementsByTagName("script")[0];   s.parentNode.insertBefore(hm, s);})();</script>
 </head>
 <body>
 <script>

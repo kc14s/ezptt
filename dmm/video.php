@@ -14,6 +14,9 @@ if (strpos($snn, '1pondo') === 0) {
 else if (strpos($sn, '-') > 0) {
 	$sn_prefix = substr($sn, 0, strpos($sn, '-'));
 }
+else if (strpos($sn, '5x') === 0) {
+	$sn_prefix = '5x';
+}
 else {
 	if (preg_match("/([A-Za-z]+)(\d+)/", $snn, $matches)) {
 		$sn_prefix = $matches[1];
@@ -71,6 +74,9 @@ else if ($channel == 10) {
 	$stars = execute_column("select name from 1pondo_sn_star, 1pondo_star_info where 1pondo_sn_star.star_id = 1pondo_star_info.id and sn = '$sn'");
 	$star_infos = execute_dataset("select 1pondo_star_info.id, name from 1pondo_star_info, 1pondo_sn_star where star_id = 1pondo_star_info.id and sn = '$sn'");
 }
+else {
+	$stars = array();
+}
 $genres = execute_dataset("select genre_list.id, genre.genre from genre_list, genre where sn = '$sn' and genre.genre = genre_list.genre");
 $html_title = "$title $snn ".implode(' ', $stars).' bittorrent '.i18n('download');
 
@@ -109,8 +115,10 @@ if (count($genres) > 0) {
 	}
 	$html .= '<br>';
 }
-$html .= '<b>'.i18n('sn')."</b>: $snn<br>";
-$html .= '<b>'.i18n('release_date')."</b>: $release_date<br>";
+if ($channel != 11) {
+	$html .= '<b>'.i18n('sn')."</b>: $snn<br>";
+	$html .= '<b>'.i18n('release_date')."</b>: $release_date<br>";
+}
 $html .= '<b>'.i18n('runtime')."</b>: $runtime ".i18n('minute')."<br>";
 if ($channel <= 4) {
 	$html .= '<b>'.i18n('fav_count')."</b>: $fav_count<br>";
@@ -128,6 +136,7 @@ if ($series_id != 0) {
 		$html .= '<b>'.i18n('series')."</b>: <a href=\"/1pondo_series/$series_id/1\">$series_name</a>";
 	}
 }
+$html .= $trafficjunky_jav_468_60;
 $html .= '</div>';	//end of md-9
 $html .= '</div>';	//end of row
 if ($channel == 8) {
@@ -149,6 +158,8 @@ if ($channel == 8) {
 			$html .= "<source src=\"http://chdl33.mgstage.com/sample/$mgs_company_en/$sn_prefix_lower/$sn_suffix/".$matches[1].".mp4\">";
 			$html .= "<source src=\"http://chdl34.mgstage.com/sample/$mgs_company_en/$sn_prefix_lower/$sn_suffix/".$matches[1].".mp4\">";
 			$html .= "<source src=\"http://chdl33.mgstage.com/sample/$mgs_company_en/$sn_prefix_upper/$sn_suffix/".$matches[1]."_sample.mp4\">";
+			$matches[1] = str_replace('-', '_', strtolower($matches[1]));
+			$html .= "<source src=\"http://chdl34.mgstage.com/sample/$mgs_company_en/$sn_prefix_lower/$sn_suffix/".$matches[1]."_$title.mp4\">";
 		}
 		$html .= '</video>';
 	}
@@ -161,6 +172,7 @@ else if ($channel <= 4) {
 		$html .= "<source src=\"http://cc3001.r18.com/litevideo/freepv/$dir/$prev_video/${prev_video}_dmb_w.mp4\" type=\"video/mp4\">";
 		$html .= "<source src=\"http://cc3001.r18.com/litevideo/freepv/$dir/$prev_video/${prev_video}_sm_s.mp4\" type=\"video/mp4\">";
 		$html .= "<source src=\"http://cc3001.r18.com/litevideo/freepv/$dir/$prev_video/${prev_video}_sm_w.mp4\" type=\"video/mp4\">";
+		$html .= "<source src=\"http://awspv3001.r18.com/litevideo/freepv/$dir/$prev_video/${prev_video}_dmb_w.mp4\" type=\"video/mp4\">";
 		$html .= "<source src=\"http://cc3001.r18.com/litevideo/freepv/".substr($sn, 0, 1)."/".substr($sn, 0, 3)."/$prev_video/${prev_video}_sm_w.mp4\" type=\"video/mp4\">";
 		$html .= "</video>";
 	}
@@ -174,6 +186,11 @@ else if ($channel == 10) {
 	$html .= '<video controls="controls" width="100%" preload="none">';
 	global $pondo1_static_host;
 	$html .= "<source src=\"$pondo1_static_host/sample/movies/$sn/480p.mp4\" type=\"video/mp4\">";
+	$html .= '</video>';
+}
+else if ($channel == 11) {
+	$html .= '<video controls="controls" width="100%" preload="none">';
+	$html .= "<source src=\"$description\" type=\"video/mp4\">";
 	$html .= '</video>';
 }
 else {
@@ -192,7 +209,9 @@ if (isset($google_url)) {
 	$html .= '</video>';
 }
 //$html .= $exoclick_jav321_in_video;
-$html .= "<div class=\"row\"><div class=\"col-md-12\">$description</div></div>";
+if ($channel != 11) {
+	$html .= "<div class=\"row\"><div class=\"col-md-12\">$description</div></div>";
+}
 $html .= '</div>';	//end of panel body
 $html .= '</div>';	//end of panel
 if (count($star_infos) > 0 && $channel <= 4) {
@@ -316,10 +335,10 @@ if ($is_spider) {
 }
 $html .= get_rand_dmm_thumb_html();
 //$html .= '<div id="uyan_frame"></div><script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=2084908"></script>';
-$html .= duoshuo_html('jporndb', $sn, $title, "video/$sn");
+$html .= duoshuo_html('jav321', $sn, $title, "video/$sn");
 $html .= '</div>';	#left column end
 $html .= '<div class="col-md-3">';	//thumb
-if ($channel != 2 && $channel != 9) {
+if ($channel != 2 && $channel != 9 && $channel != 11) {
 	$img_url = get_cover_img_large_url($sn, $channel, $rating);
 	$href = $img_url;
 	$href = "/snapshot/$sn/$channel/0";
@@ -361,6 +380,12 @@ else if ($channel == 9) {
 		}
 		if ($is_spider) $href = '#';
 		$html .= '<div class="col-xs-12 col-md-12"><p><a href="'.$href.'">'.get_img_tag($img_url).'</a></p></div>';
+	}
+}
+else if ($channel == 11) {
+	for ($i = 2; $i <= 3; ++$i) {
+		$img_url = get_sample_img_thumb_url($sn, $channel, $i, $rating);
+		$html .= '<div class="col-xs-12 col-md-12"><p>'.get_img_tag($img_url).'</p></div>';
 	}
 }
 $html .= '<div class="col-xs-12 col-md-12"><p>';

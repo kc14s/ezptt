@@ -12,6 +12,7 @@ function conn_db() {
 	mysql_select_db($database, $db_conn);
 	mysql_query("set names utf8");
 	mysql_query("SET time_zone = '+8:00'");
+	mysql_query("SET lock_wait_timeout = 3");
 	return $db_conn;
 }
 
@@ -21,6 +22,7 @@ function conn_ezptt_db() {
 	mysql_select_db($ezptt_database, $db_conn);
 	mysql_query("set names utf8");
 	mysql_query("SET time_zone = '+8:00'");
+	mysql_query("SET lock_wait_timeout = 3");
 	return $db_conn;
 }
 
@@ -30,6 +32,7 @@ function conn_ck101_db() {
 	mysql_select_db($ck101_database, $db_conn);
 	mysql_query("set names utf8");
 	mysql_query("SET time_zone = '+8:00'");
+	mysql_query("SET lock_wait_timeout = 3");
 	return $db_conn;
 }
 
@@ -39,6 +42,7 @@ function conn_douban_db() {
 	mysql_select_db($douban_database, $db_conn);
 	mysql_query("set names utf8");
 	mysql_query("SET time_zone = '+8:00'");
+	mysql_query("SET lock_wait_timeout = 3");
 	return $db_conn;
 }
 
@@ -47,6 +51,7 @@ function conn_reddit_db() {
 	$db_conn = mysql_pconnect($db_server, $db_user, $db_password);
 	mysql_select_db('reddit', $db_conn);
 	mysql_query("set names utf8");
+	mysql_query("SET lock_wait_timeout = 3");
 	return $db_conn;
 }
 
@@ -55,6 +60,7 @@ function conn_dmm_db() {
 	$db_conn = mysql_pconnect($db_server, $db_user, $db_password);
 	mysql_select_db('dmm', $db_conn);
 	mysql_query("set names utf8");
+	mysql_query("SET lock_wait_timeout = 3");
 	return $db_conn;
 }
 
@@ -63,6 +69,7 @@ function conn_ads_db() {
 	$db_conn = mysql_pconnect($db_server, $db_user, $db_password);
 	mysql_select_db('ads', $db_conn);
 	mysql_query("set names utf8");
+	mysql_query("SET lock_wait_timeout = 3");
 	return $db_conn;
 }
 

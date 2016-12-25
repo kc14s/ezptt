@@ -29,9 +29,12 @@ sub load_proxy {
 sub init_db {
 	my $db_server = $ENV{"db_server"};
 	my $database = $ENV{"database"};
+	if (@_ == 1) {
+		$database = shift;
+	}
 	my $user = $ENV{"user"};
 	my $password = $ENV{"password"};
-	$db_conn = DBI->connect("DBI:mysql:database=$database;host=$db_server", $user, $password, {RaiseError => 0, AutoCommit =>1, mysql_auto_reconnect=>1}) or die("init db failed");
+	$db_conn = DBI->connect("DBI:mysql:database=$database;host=$db_server", $user, $password, {RaiseError => 0, AutoCommit =>1, mysql_auto_reconnect=>1, mysql_enable_utf8=>1}) or die("init db failed");
 	$db_conn->do("set names UTF8");
 	$db_conn->do("SET time_zone = '+8:00'");
 	$db_conn->do('SET LOW_PRIORITY_UPDATES=1');
@@ -96,6 +99,9 @@ sub get_url {
 		if (index($url, "att.php") > 0) {
 			$ua->timeout(60);
 		}
+		elsif (index($url, 'www.5x') >= 0) {
+			$ua->timeout(60);
+		}
 		else {
 			$ua->timeout(10);
 		}
@@ -113,6 +119,9 @@ sub get_url {
 			$ua->proxy(['http', 'https'], "http://".$proxies[$proxy_idx].'/');
 #			print "use proxy $proxies[$proxy_idx]\n";
 			$request->header('Cookie' => 'over18=1');
+		}
+		elsif (index($url, 'www.5x') >= 0) {
+			$request->header('Cookie' => 'AVS=0v75qrll8dplss411po0bfcd54; splash=1; kt_tcookie=1; __atuvc=7%7C50; __atuvs=58531fbb7d8cea45006; _ga=GA1.2.1732567665.1481842085; _gat=1; style=white');
 		}
 		elsif (index($url, 'playno1') >= 1) {
 			$request->header('Cookie' => 'playno1=playno1Cookie; HZ1J_2846_secqaaSzYFEqg0=619fSFO2YgwfWcqsLQ1SWCP3j7GCwBtEPR3PEqM2uldVsuKvH5QqBrdOkAoKipsD3ec2nt2BulXNtTxsCXu5%2FwwN4TPwmJ60HT2mvm63Y0OhaQ%2FhA6nbL1IA; HZ1J_2846_secqaaSnM98B70=e5f6oAtKN63d7eCziEO%2FHyf8mQ5i1v6cPLXQngp5r3205v7hHcobVt4Erm8IVu90g2EDWEEhtRt0Y7Y3XdmZXw%2Fqzx%2BeihQdwxCM%2Feo85HlWQ7YOHIGv2cYJ; HZ1J_2846_secqaaSrrT4w80=ef6fHI5HpdeeGLupBMRGAhVLYpkqHQdHXh7CfSVbcMQ0F%2B1%2BaXWTg6QaaOZI1%2F0HjU1eVaq2sFCupOxG1Fhip%2FGl%2BqcSU3weLd%2B6fzpp8Nn%2FS5TjNiNkGZ0O; HZ1J_2846_secqaaSG9GD970=8f6eDnyA5CGieuppVZPgwXvWNjw6TGm%2BV1syrKsqjzGkci4mKYl2mTRlJM6w5HINONQcAxUgSmY2ZzB7PjSRsysvUkIbL1R7oOdRCvv5hFgprH0FAfU03JVc; HZ1J_2846_secqaaSkfQXFz0=9f9c%2F2SNshKNKmMXK1MGf9lQaAi%2FX77YJAYtNcoJratpOQjn26RF%2F221vnez03RHC8x5YEWkBEsygQegwY%2Bmy%2FTj9mTA1Qo0lfPSRwQS57dUQMVCSAZ4L5wH; HZ1J_2846_secqaaS44h95W0=68c2bXDAWRl0w8mjhVcl9zN%2F5SOGnzjqL1xOM7U6v8WBfYD8%2FVr0ig1LWH5A8ptGlV5uG%2B3tXHDIGIVryY5EJbx%2FT6%2BTZzPt8kopzIvC2Pp7pZYVbmhGTyFT; HZ1J_2846_secqaaS2DtkdZ0=1c77BTJQgKYyDmJnc6Ii95ZtddHoGQiydOeN3abMV1%2BS82PxLa0DQ5O27ALKj6tjir%2FDr596UIQQA%2FRdD68STazKqnT2hNHj%2BwawXkDyK0RkB9bt82v7rFw1; HZ1J_2846_secqaaSbv16P40=f5ebX4esyrxug39OWwK2cRcyzeEGk40adC8%2FKwe%2FDvh%2BONc2nYwYZ%2BQhipAfDw4IvtBJv5pOq4FJ7t5J9DjzPVvnuRDrsqJwUOX9jmN3Ip6bBF8Z4wgeEp2u; HZ1J_2846_saltkey=yG2imG1I; HZ1J_2846_lastvisit=1480828430; HZ1J_2846_secqaaSyKm7wm0=8545%2BIJQZL9PduViROmcHspysNJVvZYwFBjA9pNyz4txGQvLJ2s1YtekQCbSyWIpp0V1Y7IkiCPcOBD5Ib8bKJItKdz7irC9kVfC%2BwPMty3PKWqgire1Vb%2Fo; HZ1J_2846_secqaaSPhHKzH0=c1470VJ0caQcc73Nt0s3vi%2BDcoIfcQf823veW04Hq7c61%2BLL25Czwbz9jKvIoa%2FY%2Bhcgmgu%2FuDhiyvQwJLsLQZ5Y4XQGJzDbKuVhlzLyzWocHyRx9UxoUiYZ; playno1_referer=%2Farticle-21836-1.html; HZ1J_2846_sid=swWZhx; _ga=GA1.2.1682830128.1477023919; __atuvc=8%7C45%2C8%7C46%2C0%7C47%2C2%7C48%2C4%7C49; __atuvs=5844c41239e279ca003; HZ1J_2846_lastact=1480903659%09misc.php%09secqaa; HZ1J_2846_secqaaSswWZhx0=8fa8ho5j50Tamp6AF6bBtioqhXF3od5mYApoiwbgLsZetLoEzyJ2fHPEG4KlBfZQWp5btW2x00tgFI1nLDxekl5TCFkMCF3Z4cyhSsQJhmsHY4GEhtkYCjKc');
@@ -843,6 +852,17 @@ sub form_to_url {
 		push @arr, "$key=".uri_escape($value);
 	}
 	return join('&', @arr);
+}
+
+sub to_seconds {
+	my $text = shift;
+	my $seconds = 0;
+	my @arr = split(':', $text);
+	for my $arr (@arr) {
+		$seconds *= 60;
+		$seconds += $arr;
+	}
+	return $seconds;
 }
 
 1;

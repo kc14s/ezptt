@@ -43,11 +43,15 @@ sub download_mgs_video {
 	my $snn = normalize_sn($sn);
 	print "video $sn $snn $title $fav_count $company $runtime $release_date $series $rating\n";
 	my $release_year = substr($release_date, 0, 4);
+	my $type = 2;
+	if (index($sn, 'chn') >= 0 || index($sn, 'bgn') >= 0 || index($sn, 'abp') >= 0 || index($sn, 'mdtm') >= 0 || index($sn, 'fsgd') >= 0 || index($sn, 'hiz') >= 0 || index($sn, 'sdmu') >= 0 || index($sn, 'mdb') >= 0 || index($sn, 'gvg') >= 0 || index($sn, 'hodv') >= 0 || index($sn, 'hfd') >= 0 || index($sn, 'jksr') >= 0) {
+		$type = 1;
+	}
 	if (execute_scalar("select count(*) from video where sn = '$sn'") == 0) {
-		$db_conn->do("insert into video(sn, sn_normalized, title, fav_count, company, runtime, release_date, release_year, series, rating, channel, sample_image_num) values('$sn', '$snn', ".$db_conn->quote($title).", $fav_count, ".$db_conn->quote($company).", $runtime, '$release_date', '$release_year', ".$db_conn->quote($series).", $rating, 8, $sample_image_num)");
+		$db_conn->do("insert into video(sn, sn_normalized, title, fav_count, company, runtime, release_date, release_year, series, rating, channel, sample_image_num, type) values('$sn', '$snn', ".$db_conn->quote($title).", $fav_count, ".$db_conn->quote($company).", $runtime, '$release_date', '$release_year', ".$db_conn->quote($series).", $rating, 8, $sample_image_num, $type)");
 	}
 	else {
-		$db_conn->do("replace into video(sn, sn_normalized, title, fav_count, company, runtime, release_date, release_year, series, rating, channel, sample_image_num) values('$sn', '$snn', ".$db_conn->quote($title).", $fav_count, ".$db_conn->quote($company).", $runtime, '$release_date', '$release_year', ".$db_conn->quote($series).", $rating, 8, $sample_image_num)");
+		$db_conn->do("replace into video(sn, sn_normalized, title, fav_count, company, runtime, release_date, release_year, series, rating, channel, sample_image_num, type) values('$sn', '$snn', ".$db_conn->quote($title).", $fav_count, ".$db_conn->quote($company).", $runtime, '$release_date', '$release_year', ".$db_conn->quote($series).", $rating, 8, $sample_image_num, $type)");
 #		$db_conn->do("update video set fav_count = $fav_count, rating = $rating where sn = '$sn'");
 	}
 	get_seeds($sn, $snn, 8, $db_conn);
