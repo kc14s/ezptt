@@ -9,6 +9,7 @@ require('jav123_lib.pl');
 my $db_conn = init_db();
 $db_conn->do("use dmm");
 $db_conn->do("set names utf8");
+our $db = $db_conn;
 
 my $url = 'http://jav123.com/category/japan/page';
 for (my $page = 1; $page < 100; ++$page) {

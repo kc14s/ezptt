@@ -4,7 +4,6 @@ my $db;
 sub get_wxc_boards {
 	my %boards;
 	$db = shift;
-#	my $db = $ENV{'db_conn'};
 	my $url = 'http://bbs.wenxuecity.com/catalog/';
 	my $html = get_url($url);
 	my @arr = split('<h2', $html);
@@ -13,7 +12,7 @@ sub get_wxc_boards {
 		my $group_name = $1 if ($item =~ />([\d\D]+?)<\/h2>/);
 		while ($item =~ /<li><a href="\/(\w+)\/">([\d\D]+?)<\/a><\/li>/g) {
 			$boards{$1} = [$1, $2, $group_name];
-			$db->do("replace into board(en_name, cn_name, group_name) values('$1', ".$db->quote($2).", '$group_name')");
+#			$db->do("replace into board(en_name, cn_name, group_name) values('$1', ".$db->quote($2).", '$group_name')");
 			print "$group_name\t$1\t$2\n";
 		}
 	}
@@ -31,7 +30,14 @@ sub get_wxc_topic {
 		$last_page = $1;
 	}
 #	for (my $page = $last_page; $page >= 1; --$page) {
-	for (my $page = 1; $page <= $last_page; ++$page) {
+	my $first_page = execute_scalar("select page from board where en_name = '$board_en_name'");
+	for (my $page = $first_page; $page <= $last_page; ++$page) {
+		$db->do("use wxc");
+		$db->do("set names utf8");
+		$db->do("update board set page = $page where en_name = '$board_en_name'");
+		if ($board_en_name eq 'travel' && $page >= $last_page - 1) {
+			last;
+		}
 		my $continue = 0;
 		my $url = "http://bbs.wenxuecity.com/$board_en_name/?page=$page";
 		my $list_html = get_url($url);
@@ -44,6 +50,7 @@ sub get_wxc_topic {
 			last;
 		}
 		my @arr = split(/<div class="(odd|even)">/, $list_html);
+		my $found = 0;
 		foreach my $item (@arr) {
 			next if (length($item) < 20);
 			my @articles;
@@ -54,7 +61,7 @@ sub get_wxc_topic {
 			}
 			next if (@articles <= 0);
 			my $tid = $articles[0]->[0];
-			if (execute_scalar("select count(*) from topic where board_en_name = '$board_en_name' and tid = $tid") == 0) {
+			if (1 || execute_scalar("select count(*) from topic where board_en_name = '$board_en_name' and tid = $tid") == 0) {
 				get_wxc_topic_content($board_en_name, $tid, $articles[0]->[1], $articles[0]->[2], scalar @articles - 1, $articles[0]->[3]);
 				$continue = 1;
 			}
@@ -70,13 +77,15 @@ sub get_wxc_topic {
 				my ($rid, $title, $author, $pub_time) = @$reply;
 				print "reply $rid $title $author $pub_time\n";
 				if (execute_scalar("select count(*) from reply where board_en_name = '$board_en_name' and tid = $tid and rid = $rid") > 0) {
-					$db->do("update reply set pub_time = '$pub_time' where board_en_name = '$board_en_name' and tid = $tid and rid = $rid");
+					$db->do("update reply set title = ".$db->quote($title).", author = ".$db->quote($author).", pub_time = '$pub_time' where board_en_name = '$board_en_name' and tid = $tid and rid = $rid");
 				}
 				else {
 					$db->do("insert into reply(board_en_name, tid, rid, title, author, pub_time) values('$board_en_name', $tid, $rid, ".$db->quote($title).", ".$db->quote($author).", '$pub_time')");
 				}
 			}
+			$found = 1;
 		}
+		last if (!$found);
 #		last if (!$continue);
 	}
 	print "exit board $board_en_name\n";

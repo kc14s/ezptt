@@ -6,7 +6,7 @@ require('config.pl');
 require('lib.pl');
 require('dmm_lib.pl');
 
-my $channel = 7;
+my $channel = 8;
 my $db_conn = init_db();
 $db_conn->do("use dmm");
 #$db_conn->do("update star_info set seed_popularity = 0");

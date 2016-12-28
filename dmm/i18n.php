@@ -10,7 +10,7 @@ if (true || $is_spider || $is_from_search_engine || $_COOKIE['is_from_search_eng
 else {
 	header("HTTP/1.1 301 Moved Permanently"); 
 	header("Location: /discuz/forum.php?mod=viewthread&tid=21&extra=page%3D1"); 
-	error_log("reject ".$_SERVER["HTTP_ACCEPT_LANGUAGE"].' '.$_SERVER['HTTP_USER_AGENT']);
+	error_log("reject ".($_SERVER["HTTP_ACCEPT_LANGUAGE"] ? $_SERVER["HTTP_ACCEPT_LANGUAGE"] : '').' '.$_SERVER['HTTP_USER_AGENT']);
 	exit;
 }
 //*/
@@ -104,8 +104,12 @@ $i18n = array(
 'louzhu' => '楼主',
 'jixuyuedu' => '继续阅读',
 'play_list' => '在线观看',
+'type_1' => 'AV',
 'type_2' => '素人',
 'type_3' => '无码',
+'type_4' => '动画',
+'type_5' => '欧美',
+'type_6' => '自拍偷拍',
 'av_news' => 'AV新闻',
 '' => '',
 '' => '',
@@ -171,8 +175,12 @@ $i18n = array(
 'louzhu' => '楼主',
 'jixuyuedu' => '繼續閱讀',
 'play_list' => '在線觀看',
+'type_1' => 'AV',
 'type_2' => '素人',
 'type_3' => '無碼',
+'type_4' => '動畫',
+'type_5' => '歐美',
+'type_6' => '自拍偷拍',
 'av_news' => 'AV新聞',
 '' => '',
 '' => '',
@@ -235,8 +243,12 @@ $i18n = array(
 'amateur' => 'Amateur',
 'louzhu' => 'Author',
 'play_list' => 'Play List',
+'type_1' => 'AV',
 'type_2' => 'Amateur',
 'type_3' => 'Unsensored',
+'type_4' => 'Anime',
+'type_5' => 'Western',
+'type_6' => 'Homebrew',
 'av_news' => 'AV News',
 '' => '',
 '' => '',
@@ -287,8 +299,12 @@ $i18n = array(
 'uncensored' => 'Uncensored',
 'amateur' => 'Amateur',
 'play_list' => 'Play List',
-'type_2' => 'Amateur',
-'type_3' => 'Unsensored',
+'type_1' => 'AV',
+'type_2' => '素人',
+'type_3' => '無修正',
+'type_4' => '動画',
+'type_5' => '洋物ポルノ',
+'type_6' => 'Homebrew',
 'av_news' => 'AV News',
 '' => '',
 '' => '',
@@ -308,10 +324,10 @@ function i18n($key) {
 	global $lang, $i18n;
 	if (isset($i18n[$lang][$key])) return $i18n[$lang][$key];
 	if ($lang == 'ja_JP') {
-		if (!isset($i18n[$lang][$key]) && isset($i18n['en_US'][$key])) {
+		if (isset($i18n['en_US'][$key])) {
 			return $i18n['en_US'][$key];
 		}
-		return $i18n[$lang][$key];
+		return $key;
 	}
 	else if ($lang == 'zh_CN') {
 		return strtr(strtr($key, zht2s::$zh2CN), zht2s::$zh2Hans);

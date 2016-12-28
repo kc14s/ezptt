@@ -34,7 +34,6 @@ $q_content = i18n($q_content);
 $author = i18n($author);
 $nick = i18n($nick);
 $a_content = i18n($a_content);
-$b_name = i18n($b_name);
 $sb_name = i18n($sb_name);
 $html_title = "$title $author";
 $articles[] = array('', '', 0, $title, $q_content, '');
@@ -108,7 +107,7 @@ foreach ($articles as $article) {
 		if ($content <> '') {
 			$html .= '<div class="panel-body">';
 			if ($floor == 1 || $floor == 2) {
-				$html .= $adsense_dzh;
+				//$html .= $adsense_dzh;
 			}
 			if ($floor == 2) {
 				$content = process_answer_content($content, $aid);
@@ -120,7 +119,7 @@ foreach ($articles as $article) {
 	}
 	if (!$is_loyal_user) {
 		if (true || $floor == 1 || $floor == 2) {
-			$html .= $baidu_ad;
+//			$html .= $baidu_ad;
 //			$html .= $scupio_728_90;
 		}
 		else if ($floor == 3) {

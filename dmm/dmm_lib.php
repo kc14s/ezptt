@@ -36,6 +36,10 @@ function get_cover_img_url($sn, $channel, $rating = 2, $snn = '') {
 		global $pondo1_static_host;
 		return "${pondo1_static_host}assets/sample/$sn/thum_b.jpg";
 		return "http://www.1pondo.tv/assets/sample/$sn/thum_b.jpg";
+	case 11:
+		$video_id = substr($sn, 2);
+		//return "http://www.5xww3.com/media/videos/tmb1/$video_id/default.jpg";
+		return "http://www.5xww3.com/media/videos/tmb/$video_id/1.jpg";
 	}
 }
 
@@ -107,6 +111,9 @@ function get_sample_img_thumb_url($sn, $channel, $id, $rating) {
 		global $pondo1_static_host;
 		return "$pondo1_static_host/assets/sample/$sn/thum_106/$id.jpg";
 		return "http://www.1pondo.tv/assets/sample/$sn/thum_106/$id.jpg";
+	case 11:
+		$video_id = substr($sn, 2);
+		return "http://www.5xww3.com/media/videos/tmb/$video_id/$id.jpg";
 	}
 	return '';
 }
@@ -181,7 +188,7 @@ function snn_add_hyphen($snn) {
 
 function get_rand_dmm_thumb_html() {
 	$html = '';
-	$result = mysql_query("select title, sn, channel, rating, seed_popularity from video where channel = 1 order by seed_popularity desc limit ".rand(0, 200).', 8');
+	$result = mysql_query("select title, sn, channel, rating, seed_popularity from video where type = 1 order by seed_popularity desc limit ".rand(0, 200).', 8');
 	while (list($title, $sn, $channel, $rating, $seed_popularity) = mysql_fetch_array($result)) {
 		$video = array($title, $sn, $channel, $rating, $seed_popularity);
 		$videos[] = $video;
@@ -197,7 +204,7 @@ function get_rand_dmm_thumb_html() {
 		if ($col % 4 == 3) $html .= '</div></div>';
 		++$col;
 	}
-	if ($counter % 4 != 0) $html .= '</div></div>';
+	if ($col % 4 != 0) $html .= '</div></div>';
 	$html .= '</div></div>';
 	return $html;
 }
@@ -239,7 +246,7 @@ function validate_seed_name($snn, $name) {
 	}
 	$alphabet = '';
 //	preg_match_all('/([a-zA-Z\d]+)/', $name, $matches);
-	if (preg_match("/${snn_prefix}[ \-]?$snn_suffix/", strtolower($name), $matches) == 1) {
+	if (preg_match("/${snn_prefix}[ \-]?0*$snn_suffix/", strtolower($name), $matches) == 1) {
 		error_log("emule validate passed, $snn");
 		return true;
 	}
@@ -279,9 +286,12 @@ function get_img_tag($img_url) {
 		$failover_url = 'https://static.jporndb.com'.substr($img_url, $str_pos + 9);
 		return "<img class=\"img-responsive\" src=\"$img_url\" onerror=\"this.onerror=null;this.src='$failover_url'\">";
 	}
-	else {
-		return "<img class=\"img-responsive\" src=\"$img_url\">";
+	$str_pos = strpos($img_url, '5xww3');
+	if ($str_pos > 0) {
+		$failover_url = str_replace('tmb', 'tmb1', $img_url);
+		return "<img class=\"img-responsive\" src=\"$img_url\" onerror=\"this.onerror=null;this.src='$failover_url'\">";
 	}
+	return "<img class=\"img-responsive\" src=\"$img_url\">";
 }
 
 function sort_by_release_date($video1, $video2) {

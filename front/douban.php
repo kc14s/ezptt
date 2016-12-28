@@ -70,6 +70,9 @@ if (isset($articles)) {
 		$html .= "<span class=\"pull-right\">$pub_time</span>";
 		$html .= '</div>';
 		$html .= '<div class="panel-body">';
+		if ($floor == 1) {
+			$html .= $adsense_ucptt;
+		}
 		$content = i18n($content);
 		if (false && strlen($content) < 1000 && !(strpos($content, 'http://') === false)) {
 			$content = preg_replace("/(http:\/\/[\w\/\.\_\-]+\.jpg)/", "<br><a href=\"$1\" target=\"_blank\"><img data-original=\"$1\" /></a>", $content);
@@ -81,6 +84,7 @@ if (isset($articles)) {
 		}
 		$html .= $content;
 		if ($floor == 1) {
+			$html .= $adsense_ucptt;
 			$html .= '<div class="addthis_sharing_toolbox"></div>';
 		}
 		$html .= '</div></div>';
@@ -113,7 +117,7 @@ foreach ($prev_topics as $prev_topic) {
 }
 $html .= '</div></div>';
 */
-if (true || $is_spider) {
+if (false || $is_spider) {
 	$html .= get_old_ck101_topic_html();
 	$html .= get_rand_douban_topic_html();
 }

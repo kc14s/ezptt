@@ -6,7 +6,7 @@ require('config.pl');
 require('lib.pl');
 require('zhihu_lib.pl');
 
-our $db_conn = init_db();
+our $db_conn = init_db('zhihu');
 $db_conn->do("use zhihu");
 $db_conn->do("set names utf8");
 #$db_conn->do("SET character_set_client='utf8'");

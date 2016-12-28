@@ -100,7 +100,8 @@ sub download_video {
 	}
 	print "$product_id $dept_id $snn $title, $release_date, $runtime, $company\n";
 	if (0 || execute_scalar("select count(*) from video where sn = '$sn'") == 0) {
-		$db_conn->do("replace into video(sn, sn_normalized, title, release_date, runtime, company, channel, release_year, fav_count, rating, description) values('$sn', '$snn', ".$db_conn->quote($title).", '$release_date', $runtime, ".$db_conn->quote($company).", $channel, $release_year, $fav_count, $rating, ".$db_conn->quote($description).")");
+		my $type = channel_to_type($channel);
+		$db_conn->do("replace into video(sn, sn_normalized, title, release_date, runtime, company, channel, release_year, fav_count, rating, description, type) values('$sn', '$snn', ".$db_conn->quote($title).", '$release_date', $runtime, ".$db_conn->quote($company).", $channel, $release_year, $fav_count, $rating, ".$db_conn->quote($description).", $type)");
 	}
 	my $star_html;
 	if ($html =~ /主演女優: <\/span>([\d\D]+?)<\/li>/) {

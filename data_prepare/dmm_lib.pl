@@ -148,7 +148,7 @@ sub request_mldonkey {
 	my ($sn, $snn, $query, $channel, $db_conn) = @_;
 	print "requesting emule $query\n";
 	my $query_original = $query;
-	$query = uri_escape('"'.$query.'"');
+	$query = uri_escape_urt8('"'.$query.'"');
 	my $html = `curl -s 'http://mldonkey.ucptt.com/submit?custom=Complex+Search&keywords=$query&minsize=&minsize_unit=1048576&maxsize=&maxsize_unit=1048576&media=&media_propose=&format=&format_propose=&artist=&album=&title=&bitrate=&network='`;
 	my $search_id = $1 if ($html =~ /Query (\d+) sent to/);
 	if (!defined($search_id)) {
@@ -179,7 +179,7 @@ sub request_pirate_bay {
 	my ($sn, $snn, $query, $channel, $db_conn) = @_;
 	return if ($snn eq 'world2016' || $snn eq 'kub002');
 	my $query_original = $query;
-	$query = uri_escape($query); 
+	$query = uri_escape_utf8($query); 
 	my $list_html = get_url("https://thepiratebay.org/search/$query/0/99/0");
 	my @seeds = parse_pb_list_html($list_html);
 	foreach my $seed (@seeds) {
@@ -200,7 +200,7 @@ sub request_btany {
 	my ($sn, $snn, $query, $channel, $db_conn) = @_;
 	return if ($snn eq 'world2016' || $snn eq 'kub002');
 	my $query_original = $query;
-	$query = uri_escape($query); 
+	$query = uri_escape_utf8($query); 
 	my $list_html = get_url("http://www.btany.com/search/$query-hot-desc-1");
 	my @items = split('<div class="search-item">', $list_html);
 	for (my $i = 1; $i < @items; ++$i) {
@@ -232,7 +232,7 @@ sub request_btsou {
 	my ($sn, $snn, $query, $channel, $db_conn) = @_;
 	return if ($snn eq 'world2016' || $snn eq 'kub002');
 	my $query_original = $query;
-	$query = uri_escape($query); 
+	$query = uri_escape_utf8($query); 
 	my $list_html = get_url("http://www.btsou.net/list/$query/1");
 	my @items = split('<div class="T1">', $list_html);
 	for (my $i = 1; $i < @items; ++$i) {
@@ -291,7 +291,7 @@ sub request_btkitty {
 	my ($sn, $snn, $query, $channel, $db_conn) = @_;
 	return if ($snn eq 'world2016' || $snn eq 'kub002');
 	my $query_original = $query;
-	$query = uri_escape($query); 
+	$query = uri_escape_utf8($query); 
 	my $redirect_header = post_url('http://diggbt.pw/', {'keyword' => $query, 'hidden' => 'true'}, 1);
 #	print "response header\n$redirect_header\n";
 	my $list_html = '';
@@ -361,7 +361,7 @@ sub request_btkitty {
 }
 
 sub normalize_sn {
-	my $snn = $_[0];
+	my $snn = lc($_[0]);
 	if ($snn =~ /([a-z]+)\-?0*(\d+?)$/) {
 		$snn = sprintf("%s%03d", $1, $2);
 	}
@@ -547,4 +547,22 @@ sub parse_pb_list_html {
 	return @ret;
 }
 
+our %dmm_channel_to_type = (
+1 => 1,
+2 => 2,
+3 => 4,
+4 => 1,
+5 => 3,
+6 => 4,
+7 => 5,
+8 => 2,
+9 => 3,
+10 => 3,
+11 => 6
+);
+
+sub channel_to_type {
+	my $channel = shift;
+	return $dmm_channel_to_type{$channel};
+}
 1;

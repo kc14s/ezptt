@@ -4,7 +4,7 @@ require_once('i18n.php');
 require_once('dmm_lib.php');
 $db_conn = conn_dmm_db();
 
-$sort_by = $_GET['sort_by'];
+$sort_by = $_GET['sort_by'] ? $_GET['sort_by'] : '';
 $page = $_GET['page'];
 $page_size = 48;
 
@@ -59,19 +59,31 @@ else if (isset($_GET['release_year'])) {
 }
 else if (isset($_GET['channel'])) {
 	$channel = $_GET['channel'];
-	if ($channel == 1 || $channel == 1 || $channel == 3 || ($channel >= 5 && $channel <= 7) || $channel == 9 || $channel == 10) {
-		$result = mysql_query("select title, sn, sn_normalized, channel, rating, seed_popularity from video where channel = $channel order by seed_popularity desc limit ".(($page - 1) * $page_size).", $page_size");
+	header("HTTP/1.1 301 Moved Permanently");
+	if ($channel == 1 || $channel == 4) {
+		header("Location: /type/1/1");
 	}
-	else {
-		$result = mysql_query("select title, sn, sn_normalized, channel, rating, seed_popularity from video where channel = $channel order by fav_count desc limit ".(($page - 1) * $page_size).", $page_size");
+	else if ($channel == 2 || $channel == 8) {
+		header("Location: /type/2/1");
 	}
-	$label = i18n("channel_$channel");
-	$group_name_key = $label;
-	$current_url = "channel/$channel/$page";
+	else if ($channel == 5 || $channel == 9 || $channel == 10) {
+		header("Location: /type/3/1");
+	}
+	else if ($channel == 3 || $channel == 6) {
+		header("Location: /type/4/1");
+	}
+	else if ($channel == 7) {
+		header("Location: /type/5/1");
+	}
+	exit();
 }
 else if (isset($_GET['type'])) {
 	$type = $_GET['type'];
-	$result = mysql_query("select title, sn, sn_normalized, channel, rating, seed_popularity from video where type = $type order by seed_popularity desc limit ".(($page - 1) * $page_size).", $page_size");
+	$order_by = 'seed_popularity';
+	if ($type == 2) {
+		$order_by = 'fav_count';
+	}
+	$result = mysql_query("select title, sn, sn_normalized, channel, rating, seed_popularity from video where type = $type order by $order_by desc limit ".(($page - 1) * $page_size).", $page_size");
 	$label = i18n("type_$type");
 	$group_name_key = $label;
 	$current_url = "type/$type/1";

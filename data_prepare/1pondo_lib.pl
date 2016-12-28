@@ -52,7 +52,7 @@ sub parse_1pondo_list {
 		print "$sn $actor $release_date $title $runtime\n";
 		$runtime = int($runtime / 60);
 		if (execute_scalar("select count(*) from video where sn = '$sn'") == 0) {
-			$db_conn->do("replace into video(sn, sn_normalized, title, release_date, runtime, director, company, sample_image_num, description, channel, release_year, series_id) values('$sn', '$snn', $title, '$release_date', $runtime, '$director', '$company', $sample_image_num, $desc, $channel, $release_year, $series_id)");
+			$db_conn->do("replace into video(sn, sn_normalized, title, release_date, runtime, director, company, sample_image_num, description, channel, release_year, series_id, type) values('$sn', '$snn', $title, '$release_date', $runtime, '$director', '$company', $sample_image_num, $desc, $channel, $release_year, $series_id, 3)");
 		}
 		get_seeds($sn, $snn, $channel, $db_conn);
 		++$counter;
