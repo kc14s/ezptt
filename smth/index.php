@@ -17,15 +17,15 @@ while (list($bid, $gid, $title) = mysql_fetch_array($result)) {
 	else {
 		++$bid_count[$bid];
 	}
-	if ($bid_count[$bid] > 3) continue;
 	list($group, $en_name, $cn_name) = execute_vector("select `group`, en_name, cn_name from board where bid = $bid");
-	$groups[$group][] = array($en_name, $cn_name, $gid, $title);
 	$att_id = execute_scalar("select att_id from attachment where bid = $bid and aid = $gid order by att_id limit 1");
 	if (isset($att_id)) {
-		if (count($pic_topics) < 10 || $bid == 1349 || $bid == 872) {
+		if (false || count($pic_topics) < 15 || $bid == 1349 || $bid == 872) {
 			$pic_topics[] = array($en_name, $cn_name, $gid, $title, $att_id);
 		}
 	}
+	if ($bid_count[$bid] > 3) continue;
+	$groups[$group][] = array($en_name, $cn_name, $gid, $title);
 }
 
 $html .= "<div class=\"row\"><div class=\"col-md-6 col-md-offset-2 col-xs-12\">";

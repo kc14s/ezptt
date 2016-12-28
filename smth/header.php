@@ -1,5 +1,6 @@
 <?php header("Content-type: text/html; charset=UTF-8");
 require_once('i18n.php');
+require_once('ads_smth.php');
 ?>
 <!DOCTYPE HTML>
 <html lang="<?echo get_html_lang()?>">
@@ -8,6 +9,7 @@ require_once('i18n.php');
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
 <meta name="applicable-device" content="pc,mobile" />
+<meta name="propeller" content="c8293d60691fe2c80895822e8f5cd7aa" />
 <link rel="icon" href="data:;base64,iVBORw0KGgo=">
 <title>
 <?php

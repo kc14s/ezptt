@@ -13,6 +13,12 @@ $i18n = array(
 		'chaxunzuozhe' => '查询作者',
 		'meizhaodaokanban' => '没找到讨论区',
 		'defawen' => '的文章',
+		'shuimushequ' => '水木社区',
+		'' => '',
+		'' => '',
+		'' => '',
+		'' => '',
+		'' => '',
 		'' => ''
 	),
 	'zh_TW' => array(
@@ -20,6 +26,12 @@ $i18n = array(
 		'chaxunzuozhe' => '查詢作者',
 		'meizhaodaokanban' => '沒找到討論區',
 		'defawen' => '的發文',
+		'shuimushequ' => '水木社區',
+		'' => '',
+		'' => '',
+		'' => '',
+		'' => '',
+		'' => '',
 		'' => ''
 	)
 );
@@ -35,10 +47,10 @@ function get_hreflang() {
 	global $lang;
 	$protocol = $_SERVER['HTTPS'] ? 'https' : 'http';
 	if ($lang == 'zh_TW') {
-		return '<link rel="alternate" hreflang="cn" href="'.$protocol.'://www.ezsmth.com'.$_SERVER['REQUEST_URI'].'" />';
+		return '<link rel="alternate" hreflang="zh-cn" href="'.$protocol.'://www.ezsmth.com'.$_SERVER['REQUEST_URI'].'" />';
 	}
 	else if ($lang == 'zh_CN') {
-		return '<link rel="alternate" hreflang="tw" href="'.$protocol.'://tw.ezsmth.com'.$_SERVER['REQUEST_URI'].'" />';
+		return '<link rel="alternate" hreflang="zh-tw" href="'.$protocol.'://tw.ezsmth.com'.$_SERVER['REQUEST_URI'].'" />';
 	}
 	return '';
 }

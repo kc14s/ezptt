@@ -70,8 +70,9 @@ if (count($older_topics) > 0) {
 	}
 	$html .= '</div></div>';
 }
+$html .= '<p><a href="/">'.i18n('shuimushequ').'</a></p>';
 $html .= '</div>';
-if (false && !$is_loyal_user) {
+if (true && !$is_loyal_user) {
 	$html .= get_rand_dmm_column_html();
 }
 //$html .= '</div>';	//end of row
@@ -83,7 +84,6 @@ if (false || $is_spider) {
 if (true || $is_spider) {
 #	$html .= get_old_ck101_topic_html();
 }
-//$html .= '<p><a href="/">PTT</a> <a href="/disp">disp</a></p></div>';
 //$html .= '<script type="text/javascript">var zx_aid = 1;var zx_uid = 10799;var zoneid = 11554;</script><script type="text/javascript" charset="utf-8" src="http://click.9cpc.com/view.js"></script>';
 $html .= '</div></div>';
 

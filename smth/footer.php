@@ -30,6 +30,8 @@ if ($is_spider) {
 	echo get_inter_link();
 }
 if (!$is_loyal_user) {
+	echo $propellads_ezsmth_popup;
+	echo $propellads_ezsmth_interstitial;
 //	echo get_popup_script("https://www.jav321.com/");
 }
 if (false || $is_google_spider) {
