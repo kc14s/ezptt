@@ -34,7 +34,6 @@ $q_content = i18n($q_content);
 $author = i18n($author);
 $nick = i18n($nick);
 $a_content = i18n($a_content);
-$b_name = i18n($b_name);
 $sb_name = i18n($sb_name);
 $html_title = "$title $author";
 $articles[] = array('', '', 0, $title, $q_content, '');

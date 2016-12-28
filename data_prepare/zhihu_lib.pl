@@ -8,7 +8,7 @@ no warnings 'utf8';
 
 our $db_conn;
 sub get_groups {
-        my $url = 'http://www.zhihu.com/topics';
+        my $url = 'https://www.zhihu.com/topics';
         my $html = get_url($url);
         my @groups = ();
         while ($html =~ /<li .+?data-id="(\d+)"><a href="#([\d\D]+?)">/g) {

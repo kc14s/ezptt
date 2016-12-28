@@ -1,9 +1,7 @@
 require('lib.pl');
 
-my $db_conn;
 
 sub get_ck_boards {
-	$db_conn = $ENV{'db_conn'};
 	my $html = get_url('http://ck101.com/forum.php?ref=nav');
 	my %board_groups;
 	while ($html =~ /<li id="mn_(\w+)" onmouseover="showMenu\({'ctrlid':this\.id,'ctrlclass':'hover','duration':2}\)"><a  onclick="ga\('send','event', 'navs','([\d\D]+?)'\);"/g) {
@@ -55,12 +53,10 @@ sub get_ck_boards {
 }
 
 sub get_ck_boards_from_db {
-	$db_conn = $ENV{'db_conn'};
 	my $boards = execute_dataset("select id, group_name, cn_name from board");
 	my %boards;
 	for my $board (@$boards) {
 		$boards{$board->[0]} = [$board->[1], $board[2]];
-		print "$board->[0], $board->[1], $board->[2]\n";
 	}
 	return \%boards;
 }

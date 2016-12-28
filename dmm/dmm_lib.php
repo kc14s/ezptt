@@ -188,7 +188,7 @@ function snn_add_hyphen($snn) {
 
 function get_rand_dmm_thumb_html() {
 	$html = '';
-	$result = mysql_query("select title, sn, channel, rating, seed_popularity from video where channel = 1 order by seed_popularity desc limit ".rand(0, 200).', 8');
+	$result = mysql_query("select title, sn, channel, rating, seed_popularity from video where type = 1 order by seed_popularity desc limit ".rand(0, 200).', 8');
 	while (list($title, $sn, $channel, $rating, $seed_popularity) = mysql_fetch_array($result)) {
 		$video = array($title, $sn, $channel, $rating, $seed_popularity);
 		$videos[] = $video;
@@ -204,7 +204,7 @@ function get_rand_dmm_thumb_html() {
 		if ($col % 4 == 3) $html .= '</div></div>';
 		++$col;
 	}
-	if ($counter % 4 != 0) $html .= '</div></div>';
+	if ($col % 4 != 0) $html .= '</div></div>';
 	$html .= '</div></div>';
 	return $html;
 }
@@ -246,7 +246,7 @@ function validate_seed_name($snn, $name) {
 	}
 	$alphabet = '';
 //	preg_match_all('/([a-zA-Z\d]+)/', $name, $matches);
-	if (preg_match("/${snn_prefix}[ \-]?$snn_suffix/", strtolower($name), $matches) == 1) {
+	if (preg_match("/${snn_prefix}[ \-]?0*$snn_suffix/", strtolower($name), $matches) == 1) {
 		error_log("emule validate passed, $snn");
 		return true;
 	}

@@ -201,7 +201,7 @@ $html .= output_group($videos, i18n('channel_2'), '/channel/2');
 */
 
 $videos = array();
-$result = mysql_query("select title, sn, sn_normalized, channel, rating from video where type = 4 order by seed_popularity desc limit 8");
+$result = mysql_query("select title, sn, sn_normalized, channel, rating from video where type = 4 order by release_date desc limit 8");
 while (list($title, $sn, $snn, $channel, $rating) = mysql_fetch_array($result)) {
 	$snn = snn_add_hyphen($snn);
 	$video = array($title, $sn, $snn, $channel, $rating);
@@ -210,7 +210,7 @@ while (list($title, $sn, $snn, $channel, $rating) = mysql_fetch_array($result)) 
 $html .= output_group($videos, i18n('type_4'), '/type/4');
 
 $videos = array();
-$result = mysql_query("select title, sn, sn_normalized, channel, rating from video where type = 5 order by seed_popularity desc limit 8");
+$result = mysql_query("select title, sn, sn_normalized, channel, rating from video where type = 5 order by release_date desc limit 8");
 while (list($title, $sn, $snn, $channel, $rating) = mysql_fetch_array($result)) {
 	$snn = snn_add_hyphen($snn);
 	$video = array($title, $sn, $snn, $channel, $rating);

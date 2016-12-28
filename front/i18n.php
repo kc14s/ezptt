@@ -30,7 +30,7 @@ else if ($is_spider && !$is_google_spider) {
 else if (is_from_cn_search_engine()) {
 	$lang = 'zh_CN';
 }
-else if (strtolower(substr($_SERVER["HTTP_ACCEPT_LANGUAGE"], 0, 5)) == 'zh-cn') {
+else if (isset($_SERVER["HTTP_ACCEPT_LANGUAGE"]) && strtolower(substr($_SERVER["HTTP_ACCEPT_LANGUAGE"], 0, 5)) == 'zh-cn') {
 	$lang = 'zh_CN';
 }
 else if (false && is_from_china()) {
@@ -85,7 +85,9 @@ $is_default_tw = strpos($_SERVER['PHP_SELF'], '/douban') === 0 ? false : true;
 
 function get_hreflang() {
 	global $lang;
-	$protocol = $_SERVER['HTTPS'] ? 'https' : 'http';
+	$protocol = isset($_SERVER['HTTPS']) ? 'https' : 'http';
+	//$protocol = $_SERVER['HTTP_X_FORWARDED_PROTO'];
+	//$protocol = 'http';
 	if ($lang == 'zh_TW') {
 		return '<link rel="alternate" hreflang="zh_CN" href="'.$protocol.'://cn.ucptt.com'.$_SERVER['REQUEST_URI'].'" />';
 	}

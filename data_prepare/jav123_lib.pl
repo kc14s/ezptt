@@ -1,5 +1,7 @@
 use strict;
 
+our $db;
+
 sub extract_vids {
 	my $list_html = shift;
 	my %vids;
@@ -7,13 +9,14 @@ sub extract_vids {
 	while ($list_html =~ /http:\/\/jav123\.com\/(\d+)/g) {
 		push @vids, $1;
 	}
-	while ($list_html =~ /([\d,]+) views/g) {
-		my $pv = $1;
-		$pv =~ s/,//;
-		push @pvs, $pv;
-	}
-	for (my $i = 0; $i < @pvs; ++$i) {
-		$vids{$vids[$i * 2]} = $pvs[$i];
+#	while ($list_html =~ /([\d,]+) views/g) {
+#		my $pv = $1;
+#		$pv =~ s/,//;
+#		push @pvs, $pv;
+#	}
+	for (my $i = 0; $i < @vids; ++$i) {
+		$vids{$vids[$i]} = 0;
+		print "video id $vids[$i]\n";
 	}
 	return \%vids;
 }
@@ -21,7 +24,7 @@ sub extract_vids {
 sub download_vids {
 	my $vids = shift;
 	my $download_count = 0;
-	my $db = $ENV{'db_conn'};
+#	my $db = $ENV{'db_conn'};
 	while (my ($vid, $pv) = each %$vids) {
 		my $url = "http://jav123.com/$vid";
 		my $html = get_url($url);

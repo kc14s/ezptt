@@ -39,7 +39,6 @@ sub init_db {
 	$db_conn->do("SET time_zone = '+8:00'");
 	$db_conn->do('SET LOW_PRIORITY_UPDATES=1');
 	$db_conn->{mysql_auto_reconnect} = 1;
-	$ENV{'db_conn'} = $db_conn;
 	return $db_conn;
 }
 
@@ -260,7 +259,7 @@ sub post_url {
 
 sub execute_scalar {    
 	my ($sql, $conn) = @_;  
-	$conn = $ENV{'db_conn'} if (!defined($conn));
+	$conn = $db_conn if (!defined($conn));
 	my $request = $conn->prepare($sql);
 	$request->execute();
 	my ($result) = $request->fetchrow_array;
@@ -272,7 +271,7 @@ sub execute_scalar {
 
 sub execute_vector {    
 	my ($sql, $conn) = @_;  
-	$conn = $ENV{'db_conn'} if (!defined($conn));
+	$conn = $db_conn if (!defined($conn));
 	my $request = $conn->prepare($sql);
 	$request->execute();
 	return $request->fetchrow_array;
@@ -280,7 +279,7 @@ sub execute_vector {
 
 sub execute_column {
 	my ($sql, $conn) = @_;  
-	$conn = $ENV{'db_conn'} if (!defined($conn));
+	$conn = $db_conn if (!defined($conn));
 	my $request = $conn->prepare($sql);
 	$request->execute();
 	my @ret;
@@ -294,7 +293,7 @@ sub execute_column {
 
 sub execute_dataset {
 	my ($sql, $conn) = @_;  
-	$conn = $ENV{'db_conn'} if (!defined($conn));
+	$conn = $db_conn if (!defined($conn));
 	my $request = $conn->prepare($sql);
 	$request->execute();
 	my @ret;

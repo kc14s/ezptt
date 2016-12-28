@@ -4,7 +4,7 @@ require_once('i18n.php');
 require_once('dmm_lib.php');
 $db_conn = conn_dmm_db();
 
-$sort_by = $_GET['sort_by'];
+$sort_by = $_GET['sort_by'] ? $_GET['sort_by'] : '';
 $page = $_GET['page'];
 $page_size = 48;
 

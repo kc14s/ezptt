@@ -10,7 +10,7 @@ if (true || $is_spider || $is_from_search_engine || $_COOKIE['is_from_search_eng
 else {
 	header("HTTP/1.1 301 Moved Permanently"); 
 	header("Location: /discuz/forum.php?mod=viewthread&tid=21&extra=page%3D1"); 
-	error_log("reject ".$_SERVER["HTTP_ACCEPT_LANGUAGE"].' '.$_SERVER['HTTP_USER_AGENT']);
+	error_log("reject ".($_SERVER["HTTP_ACCEPT_LANGUAGE"] ? $_SERVER["HTTP_ACCEPT_LANGUAGE"] : '').' '.$_SERVER['HTTP_USER_AGENT']);
 	exit;
 }
 //*/
@@ -324,10 +324,10 @@ function i18n($key) {
 	global $lang, $i18n;
 	if (isset($i18n[$lang][$key])) return $i18n[$lang][$key];
 	if ($lang == 'ja_JP') {
-		if (!isset($i18n[$lang][$key]) && isset($i18n['en_US'][$key])) {
+		if (isset($i18n['en_US'][$key])) {
 			return $i18n['en_US'][$key];
 		}
-		return $i18n[$lang][$key];
+		return $key;
 	}
 	else if ($lang == 'zh_CN') {
 		return strtr(strtr($key, zht2s::$zh2CN), zht2s::$zh2Hans);
